@@ -16,8 +16,7 @@
     "esModuleInterop": true,
     "allowImportingTsExtensions": false,
     "types": ["vite/client", "node"],
-    "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src", "tests", "vite.config.ts"]
 }
