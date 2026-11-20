@@ -219,6 +219,7 @@ export interface Settings {
   showLessons: boolean;
   appleCalendarEnabled: boolean;
   appleManagedCalendarName: string;
+  appleManagedCalendarId: string | null;
   appleDefaultCalendarId: string | null;
   appleVisibleCalendarIds: string[];
   appleSyncLessons: boolean;

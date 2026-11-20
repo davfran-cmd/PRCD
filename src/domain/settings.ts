@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showLessons: true,
   appleCalendarEnabled: false,
   appleManagedCalendarName: APPLE_MANAGED_CALENDAR_NAME,
+  appleManagedCalendarId: null,
   appleDefaultCalendarId: null,
   appleVisibleCalendarIds: [],
   appleSyncLessons: false,
