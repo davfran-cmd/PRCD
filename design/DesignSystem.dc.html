@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Design system</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;family=Newsreader:opsz,wght@6..72,400&amp;family=STIX+Two+Text:ital@1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:1240px;padding:40px 44px;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden}
+.mu{color:#5F5F59}
+.sh{border-top:3px solid #000;padding-top:10px;margin-top:30px;display:grid;grid-template-columns:200px 1fr;gap:24px}
+.sh h2{margin:0;font-size:22px;font-weight:750;letter-spacing:-0.02em}
+.sh h2 + p{margin:6px 0 0;font-size:13px;color:#5F5F59}
+.chip{display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.chip span:first-child{height:64px;border-radius:2px}
+.btn{height:44px;padding:0 16px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:15px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.btn.d{background:#C2410C;border-color:#C2410C;color:#fff}
+.g{display:inline-block;width:16px;height:16px;border-radius:2px;flex:none}
+.g.a{background:#000}.g.x{border:2.5px solid #C2410C}.g.t{border:2px dashed #77776F}.g.r{border:2.5px solid #000;background:linear-gradient(135deg,#000 50%,#fff 50%)}.g.f{background:#EBEBE6}
+.ty{display:grid;grid-template-columns:150px 1fr;align-items:baseline;border-top:1px solid #EBEBE6;padding:6px 0}
+.cmp{display:flex;flex-direction:column;gap:8px}
+.cmp > span{font-size:12px;color:#5F5F59}
+</style>
+</helmet>
+<div class="app">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between">
+    <h1 style="margin:0;font-size:64px;font-weight:780;letter-spacing:-0.045em;line-height:0.95">Libretto<br>design system</h1>
+    <p style="margin:0;max-width:52ch;font-size:15px;color:#3A3A36">Stile tipografico svizzero, rivisto per lo schermo: carta bianca, inchiostro nero, un solo colore d'azione. I colori dei corsi sono dati, non decorazione. Il quadratino delle presenze è il segno che lega tutto il prodotto.</p>
+  </div>
+
+  <section class="sh">
+    <div><h2>Colore</h2><p>Testi minimi 4,5:1 sul bianco.</p></div>
+    <div>
+      <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px">
+        <div class="chip"><span style="box-shadow:inset 0 0 0 1px #DCDCD6;background:#fff"></span><b>Carta</b><span class="mu">#FFFFFF</span></div>
+        <div class="chip"><span style="background:#F2F2EF"></span><b>Fondo</b><span class="mu">#F2F2EF, barre e pannelli</span></div>
+        <div class="chip"><span style="background:#DCDCD6"></span><b>Filetto</b><span class="mu">#DCDCD6</span></div>
+        <div class="chip"><span style="background:#000"></span><b>Inchiostro</b><span class="mu">#000000, testo e presente</span></div>
+        <div class="chip"><span style="background:#1F35C7"></span><b>Oltremare</b><span class="mu">#1F35C7, azioni e oggi</span></div>
+        <div class="chip"><span style="background:#C2410C"></span><b>Segnale</b><span class="mu">#C2410C, assenze e scadenze</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:16px;font-size:13px">
+        <span class="mu" style="width:110px">Colori dei corsi</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;background:#6A4FB3;border-radius:2px"></span>Viola</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;background:#1F7A8C;border-radius:2px"></span>Petrolio</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;background:#3F7D3A;border-radius:2px"></span>Muschio</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;background:#B7791F;border-radius:2px"></span>Ocra</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;background:#93306E;border-radius:2px"></span>Prugna</span>
+        <span style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;background:#4A4A44;border-radius:2px"></span>Grafite</span>
+        <span class="mu">tutti reggono il testo bianco</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sh">
+    <div><h2>Tipografia</h2><p>Schibsted Grotesk per l'interfaccia, cifre tabellari solo nelle colonne di numeri interi (in questo carattere renderebbero larghe anche virgole e due punti). Newsreader solo per leggere.</p></div>
+    <div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Display 64/780, −4,5%</span><span style="font-size:64px;font-weight:780;letter-spacing:-0.045em;line-height:1">Fisica 2</span></div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Titolo pagina 46/750</span><span style="font-size:46px;font-weight:750;letter-spacing:-0.035em;line-height:1.05">Venerdì 20 novembre</span></div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Sezione 30/750</span><span style="font-size:30px;font-weight:750;letter-spacing:-0.03em">Novembre 2026</span></div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Blocco 17/650</span><span style="font-size:17px;font-weight:650">Presenze del semestre</span></div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Testo 15/400</span><span>Le presenze già registrate non cambiano mai.</span></div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Nota 13/400</span><span class="mu" style="font-size:13px">ultima sincronizzazione alle 19:01</span></div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Lettura 18,5/1,6</span><span style="font-family:'Newsreader',Georgia,serif;font-size:18.5px">La circuitazione del campo magnetico lungo una linea chiusa <span style="font-family:'STIX Two Text',serif;font-style:italic">γ</span> è proporzionale alla corrente concatenata.</span></div>
+      <div class="ty"><span class="mu" style="font-size:12.5px">Codice 12,5</span><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px">mu0 * I / (2 * pi * r)</span></div>
+    </div>
+  </section>
+
+  <section class="sh">
+    <div><h2>Griglia e misure</h2><p>Base 4 pt. Il raggio cresce con la profondità del livello.</p></div>
+    <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:28px">
+      <div>
+        <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;height:60px"><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span><span style="background:#EEF0FC"></span></div>
+        <p style="font-size:13px;margin:8px 0 0">12 colonne, margine 36, campi separati da filetti invece che da riquadri. Filetto spesso 2 pt in testa a ogni griglia.</p>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:8px;font-size:11px">
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:4px;height:4px;background:#000"></span>4</span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:8px;height:8px;background:#000"></span>8</span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:12px;height:12px;background:#000"></span>12</span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:16px;height:16px;background:#000"></span>16</span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:24px;height:24px;background:#000"></span>24</span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:32px;height:32px;background:#000"></span>32</span>
+        <span style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="width:44px;height:44px;background:#1F35C7"></span>44 tocco</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;font-size:11.5px;text-align:center">
+        <span><span style="display:block;height:40px;border:1.5px solid #000;border-radius:2px"></span>2 glifi</span>
+        <span><span style="display:block;height:40px;border:1.5px solid #000;border-radius:6px"></span>6 controlli</span>
+        <span><span style="display:block;height:40px;border:1.5px solid #000;border-radius:10px"></span>10 popover</span>
+        <span><span style="display:block;height:40px;border:1.5px solid #000;border-radius:14px"></span>14 fogli</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sh">
+    <div><h2>Glifi presenza</h2><p>Riconoscibili anche senza colore: pieno, vuoto, metà, tratteggio.</p></div>
+    <div style="display:flex;gap:30px;align-items:center">
+      <span style="display:flex;align-items:center;gap:8px"><span class="g a"></span>Presente</span>
+      <span style="display:flex;align-items:center;gap:8px"><span class="g x"></span>Assente</span>
+      <span style="display:flex;align-items:center;gap:8px"><span class="g r"></span>Recuperata</span>
+      <span style="display:flex;align-items:center;gap:8px"><span class="g t"></span>Da confermare</span>
+      <span style="display:flex;align-items:center;gap:8px"><span class="g f"></span>Da svolgere</span>
+      <span style="display:flex;gap:2px;margin-left:20px"><span class="g a" style="width:9px;height:9px"></span><span class="g a" style="width:9px;height:9px"></span><span class="g a" style="width:9px;height:9px"></span><span class="g x" style="width:9px;height:9px;border-width:1.5px"></span><span class="g a" style="width:9px;height:9px"></span><span class="g a" style="width:9px;height:9px"></span><span class="g r" style="width:9px;height:9px;border-width:1.5px"></span><span class="g a" style="width:9px;height:9px"></span><span class="g t" style="width:9px;height:9px;border-width:1.5px"></span><span class="g f" style="width:9px;height:9px"></span><span class="g f" style="width:9px;height:9px"></span><span class="g f" style="width:9px;height:9px"></span></span>
+      <span class="mu" style="font-size:13px">la striscia di un corso</span>
+    </div>
+  </section>
+
+  <section class="sh">
+    <div><h2>Componenti</h2><p>Stessi nomi per la stessa azione in tutto il flusso.</p></div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 30px">
+      <div class="cmp"><span>Pulsanti</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn p">Registra presenze</button><button class="btn">Esporta</button><button class="btn d">Elimina corso</button><button class="btn" style="border:0;color:#1F35C7;padding:0 8px">Annulla</button></div></div>
+      <div class="cmp"><span>Scelta di vista</span><div style="display:inline-flex;border:1px solid #CFCFC9;border-radius:6px;overflow:hidden;height:40px;width:max-content"><span style="display:flex;align-items:center;padding:0 14px;font-size:14px;border-right:1px solid #CFCFC9">Giorno</span><span style="display:flex;align-items:center;padding:0 14px;font-size:14px;background:#000;color:#fff;font-weight:600">Settimana</span><span style="display:flex;align-items:center;padding:0 14px;font-size:14px;border-left:1px solid #CFCFC9">Mese</span></div></div>
+      <div class="cmp"><span>Interruttore e filtro</span><div style="display:flex;gap:12px;align-items:center"><span style="width:48px;height:28px;border-radius:14px;padding:3px;display:flex;justify-content:flex-end;background:#000"><span style="width:22px;height:22px;border-radius:11px;background:#fff"></span></span><span style="width:48px;height:28px;border-radius:14px;padding:3px;display:flex;background:#D4D4CE"><span style="width:22px;height:22px;border-radius:11px;background:#fff"></span></span><span style="font-size:13px;height:28px;padding:0 10px;border-radius:14px;background:#000;color:#fff;display:flex;align-items:center">Tutto</span><span style="font-size:13px;height:28px;padding:0 10px;border-radius:14px;background:#F2F2EF;display:flex;align-items:center">#esame</span></div></div>
+      <div class="cmp"><span>Campo</span><span style="height:44px;border:1px solid #CFCFC9;border-radius:6px;padding:0 12px;display:flex;align-items:center;font-size:15px;color:#000">giovedì 26 novembre</span><span style="height:44px;border:2px solid #1F35C7;border-radius:6px;padding:0 12px;display:flex;align-items:center;font-size:15px;font-weight:650;color:#000">16:30</span></div>
+      <div class="cmp"><span>Riga di lezione, con presenza in un tocco</span><div style="display:flex;align-items:center;gap:12px;height:56px;border-top:1px solid #EBEBE6;border-bottom:1px solid #EBEBE6"><b style="width:44px;font-size:14px">14:15</b><span style="width:10px;height:10px;border-radius:2px;background:#6A4FB3"></span><span style="flex:1">Analisi 2</span><span class="btn" style="height:36px;font-size:14px;background:#000;color:#fff;border-color:#000">Presente</span><span class="btn" style="height:36px;font-size:14px">Assente</span></div></div>
+      <div class="cmp"><span>Eventi nel calendario</span><div style="display:flex;gap:6px"><span style="flex:1;height:56px;background:#1F7A8C;color:#fff;border-radius:4px;padding:5px 7px;font-size:12px;line-height:1.25"><b>Fisica 2</b><br>lezione, piena</span><span style="flex:1;height:56px;border:2px solid #1F35C7;border-radius:4px;padding:4px 6px;font-size:12px;line-height:1.25"><b>Studio</b><br>Libretto</span><span style="flex:1;height:56px;border:1.5px solid #000;border-radius:4px;padding:4px 6px;font-size:12px;line-height:1.25"><b>Cena</b><br>iCloud</span></div></div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

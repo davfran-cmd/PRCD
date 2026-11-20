@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Nuovo evento</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:44px;padding:0 16px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:15px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.row{display:grid;grid-template-columns:150px 1fr;align-items:center;min-height:52px;border-top:1px solid #EBEBE6;gap:12px}
+.row label,.row .lb{font-size:14px;color:#5F5F59}
+.in{height:40px;border:1px solid #CFCFC9;border-radius:6px;padding:0 12px;font:inherit;font-size:15px;color:#000;background:#fff;display:inline-flex;align-items:center;gap:8px}
+.pill{height:36px;padding:0 12px;border:1px solid #CFCFC9;border-radius:18px;background:#fff;font:inherit;font-size:14px;color:#000;display:inline-flex;align-items:center;gap:6px}
+.pill.on{background:#000;border-color:#000;color:#fff}
+.tab{flex:1;height:40px;border:0;background:transparent;font:inherit;font-size:14px;color:#000;border-radius:5px}
+.tab.on{background:#fff;font-weight:650;box-shadow:0 0 0 1px #CFCFC9}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="cal" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;background:repeating-linear-gradient(0deg,#fff 0 48px,#EBEBE6 48px 49px)"></main>
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.32)"></div>
+  <section role="dialog" aria-modal="true" aria-labelledby="t" style="position:absolute;left:287px;top:40px;width:620px;height:754px;background:#fff;border-radius:14px;display:flex;flex-direction:column;overflow:hidden">
+    <header style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #DCDCD6">
+      <a class="btn" href="CalSettimana.dc.html" style="border:0;color:#1F35C7">Annulla</a>
+      <h2 id="t" style="margin:0;font-size:17px;font-weight:700">Nuovo evento</h2>
+      <a class="btn p" href="CalSettimana.dc.html">{{cta}}</a>
+    </header>
+    <div style="padding:18px 28px 0;overflow:hidden;flex:1">
+      <div role="tablist" aria-label="Tipo" style="display:flex;gap:2px;padding:3px;background:#F2F2EF;border-radius:8px">
+        <sc-for list="{{types}}" as="t" hint-placeholder-count="4"><button role="tab" class="tab {{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for>
+      </div>
+      <label for="ti" style="position:absolute;left:-9999px">Titolo</label>
+      <input id="ti" value="{{title}}" style="width:100%;margin-top:18px;border:0;border-bottom:2px solid #000;font:inherit;font-size:28px;font-weight:700;letter-spacing:-0.02em;padding:6px 0 8px;color:#000;background:transparent">
+      <label for="de" style="position:absolute;left:-9999px">Descrizione</label>
+      <textarea id="de" rows="2" style="width:100%;margin-top:10px;border:0;font:inherit;font-size:15px;color:#5F5F59;resize:none;background:transparent">Capitolo 8 del Mazzoldi, esercizi 8.3–8.11. Portare le soluzioni della prova 2024.</textarea>
+      <div style="margin-top:6px">
+        <div class="row"><span class="lb">Corso</span><span style="display:flex;gap:8px;align-items:center"><span class="pill on" style="background:#1F7A8C;border-color:#1F7A8C"><span style="width:8px;height:8px;background:#fff;border-radius:1px"></span>Fisica 2</span><span class="mu" style="font-size:13px">facoltativo, collega l'evento al corso</span></span></div>
+        <div class="row"><span class="lb">Data</span><span style="display:flex;gap:8px"><span class="in">giovedì 26 novembre</span><sc-if value="{{hasDur}}" hint-placeholder-val="{{ true }}"><span style="display:flex;align-items:center;gap:6px"><span class="in">15:00</span><span class="mu">–</span><span class="in" style="font-weight:650">{{end}}</span></span></sc-if><sc-if value="{{isDeadline}}" hint-placeholder-val="{{ false }}"><span class="in">entro le 23:59</span></sc-if></span></div>
+        <sc-if value="{{hasDur}}" hint-placeholder-val="{{ true }}">
+          <div class="row"><span class="lb">Durata</span><span role="radiogroup" aria-label="Durata" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><sc-for list="{{durs}}" as="d" hint-placeholder-count="5"><button class="pill {{d.cls}}" role="radio" aria-checked="{{d.on}}" onClick="{{d.pick}}">{{d.l}}</button></sc-for></span></div>
+        </sc-if>
+        <div class="row"><span class="lb">Ripeti</span><span style="display:flex;gap:6px"><span class="pill on">Mai</span><span class="pill">Ogni giorno</span><span class="pill">Ogni settimana</span><span class="pill">Personalizza</span></span></div>
+        <div class="row"><span class="lb">Calendario</span><span style="display:flex;gap:8px;align-items:center"><span class="in" style="min-width:250px"><span style="width:10px;height:10px;border:2px solid #1F35C7;border-radius:2px"></span>Libretto, Studio<svg style="margin-left:auto" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span><span class="mu" style="font-size:13px">Solo su questo iPad</span></span></div>
+        <div class="row"><span class="lb">Colore</span><span style="display:flex;gap:8px"><span title="Bordo Oltremare" style="width:28px;height:28px;border-radius:4px;border:3px solid #1F35C7;box-shadow:{{ringS}}"></span><span title="Colore del corso" style="width:28px;height:28px;border-radius:4px;background:#1F7A8C;box-shadow:{{ringC}}"></span><span style="width:28px;height:28px;border-radius:4px;background:#000"></span><span style="width:28px;height:28px;border-radius:4px;background:#5F5F59"></span><span class="mu" style="font-size:13px;align-self:center;margin-left:4px">{{colNote}}</span></span></div>
+        <div class="row"><span class="lb">Promemoria</span><span style="display:flex;gap:8px;align-items:center"><span class="pill">{{remind}}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span><button class="pill" style="color:#1F35C7;border-style:dashed">Aggiungi promemoria</button></span></div>
+      </div>
+    </div>
+    <footer class="mu" style="padding:12px 28px;border-top:1px solid #EBEBE6;font-size:13px;display:flex;justify-content:space-between"><span>Esc per chiudere</span><span>Gli eventi su iCloud si sincronizzano con Calendario di Apple</span></footer>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { t: 'study', d: null }; }
+  renderVals() {
+    var self = this, t = this.state.t;
+    var defDur = { event: 120, appt: 30, study: 180, deadline: 0 };
+    var dur = this.state.d != null ? this.state.d : defDur[t];
+    var opts = [[30, '30 min'], [60, '1 h'], [120, '2 h'], [180, '3 h'], [-1, 'Altro']];
+    var endMin = 15 * 60 + (dur > 0 ? dur : 105);
+    var end = Math.floor(endMin / 60) + ':' + ('0' + (endMin % 60)).slice(-2);
+    var defs = [['event', 'Evento'], ['deadline', 'Scadenza'], ['appt', 'Appuntamento'], ['study', 'Sessione di studio']];
+    var titles = { event: 'Aperitivo dopo la prova', deadline: 'Consegna esercizi, Analisi 2', appt: 'Ricevimento, Fisica 2', study: 'Esercizi di Fisica 2: induzione' };
+    var ctas = { event: 'Aggiungi evento', deadline: 'Aggiungi scadenza', appt: 'Aggiungi appuntamento', study: 'Aggiungi sessione' };
+    return {
+      types: defs.map(function (d) { return { label: d[1], cls: d[0] === t ? 'on' : '', pick: function () { self.setState({ t: d[0], d: null }); } }; }),
+      durs: opts.map(function (o) { return { l: o[0] === -1 && dur === -1 ? 'Altro: 1 h 45' : o[1], cls: o[0] === dur ? 'on' : '', on: o[0] === dur ? 'true' : 'false', pick: function () { self.setState({ d: o[0] }); } }; }),
+      end: end,
+      title: titles[t], cta: ctas[t],
+      ringS: t === 'study' ? '0 0 0 2px #fff,0 0 0 3px #000' : 'none', ringC: t === 'study' ? 'none' : '0 0 0 2px #fff,0 0 0 3px #000',
+      colNote: t === 'study' ? 'Sessioni di studio: bordo Oltremare di default' : 'Di default, il colore del corso',
+      hasDur: t !== 'deadline', isDeadline: t === 'deadline',
+      remind: t === 'deadline' ? '1 giorno prima' : '15 minuti prima'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Università</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:14px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.seg{display:inline-flex;border:1px solid #CFCFC9;border-radius:6px;overflow:hidden;height:40px}
+.seg button{border:0;border-right:1px solid #CFCFC9;background:#fff;font:inherit;font-size:14px;padding:0 14px;color:#000}
+.seg button:last-child{border-right:0}
+.seg .on{background:#000;color:#fff;font-weight:600}
+.k{display:flex;flex-direction:column;gap:2px;padding:16px 20px 16px 0;border-right:1px solid #DCDCD6}
+.k b{font-size:40px;font-weight:750;letter-spacing:-0.035em;line-height:1}
+.tr > *{min-width:0}
+.tr{display:grid;grid-template-columns:230px 44px 96px minmax(0,1fr) 52px 96px 110px;gap:14px;align-items:center;min-height:62px;border-top:1px solid #EBEBE6;color:#000;text-decoration:none}
+.tr:hover{background:#FAFAF8}
+.th{min-height:36px;font-size:13px;color:#5F5F59;border-top:0}
+.g{display:inline-block;width:9px;height:9px;border-radius:2px;flex:none}
+.g.a{background:#000}.g.x{border:1.5px solid #C2410C}.g.t{border:1.5px dashed #77776F}.g.r{border:1.5px solid #000;background:linear-gradient(135deg,#000 50%,#fff 50%)}.g.f{background:#EBEBE6}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="uni" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;padding:26px 32px 0;display:flex;flex-direction:column">
+    <header style="display:flex;align-items:flex-end;gap:12px">
+      <div style="flex:1">
+        <h1 style="margin:0;font-size:46px;line-height:1;font-weight:750;letter-spacing:-0.035em">Università</h1>
+        <p class="mu" style="margin:8px 0 0">Ingegneria fisica, laurea triennale, 2° anno</p>
+      </div>
+      <a class="btn" href="LezioneModifica.dc.html">Modifica orario</a>
+      <button class="btn p">Nuovo corso</button>
+    </header>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:22px;border-top:2px solid #000;border-bottom:1px solid #DCDCD6">
+      <div class="k"><b>56<span class="mu" style="font-size:20px;font-weight:500;letter-spacing:0"> / 180</span></b><span class="mu" style="font-size:14px">CFU acquisiti</span></div>
+      <div class="k" style="padding-left:20px"><b>26,42</b><span class="mu" style="font-size:14px">media ponderata su 6 esami</span></div>
+      <div class="k" style="padding-left:20px"><b>81%</b><span class="mu" style="font-size:14px">presenza media del semestre</span></div>
+      <div class="k" style="padding-left:20px;border-right:0"><b>14</b><span class="mu" style="font-size:14px">assenze ancora da recuperare</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin:18px 0 6px">
+      <h2 style="margin:0;font-size:20px;font-weight:700;flex:1">Corsi</h2>
+      <div class="seg" role="group" aria-label="Semestre"><sc-for list="{{sems}}" as="s" hint-placeholder-count="3"><button class="{{s.cls}}" onClick="{{s.pick}}">{{s.label}}</button></sc-for></div>
+    </div>
+    <div class="tr th"><span>Corso</span><span>CFU</span><span>Giorni</span><span>Lezioni del semestre</span><span style="text-align:right">Pres.</span><span>Da recuperare</span><span>Esame</span></div>
+    <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+      <a class="tr" href="Corso.dc.html">
+        <span style="display:grid;grid-template-columns:12px minmax(0,1fr);align-items:center;gap:10px;font-weight:600;min-width:0" title="{{r.name}}"><span style="width:12px;height:12px;border-radius:2px;background:{{r.color}}"></span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.name}}</span></span>
+        <span>{{r.cfu}}</span>
+        <span style="display:flex;gap:3px"><sc-for list="{{r.days}}" as="d" hint-placeholder-count="5"><span style="width:16px;height:22px;border-radius:2px;background:{{d.bg}};color:{{d.fg}};font-size:10px;display:flex;align-items:flex-end;justify-content:center">{{d.l}}</span></sc-for></span>
+        <span style="display:flex;gap:2px;flex-wrap:wrap;max-width:300px"><sc-for list="{{r.g}}" as="s" hint-placeholder-count="24"><span class="g {{s}}"></span></sc-for></span>
+        <span style="text-align:right;font-weight:650;font-size:17px;color:{{r.pc}}">{{r.pct}}</span>
+        <span>{{r.rec}}</span>
+        <span style="font-size:14px">{{r.exam}}</span>
+      </a>
+    </sc-for>
+    <div class="mu" style="font-size:13px;margin-top:10px;border-top:1px solid #EBEBE6;padding-top:10px">Ogni quadrato è una lezione. Le lezioni ancora da svolgere sono in grigio chiaro.</div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sem: 0 }; }
+  renderVals() {
+    var self = this;
+    function days(arr, col) { return ['L', 'M', 'M', 'G', 'V'].map(function (l, i) { var on = arr.indexOf(i) >= 0; return { l: l, bg: on ? col : '#F2F2EF', fg: on ? '#fff' : '#9A9A93' }; }); }
+    function strip(s, total) { var a = s.split(''); while (a.length < total) a.push('f'); return a; }
+    var cur = [
+      { name: 'Analisi 2', cfu: 8, color: '#6A4FB3', d: [0, 2, 4], g: strip('aaaaaaaxaaaaaraaaaaaaaat', 48), pct: '87%', rec: '1 lezione', exam: 'prova 3 dic' },
+      { name: 'Fisica 2', cfu: 10, color: '#1F7A8C', d: [0, 3, 4], g: strip('aaaxaaaraaaaxaaxaaraaxaa', 48), pct: '75%', rec: '4 lezioni', exam: '19 gen' },
+      { name: 'Meccanica razionale', cfu: 8, color: '#3F7D3A', d: [1, 3], g: strip('aaaaaaaaaxaaaaaa', 32), pct: '94%', rec: '1 lezione', exam: '29 gen' },
+      { name: 'Elettrotecnica', cfu: 7, color: '#B7791F', d: [1, 2], g: strip('aaaaxaaaaaxaaaxa', 32), pct: '81%', rec: '3 lezioni', exam: 'da fissare' },
+      { name: 'Probabilità e statistica', cfu: 6, color: '#93306E', d: [2, 4], g: strip('aaxaaaxaaxaaaxax', 32), pct: '69%', rec: '5 lezioni', exam: '8 feb' }
+    ];
+    var prev = [
+      { name: 'Fisica 1', cfu: 12, color: '#1F7A8C', d: [0, 2, 3], g: strip('aaxaxaaaxxaaxaaaxaaxaaaxaxaaaxaaxaxaa', 0), pct: '61%', rec: 'chiuso', exam: '24, 2° tentativo' },
+      { name: 'Chimica', cfu: 7, color: '#93306E', d: [1, 4], g: strip('axaxaaxxaaxaxaaxxaaxaaxx', 0), pct: '54%', rec: 'chiuso', exam: '22, 2° tentativo' },
+      { name: 'Informatica', cfu: 10, color: '#3F7D3A', d: [1, 2, 4], g: strip('aaaaxaaaaaxaaaaaxaaaaaxaaaaaxaaaax', 0), pct: '79%', rec: 'chiuso', exam: '30 e lode' }
+    ];
+    var list = this.state.sem === 0 ? cur : prev;
+    var labels = ['1° sem. 2026/27', '2° sem. 2025/26', '1° sem. 2025/26'];
+    return {
+      sems: labels.map(function (l, i) { return { label: l, cls: self.state.sem === i ? 'on' : '', pick: function () { self.setState({ sem: i === 0 ? 0 : 1 }); } }; }),
+      rows: list.map(function (r) { return Object.assign({}, r, { days: days(r.d, r.color), pc: parseInt(r.pct, 10) < 80 ? '#B23A0A' : '#000' }); })
+    };
+  }
+}
+</script>
+</body>
+</html>

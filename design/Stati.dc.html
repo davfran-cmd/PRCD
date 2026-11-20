@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Stati vuoti, errori, conferme e permessi</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;padding:24px;background:#E9E9E5;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:20px}
+.mu{color:#5F5F59}
+.btn{height:44px;padding:0 16px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:15px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.btn.d{background:#C2410C;border-color:#C2410C;color:#fff}
+.pn{display:flex;flex-direction:column;min-height:0}
+.lb{font-size:13px;color:#3A3A36;margin:0 0 8px}
+.sf{flex:1;background:#fff;border-radius:10px;padding:26px;display:flex;flex-direction:column;min-height:0;position:relative;overflow:hidden}
+.dlg{background:#fff;border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,0.18);padding:22px;width:300px}
+.dlg h2{margin:0 0 8px;font-size:18px;font-weight:700;line-height:1.25}
+.dlg p{margin:0 0 16px;font-size:14px;color:#3A3A36}
+</style>
+</helmet>
+<div class="app">
+  <div class="pn">
+    <p class="lb">Vuoto: Università, primo avvio</p>
+    <div class="sf">
+      <div style="display:flex;gap:4px;margin-bottom:22px"><span style="width:18px;height:18px;border:1.5px dashed #9A9A93;border-radius:2px"></span><span style="width:18px;height:18px;border:1.5px dashed #9A9A93;border-radius:2px"></span><span style="width:18px;height:18px;border:1.5px dashed #9A9A93;border-radius:2px"></span><span style="width:18px;height:18px;border:1.5px dashed #9A9A93;border-radius:2px"></span></div>
+      <h2 style="margin:0;font-size:26px;font-weight:750;letter-spacing:-0.03em;line-height:1.1">Nessun corso in questo semestre</h2>
+      <p class="mu" style="font-size:14px;margin:10px 0 0">Aggiungi un corso con giorni e orari: Libretto crea da solo tutte le lezioni fino alla fine del semestre.</p>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><button class="btn p">Aggiungi il primo corso</button><button class="btn">Importa orario da file .ics</button></div>
+    </div>
+  </div>
+  <div class="pn">
+    <p class="lb">Vuoto: cartella di un corso</p>
+    <div class="sf" style="border:2px dashed #CFCFC9;background:#FAFAF8">
+      <span style="display:flex;align-items:center;gap:8px;font-weight:650"><span style="width:12px;height:12px;border-radius:2px;background:#B7791F"></span>Elettrotecnica</span>
+      <h2 style="margin:26px 0 0;font-size:26px;font-weight:750;letter-spacing:-0.03em;line-height:1.1">La cartella è vuota</h2>
+      <p class="mu" style="font-size:14px;margin:10px 0 0">Trascina qui PDF e note da Files, oppure scrivi la prima nota della lezione di oggi.</p>
+      <div style="margin-top:auto;display:flex;gap:8px"><button class="btn p" style="flex:1">Nuova nota</button><button class="btn" style="flex:1">Importa</button></div>
+    </div>
+  </div>
+  <div class="pn">
+    <p class="lb">Permesso: prima di chiedere l'accesso ai calendari</p>
+    <div class="sf">
+      <div style="display:flex;gap:6px;margin-bottom:18px"><span style="flex:1;height:30px;background:#1F7A8C;border-radius:3px"></span><span style="flex:1;height:30px;border:1.5px solid #000;border-radius:3px"></span><span style="flex:1;height:30px;background:#6A4FB3;border-radius:3px"></span></div>
+      <h2 style="margin:0;font-size:22px;font-weight:750;letter-spacing:-0.02em;line-height:1.15">Vedi i tuoi impegni accanto alle lezioni</h2>
+      <ul style="margin:12px 0 0;padding:0 0 0 18px;font-size:14px;color:#3A3A36;display:flex;flex-direction:column;gap:4px">
+        <li>Libretto legge i calendari che scegli tu.</li>
+        <li>Scrive solo quando aggiungi o modifichi un evento.</li>
+        <li>Non invia nulla fuori dall'iPad.</li>
+      </ul>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px"><button class="btn p">Continua</button><button class="btn" style="border:0;color:#1F35C7">Non ora</button></div>
+    </div>
+  </div>
+  <div class="pn">
+    <p class="lb">Conferma: eliminare un corso con presenze</p>
+    <div class="sf" style="background:#CFCFCA;align-items:center;justify-content:center">
+      <div class="dlg" role="alertdialog" aria-labelledby="d1">
+        <h2 id="d1">Eliminare Probabilità e statistica?</h2>
+        <p>Spariranno 32 lezioni e 16 presenze già registrate. L'esame e le note collegate restano. Se vuoi solo toglierlo dal semestre, archivialo.</p>
+        <div style="display:flex;flex-direction:column;gap:8px"><button class="btn d">Elimina corso e presenze</button><button class="btn">Archivia</button><button class="btn" style="border:0;color:#1F35C7">Annulla</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="pn">
+    <p class="lb">Errore: immagine o file non trovati</p>
+    <div class="sf">
+      <div style="font-family:'Newsreader',Georgia,serif;font-size:15px;color:#3A3A36;margin-bottom:12px">…le linee di campo sono circonferenze concentriche al filo:</div>
+      <div style="border:1.5px solid #C2410C;border-radius:6px;padding:14px 16px;background:#FFF8F4">
+        <div style="font-weight:650;font-size:15px">Immagine non trovata: ampere-filo.png</div>
+        <div style="font-size:13.5px;color:#3A3A36;margin-top:4px">Cercata in Fisica 2 / allegati e nella cartella della nota. Forse è stata rinominata in Obsidian.</div>
+        <div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="height:38px;font-size:14px">Scegli il file</button><button class="btn" style="height:38px;font-size:14px;border:0;color:#1F35C7">Ignora</button></div>
+      </div>
+      <div style="margin-top:auto;background:#000;color:#fff;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:14px"><span style="flex:1">Lezione di Fisica 2 annullata</span><button style="background:transparent;border:0;color:#fff;font:inherit;font-weight:700;text-decoration:underline;height:32px">Ripristina</button></div>
+    </div>
+  </div>
+  <div class="pn">
+    <p class="lb">Modifica in linea con conflitto</p>
+    <div class="sf">
+      <div style="font-size:13px;font-weight:650;margin-bottom:8px">Orario di Analisi 2</div>
+      <div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;font-size:14px">
+        <span>lunedì</span><span style="height:40px;border:1px solid #CFCFC9;border-radius:6px;display:flex;align-items:center;padding:0 10px">10:15</span><span style="height:40px;border:1px solid #CFCFC9;border-radius:6px;display:flex;align-items:center;padding:0 10px">12:15</span>
+        <span>mercoledì</span><span style="height:40px;border:2px solid #C2410C;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-weight:650">10:00</span><span style="height:40px;border:2px solid #C2410C;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-weight:650">12:00</span>
+      </div>
+      <p style="font-size:13.5px;color:#B23A0A;margin:10px 0 0">Si sovrappone a Probabilità e statistica, mercoledì 10:30–12:15. Puoi salvare lo stesso: le due lezioni saranno affiancate nel calendario.</p>
+      <div style="margin-top:auto;display:flex;gap:8px"><button class="btn" style="flex:1">Annulla</button><button class="btn p" style="flex:1">Salva comunque</button></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

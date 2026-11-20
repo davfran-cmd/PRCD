@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Impostazioni</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:14px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.cat{display:flex;align-items:center;height:44px;padding:0 12px;border-radius:6px;font-size:15px;border:0;background:transparent;font-family:inherit;color:#000;width:100%;text-align:left}
+.cat.on{background:#000;color:#fff;font-weight:600}
+.sr{display:flex;align-items:center;gap:14px;min-height:56px;border-top:1px solid #EBEBE6}
+.sr .t{flex:1}
+.sr .t small{display:block;color:#5F5F59;font-size:13px}
+.tg{width:48px;height:28px;border-radius:14px;padding:3px;display:flex;flex:none;background:#000;justify-content:flex-end}
+.tg.off{background:#D4D4CE;justify-content:flex-start}
+.tg span{width:22px;height:22px;border-radius:11px;background:#fff}
+h3{margin:26px 0 6px;font-size:15px;font-weight:650}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="imp" hint-size="240px,834px"></dc-import>
+  <nav aria-label="Categorie" style="width:230px;border-right:1px solid #DCDCD6;padding:24px 12px;display:flex;flex-direction:column;gap:2px">
+    <h1 style="margin:0 12px 14px;font-size:26px;font-weight:750;letter-spacing:-0.03em">Impostazioni</h1>
+    <sc-for list="{{cats}}" as="c" hint-placeholder-count="8"><button class="cat {{c.cls}}" onClick="{{c.pick}}">{{c.n}}</button></sc-for>
+  </nav>
+  <main style="flex:1;min-width:0;padding:28px 36px;overflow:hidden">
+    <sc-if value="{{isData}}" hint-placeholder-val="{{ true }}">
+      <div style="max-width:620px">
+        <h2 style="margin:0;font-size:30px;font-weight:750;letter-spacing:-0.03em">Dati e backup</h2>
+        <p class="mu" style="margin:6px 0 0">Tutto è salvato solo su questo iPad. Nessun account, nessun server.</p>
+        <div style="margin-top:20px;border-top:2px solid #000;padding-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:28px;font-weight:750;letter-spacing:-0.03em">1,24 GB</span><span class="mu" style="font-size:13px">su 256 GB dell'iPad</span></div>
+          <div style="display:flex;height:10px;margin:10px 0 8px;gap:2px"><span style="flex:1190;background:#000"></span><span style="flex:38;background:#1F35C7"></span><span style="flex:12;background:#9A9A93"></span></div>
+          <div style="display:flex;gap:18px;font-size:13px"><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:#000"></span>PDF e immagini 1,19 GB</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:#1F35C7"></span>Note 38 MB</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:#9A9A93"></span>Orari, presenze, esami 12 MB</span></div>
+        </div>
+        <h3>Backup</h3>
+        <div class="sr"><span class="t">Backup automatico<small>Ogni notte in iCloud Drive / Libretto. Ultimo: oggi alle 03:12</small></span><span class="tg" aria-hidden="true"><span></span></span></div>
+        <div class="sr"><span class="t">Esporta un archivio completo<small>Un file .libretto con dati, note e PDF</small></span><button class="btn">Esporta</button></div>
+        <div class="sr"><span class="t">Ripristina da un archivio<small>Sostituisce i dati attuali dopo una conferma</small></span><button class="btn">Scegli file</button></div>
+        <h3>Esporta dati</h3>
+        <div class="sr"><span class="t">Presenze ed esami in CSV<small>Per un foglio di calcolo</small></span><button class="btn">Esporta CSV</button></div>
+        <div class="sr"><span class="t">Calendario in formato .ics</span><button class="btn">Esporta</button></div>
+        <h3 style="color:#B23A0A">Zona irreversibile</h3>
+        <div class="sr"><span class="t">Elimina tutti i dati<small>Orari, presenze, esami, note e documenti importati. I file collegati da Obsidian restano dove sono.</small></span><button class="btn" style="color:#B23A0A;border-color:#C2410C">Elimina…</button></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{isPres}}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:620px">
+        <h2 style="margin:0;font-size:30px;font-weight:750;letter-spacing:-0.03em">Presenze</h2>
+        <p class="mu" style="margin:6px 0 0">Come Libretto registra e conta le lezioni.</p>
+        <div style="margin-top:20px;border-top:2px solid #000"></div>
+        <div class="sr"><span class="t">Soglia di presenza<small>Sotto questa percentuale il corso viene segnalato in arancio</small></span><span style="display:flex;align-items:center;border:1px solid #CFCFC9;border-radius:6px;height:40px"><button class="btn" style="border:0;height:38px" aria-label="Diminuisci">−</button><b style="width:48px;text-align:center">80%</b><button class="btn" style="border:0;height:38px" aria-label="Aumenta">+</button></span></div>
+        <div class="sr"><span class="t">Chiedi a fine lezione<small>Una notifica con Presente e Assente</small></span><span class="tg" aria-hidden="true"><span></span></span></div>
+        <div class="sr"><span class="t">Le lezioni recuperate contano come presenze</span><span class="tg off" aria-hidden="true"><span></span></span></div>
+        <div class="sr"><span class="t">Escludi “da confermare” dalla percentuale</span><span class="tg" aria-hidden="true"><span></span></span></div>
+        <div class="sr"><span class="t">Le lezioni annullate non contano</span><span class="tg" aria-hidden="true"><span></span></span></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{isOther}}" hint-placeholder-val="{{ false }}">
+      <h2 style="margin:0;font-size:30px;font-weight:750;letter-spacing:-0.03em">{{title}}</h2>
+      <p class="mu">Prova “Dati e backup” o “Presenze” per vedere il dettaglio.</p>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { c: 6 }; }
+  renderVals() {
+    var self = this, c = this.state.c;
+    var names = ['Generale', 'Semestri e orario', 'Presenze', 'Esami e media', 'Calendari', 'Documenti', 'Dati e backup', 'Aspetto', 'Scorciatoie da tastiera'];
+    return {
+      cats: names.map(function (n, i) { return { n: n, cls: i === c ? 'on' : '', pick: function () { self.setState({ c: i }); } }; }),
+      isData: c === 6, isPres: c === 2, isOther: c !== 6 && c !== 2, title: names[c]
+    };
+  }
+}
+</script>
+</body>
+</html>

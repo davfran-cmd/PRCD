@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Architettura dell'informazione</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;padding:36px 44px;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden}
+.mu{color:#5F5F59}
+.sec{border-top:3px solid #000;padding-top:10px;min-width:0}
+.sec h3{margin:0;font-size:22px;font-weight:750;letter-spacing:-0.02em}
+.l2{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.l2 div{font-size:14px;padding:6px 0;border-top:1px solid #DCDCD6}
+.l3{font-size:12.5px;color:#5F5F59;display:block}
+.ent{border:1.5px solid #000;border-radius:4px;padding:8px 10px;font-size:14px;font-weight:650;background:#fff;white-space:nowrap}
+.ar{font-size:12px;color:#5F5F59;padding:0 6px;white-space:nowrap}
+</style>
+</helmet>
+<div class="app">
+  <div style="display:flex;align-items:baseline;gap:20px">
+    <h1 style="margin:0;font-size:46px;font-weight:780;letter-spacing:-0.04em;line-height:1">Architettura</h1>
+    <p class="mu" style="margin:0;max-width:62ch">Cinque sezioni sempre visibili. Nessuna informazione sta a più di due tocchi dalla barra laterale; le azioni frequenti sono raggiungibili anche da Oggi.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:70px repeat(5,minmax(0,1fr));column-gap:20px;margin-top:30px">
+    <div class="mu" style="font-size:12px;padding-top:14px">sezione</div>
+    <div class="sec"><h3>Oggi</h3><span class="mu" style="font-size:13px">la giornata e i prossimi giorni</span></div>
+    <div class="sec"><h3>Calendario</h3><span class="mu" style="font-size:13px">lezioni ed eventi insieme</span></div>
+    <div class="sec"><h3>Università</h3><span class="mu" style="font-size:13px">corsi, presenze, esami</span></div>
+    <div class="sec"><h3>Documenti</h3><span class="mu" style="font-size:13px">note Markdown e PDF</span></div>
+    <div class="sec"><h3>Statistiche</h3><span class="mu" style="font-size:13px">domande con risposta</span></div>
+    <div class="mu" style="font-size:12px;padding-top:18px">viste e dettagli</div>
+    <div class="l2"><div>Oggi<span class="l3">lezioni, presenze da confermare</span></div><div>Prossimi giorni<span class="l3">eventi e scadenze</span></div><div>Esami in arrivo</div><div>Da recuperare</div><div>Aperti di recente</div></div>
+    <div class="l2"><div>Giorno, settimana, mese</div><div>Popover lezione<span class="l3">presenza in un tocco</span></div><div>Nuovo evento<span class="l3">foglio modale</span></div><div>Modifica lezione<span class="l3">una, successive, tutte</span></div><div>Calendari<span class="l3">Apple, duplicati, permessi</span></div></div>
+    <div class="l2"><div>Panoramica e semestri</div><div>Pagina corso<span class="l3">presenze, esame, studio, materiali</span></div><div>Registra presenze</div><div>Libretto<span class="l3">tentativi, medie, simulazione</span></div><div>Orario del semestre</div></div>
+    <div class="l2"><div>Libreria a colonne<span class="l3">cartelle libere, tag, preferiti</span></div><div>Lettore Markdown</div><div>Lettore PDF</div><div>Importa cartella o vault</div><div>Ricerca nel testo</div></div>
+    <div class="l2"><div>Presenza e voti</div><div>Andamento settimanale</div><div>Confronto semestri</div><div>Tempo di studio</div></div>
+  </div>
+  <div style="margin-top:34px;border-top:1px solid #000;padding-top:14px">
+    <div style="display:flex;align-items:baseline;gap:16px"><h2 style="margin:0;font-size:20px;font-weight:700">Modello dei dati</h2><span class="mu" style="font-size:13px">gli oggetti che legano le sezioni tra loro</span></div>
+    <div style="display:flex;align-items:center;margin-top:16px;flex-wrap:nowrap">
+      <span class="ent">Semestre</span><span class="ar">contiene</span><span class="ent">Corso</span><span class="ar">ha</span><span class="ent">Slot orario</span><span class="ar">genera</span><span class="ent">Lezione</span><span class="ar">ha una</span><span class="ent" style="border-color:#C2410C">Presenza</span>
+    </div>
+    <div style="display:flex;align-items:center;margin-top:12px;padding-left:112px">
+      <span class="ar">Corso</span><span class="ar">ha</span><span class="ent">Esame</span><span class="ar">ha</span><span class="ent">Tentativi</span><span style="width:40px"></span><span class="ar">Corso</span><span class="ar">collega</span><span class="ent">Documenti</span><span style="width:40px"></span><span class="ent" style="border-style:dashed">Evento</span><span class="ar">locale o da Apple</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:22px;font-size:13.5px">
+      <div><b>La presenza appartiene alla lezione svolta, non allo slot.</b> <span class="mu">Cambiare l'orario rigenera solo le lezioni future senza presenza registrata.</span></div>
+      <div><b>Una modifica singola è un'eccezione salvata sulla lezione.</b> <span class="mu">Sopravvive ai cambi dell'orario finché non scegli “tutto l'orario”, che te lo chiede prima.</span></div>
+      <div><b>Gli eventi Apple non vengono copiati.</b> <span class="mu">Libretto li legge e li scrive sul calendario d'origine, così non nascono duplicati.</span></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

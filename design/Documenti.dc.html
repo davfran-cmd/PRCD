@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Documenti</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;family=Newsreader:opsz,wght@6..72,400;6..72,600&amp;family=STIX+Two+Text:ital@1&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:14px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.colm{width:200px;border-right:1px solid #DCDCD6;padding:6px;display:flex;flex-direction:column;gap:1px;flex:none}
+.fi{display:flex;align-items:center;gap:9px;height:40px;padding:0 8px;border-radius:5px;font-size:14px;color:#000;text-decoration:none;border:0;background:transparent;font-family:inherit;width:100%;text-align:left}
+.fi .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi.sel{background:#000;color:#fff}
+.fi.path{background:#E6E6E1}
+.chev{color:#9A9A93}
+.fi.sel .chev{color:#fff}
+.tag{font-size:12px;padding:2px 8px;border-radius:10px;background:#F2F2EF;color:#000}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="doc" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="padding:20px 24px 12px;display:flex;align-items:center;gap:10px">
+      <h1 style="margin:0;font-size:30px;font-weight:750;letter-spacing:-0.03em">Documenti</h1>
+      <span style="flex:1"></span>
+      <span style="height:40px;width:250px;border:1px solid #CFCFC9;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 10px;color:#5F5F59;font-size:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>Filtra in Fisica 2</span>
+      <a class="btn" href="Importa.dc.html">Importa</a>
+      <a class="btn p" href="Markdown.dc.html">Nuova nota</a>
+    </header>
+    <div style="display:flex;align-items:center;gap:6px;padding:0 24px 12px;font-size:13px">
+      <span class="tag" style="background:#000;color:#fff">Tutto</span><span class="tag">Recenti</span><span class="tag">Preferiti</span><span class="tag">#esame</span><span class="tag">#formulario</span><span class="tag">#da-rivedere</span>
+      <span style="flex:1"></span>
+      <span class="mu">Libreria / Università / 2° anno / <b style="color:#000">Fisica 2</b></span>
+    </div>
+    <div style="display:flex;flex:1;min-height:0;border-top:1px solid #DCDCD6">
+      <div class="colm">
+        <button class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg><span class="nm">1° anno</span><span class="chev">›</span></button>
+        <button class="fi path"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg><span class="nm">2° anno</span><span class="chev">›</span></button>
+        <button class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg><span class="nm">Moduli e regolamenti</span><span class="chev">›</span></button>
+        <button class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg><span class="nm">Vault Obsidian</span><span class="chev">›</span></button>
+        <button class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg><span class="nm">Personale</span><span class="chev">›</span></button>
+      </div>
+      <div class="colm">
+        <sc-for list="{{courses}}" as="c" hint-placeholder-count="5">
+          <button class="fi {{c.cls}}"><span style="width:12px;height:12px;border-radius:2px;background:{{c.col}};flex:none"></span><span class="nm">{{c.n}}</span><span class="mu" style="font-size:12px;color:inherit;opacity:0.7">{{c.k}}</span><span class="chev">›</span></button>
+        </sc-for>
+      </div>
+      <div class="colm" style="width:236px">
+        <sc-for list="{{files}}" as="f" hint-placeholder-count="8">
+          <button class="fi {{f.cls}}" onClick="{{f.pick}}">
+            <sc-if value="{{f.dir}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg></sc-if>
+            <sc-if value="{{f.md}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg></sc-if>
+            <sc-if value="{{f.pdf}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 15h6" stroke-width="3"></path></svg></sc-if>
+            <span class="nm">{{f.n}}</span><span style="font-size:12px">{{f.star}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <aside style="flex:1;min-width:0;padding:18px 22px;display:flex;flex-direction:column;gap:12px;background:#FAFAF8">
+        <div style="background:#fff;border:1px solid #DCDCD6;height:250px;padding:18px 20px;overflow:hidden;font-family:'Newsreader',Georgia,serif;font-size:13px;line-height:1.5">
+          <div style="font-size:20px;font-weight:600;line-height:1.2;margin-bottom:8px">{{sel.title}}</div>
+          <div style="white-space:pre-line">{{sel.prev}}</div>
+          <sc-if value="{{sel.hasF}}" hint-placeholder-val="{{ false }}"><div style="font-family:'STIX Two Text',serif;font-style:italic;font-size:15px;text-align:center;margin:8px 0;white-space:pre-line">{{sel.f}}</div></sc-if>
+          <sc-if value="{{sel.hasL}}" hint-placeholder-val="{{ false }}"><div>Vedi anche <a href="Markdown.dc.html" style="color:#1F35C7;text-decoration:none;border-bottom:1px solid #B8C0F0">{{sel.l}}</a></div></sc-if>
+        </div>
+        <div style="font-size:17px;font-weight:650;line-height:1.25">{{sel.n}}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{sel.tags}}" as="t" hint-placeholder-count="2"><span class="tag">{{t}}</span></sc-for></div>
+        <div style="font-size:13px;border-top:1px solid #DCDCD6">
+          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #EBEBE6"><span class="mu">Corso</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#1F7A8C"></span>Fisica 2</span></div>
+          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #EBEBE6"><span class="mu">Modificato</span><span>{{sel.mod}}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:7px 0"><span class="mu">Dimensione</span><span>{{sel.size}}</span></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:auto"><a class="btn p" href="{{sel.href}}" style="flex:1">Apri</a><button class="btn">Sposta</button><button class="btn" aria-label="Altre azioni">•••</button></div>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { f: 5 }; }
+  renderVals() {
+    var self = this;
+    var courses = [['Analisi 2', '#6A4FB3', '18'], ['Fisica 2', '#1F7A8C', '23'], ['Meccanica razionale', '#3F7D3A', '9'], ['Elettrotecnica', '#B7791F', '11'], ['Probabilità', '#93306E', '6']].map(function (c, i) { return { n: c[0], col: c[1], k: c[2], cls: i === 1 ? 'path' : '' }; });
+    var F = [
+      { n: 'Appunti', t: 'dir' }, { n: 'Slide', t: 'dir' }, { n: 'Esercitazioni', t: 'dir' },
+      { n: 'Formulario.md', t: 'md', star: '★', title: 'Formulario di Fisica 2', prev: 'Le leggi fondamentali, con unità e condizioni al contorno.', f: '∮ E · dA = Q / ε₀\n∮ B · dl = μ₀ I\nε = − dΦ / dt', tags: ['#formulario', '#esame'], mod: 'ieri, 22:40', size: '6 KB', href: 'Markdown.dc.html' },
+      { n: '13 Forza di Lorentz.md', t: 'md', title: 'Forza di Lorentz', prev: 'Una carica in moto in un campo magnetico subisce F = q v × B.\nIl lavoro della forza magnetica è nullo…', tags: ['#lezione'], mod: '16 nov', size: '11 KB', href: 'Markdown.dc.html' },
+      { n: '14 Legge di Ampère.md', t: 'md', title: 'Legge di Ampère', prev: 'La circuitazione del campo magnetico lungo una linea chiusa è proporzionale alla corrente concatenata.', f: '∮ B · dl = μ₀ I conc', l: '13 Forza di Lorentz', tags: ['#lezione', '#da-rivedere'], mod: 'oggi, 11:02', size: '14 KB, 2 immagini', href: 'Markdown.dc.html' },
+      { n: 'Mazzoldi, Fisica II.pdf', t: 'pdf', star: '★', title: 'Fisica II', prev: 'Mazzoldi, Nigro, Voci\nElettromagnetismo, ottica\n\n612 pagine. Ultima posizione: p. 212', tags: ['#libro'], mod: '3 ott', size: '48 MB', href: 'PDF.dc.html' },
+      { n: 'Temi d’esame 2022–25.pdf', t: 'pdf', title: 'Temi d’esame', prev: '12 pagine, 8 prove scritte con soluzioni.', tags: ['#esame'], mod: '10 nov', size: '2,1 MB', href: 'PDF.dc.html' }
+    ];
+    var sel = F[this.state.f];
+    var files = F.map(function (f, i) { return { n: f.n.replace(/\.md$/, ''), dir: f.t === 'dir', md: f.t === 'md', pdf: f.t === 'pdf', star: f.star || '', cls: i === self.state.f ? 'sel' : '', pick: function () { if (f.t !== 'dir') self.setState({ f: i }); } }; });
+    return { courses: courses, files: files, sel: { n: sel.n, title: sel.title, prev: sel.prev, f: sel.f || '', hasF: !!sel.f, l: sel.l || '', hasL: !!sel.l, tags: sel.tags, mod: sel.mod, size: sel.size, href: sel.href } };
+  }
+}
+</script>
+</body>
+</html>

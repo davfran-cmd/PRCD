@@ -1,0 +1,241 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 1560,
+      "w": 1194,
+      "h": 834,
+      "title": "Oggi (dashboard)",
+      "is_interactive": true
+    },
+    {
+      "file": "Sidebar.dc.html",
+      "x": 3822,
+      "y": 0,
+      "w": 240,
+      "h": 834,
+      "title": "Componente: barra laterale",
+      "is_interactive": true
+    },
+    {
+      "file": "Architettura.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1194,
+      "h": 834,
+      "title": "Architettura dell'informazione"
+    },
+    {
+      "file": "Navigazione.dc.html",
+      "x": 1274,
+      "y": 0,
+      "w": 1194,
+      "h": 834,
+      "title": "Sistema di navigazione"
+    },
+    {
+      "file": "DesignSystem.dc.html",
+      "x": 2548,
+      "y": 0,
+      "w": 1194,
+      "h": 1240,
+      "title": "Design system"
+    },
+    {
+      "file": "CalSettimana.dc.html",
+      "x": 1274,
+      "y": 1560,
+      "w": 1194,
+      "h": 834,
+      "title": "Calendario: settimana",
+      "is_interactive": true
+    },
+    {
+      "file": "CalMese.dc.html",
+      "x": 2548,
+      "y": 1560,
+      "w": 1194,
+      "h": 834,
+      "title": "Calendario: mese",
+      "is_interactive": true
+    },
+    {
+      "file": "EventoNuovo.dc.html",
+      "x": 3822,
+      "y": 1560,
+      "w": 1194,
+      "h": 834,
+      "title": "Nuovo evento"
+    },
+    {
+      "file": "LezioneModifica.dc.html",
+      "x": 5096,
+      "y": 1560,
+      "w": 1194,
+      "h": 834,
+      "title": "Modifica lezione: una o tutte"
+    },
+    {
+      "file": "AppleCalendario.dc.html",
+      "x": 6370,
+      "y": 1560,
+      "w": 1194,
+      "h": 834,
+      "title": "Calendari Apple"
+    },
+    {
+      "file": "Universita.dc.html",
+      "x": 0,
+      "y": 2714,
+      "w": 1194,
+      "h": 834,
+      "title": "Università: panoramica",
+      "is_interactive": true
+    },
+    {
+      "file": "Corso.dc.html",
+      "x": 1274,
+      "y": 2714,
+      "w": 1194,
+      "h": 834,
+      "title": "Corso: Fisica 2",
+      "is_interactive": true
+    },
+    {
+      "file": "Presenze.dc.html",
+      "x": 2548,
+      "y": 2714,
+      "w": 1194,
+      "h": 834,
+      "title": "Registra presenze",
+      "is_interactive": true
+    },
+    {
+      "file": "Esami.dc.html",
+      "x": 3822,
+      "y": 2714,
+      "w": 1194,
+      "h": 834,
+      "title": "Esami e libretto",
+      "is_interactive": true
+    },
+    {
+      "file": "Statistiche.dc.html",
+      "x": 5096,
+      "y": 2714,
+      "w": 1194,
+      "h": 834,
+      "title": "Statistiche",
+      "is_interactive": true
+    },
+    {
+      "file": "Documenti.dc.html",
+      "x": 0,
+      "y": 3868,
+      "w": 1194,
+      "h": 834,
+      "title": "Libreria documenti",
+      "is_interactive": true
+    },
+    {
+      "file": "Markdown.dc.html",
+      "x": 1274,
+      "y": 3868,
+      "w": 1194,
+      "h": 834,
+      "title": "Lettore Markdown"
+    },
+    {
+      "file": "PDF.dc.html",
+      "x": 2548,
+      "y": 3868,
+      "w": 1194,
+      "h": 834,
+      "title": "Lettore PDF"
+    },
+    {
+      "file": "Importa.dc.html",
+      "x": 3822,
+      "y": 3868,
+      "w": 1194,
+      "h": 834,
+      "title": "Importazione e gestione file"
+    },
+    {
+      "file": "Impostazioni.dc.html",
+      "x": 0,
+      "y": 5022,
+      "w": 1194,
+      "h": 834,
+      "title": "Impostazioni e dati locali",
+      "is_interactive": true
+    },
+    {
+      "file": "Stati.dc.html",
+      "x": 1274,
+      "y": 5022,
+      "w": 1194,
+      "h": 834,
+      "title": "Stati vuoti, errori, conferme, permessi"
+    },
+    {
+      "file": "Adattamenti.dc.html",
+      "x": 2548,
+      "y": 5022,
+      "w": 1194,
+      "h": 834,
+      "title": "Adattamenti: iPad verticale e Mac"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "t0",
+      "x": 0,
+      "y": -260,
+      "w": 240,
+      "maxW": 4062,
+      "text": "Fondamenta",
+      "kind": "title1"
+    },
+    {
+      "id": "t1",
+      "x": 0,
+      "y": 1300,
+      "w": 240,
+      "maxW": 7564,
+      "text": "Oggi e calendario",
+      "kind": "title1"
+    },
+    {
+      "id": "t2",
+      "x": 0,
+      "y": 2454,
+      "w": 240,
+      "maxW": 6290,
+      "text": "Università",
+      "kind": "title1"
+    },
+    {
+      "id": "t3",
+      "x": 0,
+      "y": 3608,
+      "w": 240,
+      "maxW": 5016,
+      "text": "Documenti e note",
+      "kind": "title1"
+    },
+    {
+      "id": "t4",
+      "x": 0,
+      "y": 4762,
+      "w": 240,
+      "maxW": 3742,
+      "text": "Sistema e stati",
+      "kind": "title1"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

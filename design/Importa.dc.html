@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Importazione e gestione file</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;gap:24px;padding:28px;background:#E9E9E5;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden}
+.mu{color:#5F5F59}
+.btn{height:44px;padding:0 16px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:15px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.cap{font-size:13px;color:#3A3A36;margin:0 0 10px}
+.sr{display:flex;align-items:center;gap:12px;min-height:46px;border-top:1px solid #EBEBE6;font-size:14px}
+.tg{width:48px;height:28px;border-radius:14px;padding:3px;display:flex;flex:none;background:#000;justify-content:flex-end}
+.tg span{width:22px;height:22px;border-radius:11px;background:#fff}
+.mi{display:flex;align-items:center;gap:12px;height:44px;padding:0 14px;font-size:15px;border-top:1px solid #EBEBE6}
+.mi svg{margin-left:auto}
+</style>
+</helmet>
+<div class="app">
+  <div style="width:640px;display:flex;flex-direction:column">
+    <p class="cap">Importare un vault di Obsidian. Libretto legge la cartella così com'è: niente da ricreare a mano.</p>
+    <section role="dialog" aria-labelledby="it" style="background:#fff;border-radius:14px;flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #DCDCD6">
+        <button class="btn" style="border:0;color:#1F35C7">Annulla</button>
+        <h2 id="it" style="margin:0;font-size:17px;font-weight:700">Importa cartella</h2>
+        <button class="btn p">Importa 264 file</button>
+      </header>
+      <ol style="list-style:none;margin:0;padding:14px 24px;display:flex;gap:22px;font-size:14px;border-bottom:1px solid #EBEBE6">
+        <li class="mu">1 Scegli</li><li style="font-weight:700;border-bottom:2px solid #000">2 Controlla</li><li class="mu">3 Collega ai corsi</li>
+      </ol>
+      <div style="padding:16px 24px;flex:1;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg><span style="font-weight:650">Appunti universita</span><span class="mu" style="font-size:13px">iCloud Drive / Obsidian</span></div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px;border-top:2px solid #000">
+          <div style="padding:10px 0"><div style="font-size:28px;font-weight:750;letter-spacing:-0.03em">214</div><div class="mu" style="font-size:13px">note Markdown</div></div>
+          <div style="padding:10px 0"><div style="font-size:28px;font-weight:750;letter-spacing:-0.03em">38</div><div class="mu" style="font-size:13px">immagini</div></div>
+          <div style="padding:10px 0"><div style="font-size:28px;font-weight:750;letter-spacing:-0.03em">12</div><div class="mu" style="font-size:13px">PDF</div></div>
+          <div style="padding:10px 0"><div style="font-size:28px;font-weight:750;letter-spacing:-0.03em;color:#9A9A93">3</div><div class="mu" style="font-size:13px">ignorati (.obsidian)</div></div>
+        </div>
+        <div style="margin-top:8px;font-size:14px;font-weight:650">Da sistemare, facoltativo</div>
+        <div class="sr"><span style="width:8px;height:8px;border-radius:4px;background:#C2410C"></span><span style="flex:1">4 link a note che non esistono nel vault</span><button class="btn" style="height:36px;font-size:14px">Mostra</button></div>
+        <div class="sr"><span style="width:8px;height:8px;border-radius:4px;background:#C2410C"></span><span style="flex:1">“Formulario.md” esiste già in Fisica 2</span><span style="display:flex;gap:6px"><button class="btn" style="height:36px;font-size:14px">Sostituisci</button><button class="btn" style="height:36px;font-size:14px;box-shadow:inset 0 0 0 2px #000">Tieni entrambi</button></span></div>
+        <div style="margin-top:14px;font-size:14px;font-weight:650">Come importare</div>
+        <div class="sr"><span style="flex:1">Mantieni la struttura delle cartelle</span><span class="tg" aria-hidden="true"><span></span></span></div>
+        <div class="sr" style="align-items:flex-start;padding-top:10px"><span style="width:20px;height:20px;border-radius:10px;border:2px solid #000;display:flex;align-items:center;justify-content:center;flex:none"><span style="width:10px;height:10px;border-radius:5px;background:#000"></span></span><span style="flex:1"><b>Collega la cartella</b><br><span class="mu" style="font-size:13px">Le modifiche fatte in Obsidian compaiono anche qui. I file restano dove sono.</span></span></div>
+        <div class="sr" style="align-items:flex-start;padding-top:10px"><span style="width:20px;height:20px;border-radius:10px;border:2px solid #000;flex:none"></span><span style="flex:1"><b>Copia in Libretto</b><br><span class="mu" style="font-size:13px">Una copia indipendente, salvata solo su questo iPad.</span></span></div>
+      </div>
+    </section>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:22px;min-width:0">
+    <div>
+      <p class="cap">Trascinare da Files in Split View: la cartella di destinazione si evidenzia.</p>
+      <div style="background:#fff;border-radius:10px;padding:10px;position:relative;height:200px">
+        <div style="display:flex;align-items:center;gap:9px;height:40px;padding:0 10px;font-size:14px"><span style="width:12px;height:12px;border-radius:2px;background:#6A4FB3"></span>Analisi 2</div>
+        <div style="display:flex;align-items:center;gap:9px;height:44px;padding:0 10px;font-size:14px;border-radius:6px;background:#EEF0FC;box-shadow:inset 0 0 0 2px #1F35C7;font-weight:650"><span style="width:12px;height:12px;border-radius:2px;background:#1F7A8C"></span>Fisica 2<span style="margin-left:auto;font-size:12px;color:#1F35C7;font-weight:600">Rilascia per aggiungere</span></div>
+        <div style="display:flex;align-items:center;gap:9px;height:40px;padding:0 10px;font-size:14px"><span style="width:12px;height:12px;border-radius:2px;background:#3F7D3A"></span>Meccanica razionale</div>
+        <div style="position:absolute;left:150px;top:100px;transform:rotate(-3deg);background:#fff;border-radius:8px;box-shadow:0 10px 24px rgba(0,0,0,0.22);padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path></svg>Slide 15, induzione.pdf<span style="background:#1F35C7;color:#fff;border-radius:10px;font-size:12px;padding:0 7px;font-weight:700">3</span></div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <p class="cap">Tocco prolungato su un documento.</p>
+      <div style="background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);overflow:hidden;width:300px">
+        <div style="padding:12px 14px;font-weight:650;font-size:14px">14 Legge di Ampère</div>
+        <div class="mi">Rinomina<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+        <div class="mi">Sposta in…<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg></div>
+        <div class="mi">Collega a un corso<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"></path></svg></div>
+        <div class="mi">Tag<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 3h8l10 10-8 8L3 11z"></path><circle cx="8" cy="8" r="1.5"></circle></svg></div>
+        <div class="mi">Aggiungi ai preferiti<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3L12 17.5 6.5 20.4l1-6.3L3 9.7l6.2-.9z"></path></svg></div>
+        <div class="mi" style="color:#B23A0A;border-top:6px solid #F2F2EF">Elimina<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

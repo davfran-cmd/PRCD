@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Calendari collegati</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:14px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.tg{width:48px;height:28px;border-radius:14px;border:0;padding:3px;display:flex;flex:none}
+.tg span{width:22px;height:22px;border-radius:11px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3)}
+.tg.on{background:#000;justify-content:flex-end}.tg.off{background:#D4D4CE;justify-content:flex-start}
+.cr{display:grid;grid-template-columns:16px 1fr auto auto;gap:12px;align-items:center;min-height:52px;border-top:1px solid #EBEBE6}
+.grp{font-size:13px;color:#5F5F59;font-weight:500;margin:22px 0 4px;display:flex;justify-content:space-between}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="cal" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;display:grid;grid-template-columns:470px 1fr">
+    <section style="padding:24px 28px;border-right:1px solid #DCDCD6;overflow:hidden">
+      <a href="CalSettimana.dc.html" style="font-size:14px;color:#1F35C7;text-decoration:none">Calendario</a>
+      <h1 style="margin:4px 0 0;font-size:30px;font-weight:750;letter-spacing:-0.03em">Calendari</h1>
+      <p class="mu" style="margin:6px 0 0;font-size:14px">Scegli cosa vedere e dove salvare. Le lezioni vivono solo in Libretto.</p>
+      <div class="grp"><span>Libretto, su questo iPad</span><span>mostra</span></div>
+      <div class="cr"><span style="width:14px;height:14px;border-radius:2px;background:#000"></span><span>Lezioni<br><span class="mu" style="font-size:13px">generate dall'orario, 5 corsi</span></span><span></span><button class="tg on" aria-label="Mostra Lezioni" aria-pressed="true"><span></span></button></div>
+      <div class="cr"><span style="width:14px;height:14px;border-radius:2px;border:2px solid #1F35C7"></span><span>Studio</span><span></span><button class="tg on" aria-label="Mostra Studio" aria-pressed="true"><span></span></button></div>
+      <div class="cr"><span style="width:14px;height:14px;border-radius:2px;border:2px solid #C2410C"></span><span>Scadenze ed esami</span><span></span><button class="tg on" aria-label="Mostra Scadenze" aria-pressed="true"><span></span></button></div>
+      <div class="grp"><span>iCloud, giulia.ferri@icloud.com</span><span>mostra</span></div>
+      <sc-for list="{{cals}}" as="c" hint-placeholder-count="4">
+        <div class="cr"><span style="width:14px;height:14px;border-radius:2px;border:1.5px solid {{c.col}}"></span><span>{{c.name}}<br><span class="mu" style="font-size:13px">{{c.sub}}</span></span><span class="mu" style="font-size:12px">{{c.rw}}</span><button class="tg {{c.cls}}" onClick="{{c.flip}}" aria-label="Mostra {{c.name}}" aria-pressed="{{c.pressed}}"><span></span></button></div>
+      </sc-for>
+      <div class="mu" style="font-size:13px;margin-top:14px;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:4px;background:#3F7D3A"></span>Sincronizzato alle 19:01</div>
+    </section>
+    <section style="padding:24px 32px;display:flex;flex-direction:column;gap:22px">
+      <div>
+        <h2 style="margin:0 0 10px;font-size:17px;font-weight:650">Accesso a Calendario di Apple</h2>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-top:2px solid #000;border-bottom:1px solid #EBEBE6">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.8" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+          <span style="flex:1">Accesso completo: lettura e scrittura</span>
+          <button class="btn">Apri Impostazioni iPad</button>
+        </div>
+        <p class="mu" style="font-size:13px;margin:8px 0 0">Per revocare l'accesso usa Impostazioni &gt; Privacy &gt; Calendari. Libretto continuerà a funzionare con i soli calendari locali.</p>
+      </div>
+      <div>
+        <h2 style="margin:0 0 10px;font-size:17px;font-weight:650">Nuovi eventi</h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid #EBEBE6"><span>Calendario predefinito</span><span class="btn">iCloud, Personale<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid #EBEBE6"><span>Pubblica le lezioni su Apple come calendario di sola lettura<br><span class="mu" style="font-size:13px">Utile per vederle su iPhone e Apple Watch. Le modifiche si fanno qui.</span></span><button class="tg off" aria-label="Pubblica lezioni" aria-pressed="false"><span></span></button></div>
+      </div>
+      <div>
+        <h2 style="margin:0 0 4px;font-size:17px;font-weight:650">Possibili duplicati</h2>
+        <p class="mu" style="margin:0 0 10px;font-size:14px">Stesso titolo e orario in due calendari. Scegli cosa tenere.</p>
+        <div style="border:1px solid #CFCFC9;border-radius:8px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #EBEBE6">
+            <div style="padding:12px 14px;border-right:1px solid #EBEBE6"><div style="font-weight:650">Dentista</div><div class="mu" style="font-size:13px">mar 24 nov, 17:30–18:15</div><div style="font-size:13px;margin-top:6px;display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border:2px solid #1F35C7;border-radius:2px"></span>Libretto, Studio</div></div>
+            <div style="padding:12px 14px"><div style="font-weight:650">Dentista</div><div class="mu" style="font-size:13px">mar 24 nov, 17:30–18:30</div><div style="font-size:13px;margin-top:6px;display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border:1.5px solid #000;border-radius:2px"></span>iCloud, Personale</div></div>
+          </div>
+          <div style="display:flex;gap:8px;padding:10px 14px;background:#FAFAF8"><button class="btn p">Tieni quello di iCloud</button><button class="btn">Tieni entrambi</button><span style="flex:1"></span><span class="mu" style="font-size:13px;align-self:center">1 di 2</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { off: { lav: true } }; }
+  renderVals() {
+    var self = this, off = this.state.off;
+    var defs = [['pers', 'Personale', 'predefinito per i nuovi eventi', '#000', 'lettura e scrittura'], ['fam', 'Famiglia', 'condiviso da Anna Ferri', '#8A8A83', 'solo lettura'], ['lav', 'Ripetizioni', '12 eventi a novembre', '#5F5F59', 'lettura e scrittura'], ['fest', 'Festività in Italia', 'abbonamento', '#93306E', 'solo lettura']];
+    return {
+      cals: defs.map(function (d) {
+        var isOff = !!off[d[0]];
+        return { name: d[1], sub: d[2], col: d[3], rw: d[4], cls: isOff ? 'off' : 'on', pressed: isOff ? 'false' : 'true', flip: function () { var o = Object.assign({}, off); o[d[0]] = !isOff; self.setState({ off: o }); } };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

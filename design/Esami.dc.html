@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Esami e libretto</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:14px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.tr{display:grid;grid-template-columns:22px 1fr 50px 70px 100px 80px;gap:10px;align-items:center;min-height:40px;border-top:1px solid #EBEBE6;font-size:14px}
+.th{color:#5F5F59;font-size:12.5px;min-height:30px;border-top:0}
+.vt{font-size:20px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.stp{display:flex;align-items:center;border:1px solid #CFCFC9;border-radius:6px;height:36px}
+.stp button{width:36px;height:34px;border:0;background:#fff;font:inherit;font-size:18px;color:#000;border-radius:6px}
+.stp span{width:38px;text-align:center;font-weight:700;font-size:16px}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="uni" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;display:grid;grid-template-columns:1fr 330px">
+    <section style="padding:24px 26px 0 32px;min-width:0;overflow:hidden">
+      <div style="display:flex;align-items:flex-end;gap:10px">
+        <div style="flex:1"><a href="Universita.dc.html" style="font-size:14px;color:#1F35C7;text-decoration:none">Università</a><h1 style="margin:2px 0 0;font-size:40px;line-height:1;font-weight:750;letter-spacing:-0.035em">Libretto</h1></div>
+        <button class="btn">Esporta PDF</button>
+        <button class="btn p">Registra esito</button>
+      </div>
+      <div style="margin-top:16px;border-top:2px solid #000">
+        <div class="tr th"><span></span><span>Esame</span><span style="text-align:right">CFU</span><span style="text-align:right">Voto</span><span>Data</span><span>Tentativi</span></div>
+        <div style="font-size:13px;font-weight:650;padding:8px 0 4px">1° anno, 2025/26</div>
+        <sc-for list="{{done}}" as="r" hint-placeholder-count="7">
+          <div>
+            <button class="tr" onClick="{{r.tog}}" style="width:100%;background:transparent;border-left:0;border-right:0;border-bottom:0;font:inherit;color:#000;text-align:left;padding:0">
+              <span style="width:10px;height:10px;border-radius:2px;background:#000"></span><span style="font-weight:550">{{r.n}}</span><span style="text-align:right">{{r.cfu}}</span><span class="vt">{{r.v}}</span><span>{{r.d}}</span><span class="mu">{{r.t}}</span>
+            </button>
+            <sc-if value="{{r.open}}" hint-placeholder-val="{{ false }}">
+              <div style="margin:0 0 8px 32px;padding:10px 14px;background:#F2F2EF;border-radius:6px;font-size:13.5px">
+                <sc-for list="{{r.hist}}" as="h" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:110px 1fr auto;gap:8px;padding:3px 0"><span class="mu">{{h.d}}</span><span>{{h.k}}</span><span style="font-weight:650">{{h.e}}</span></div></sc-for>
+                <div class="mu" style="margin-top:6px">Presenza al corso: {{r.pres}}. Note: {{r.note}}</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div style="font-size:13px;font-weight:650;padding:14px 0 4px;display:flex;justify-content:space-between"><span>2° anno, 1° semestre: da sostenere</span><span class="mu" style="font-weight:400">voti simulati in blu</span></div>
+        <sc-for list="{{plan}}" as="r" hint-placeholder-count="5">
+          <div class="tr"><span style="width:10px;height:10px;border-radius:2px;border:1.5px dashed #5F5F59"></span><span>{{r.n}}</span><span style="text-align:right">{{r.cfu}}</span><span class="vt" style="color:#1F35C7">{{r.v}}</span><span>{{r.d}}</span><span class="mu">{{r.s}}</span></div>
+        </sc-for>
+      </div>
+    </section>
+    <aside style="border-left:1px solid #DCDCD6;padding:24px 22px;display:flex;flex-direction:column;background:#FAFAF8">
+      <div class="mu" style="font-size:13px">Media ponderata</div>
+      <div style="font-size:60px;font-weight:780;letter-spacing:-0.045em;line-height:1">26,42</div>
+      <div class="mu" style="font-size:13px;margin-top:4px">su 6 esami, 53 CFU con voto</div>
+      <div style="margin-top:14px;border-top:1px solid #DCDCD6">
+        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #EBEBE6;font-size:14px"><span>Media aritmetica</span><b>26,33</b></div>
+        <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #EBEBE6;font-size:14px"><span>Base di laurea su 110</span><b>96,9</b></div>
+        <div style="display:flex;justify-content:space-between;padding:7px 0;font-size:14px"><span>CFU acquisiti</span><b>56 <span class="mu" style="font-weight:400">/ 180</span></b></div>
+      </div>
+      <div style="margin-top:18px;border-top:2px solid #000;padding-top:10px">
+        <h2 style="margin:0;font-size:16px;font-weight:650">Simula i prossimi voti</h2>
+        <p class="mu" style="margin:2px 0 4px;font-size:13px">Prova dei voti per vedere l’effetto. Non viene salvato.</p>
+      </div>
+      <sc-for list="{{plan}}" as="r" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:10px;min-height:46px;border-top:1px solid #EBEBE6"><span style="width:10px;height:10px;border-radius:2px;background:{{r.c}}"></span><span style="flex:1;font-size:14px">{{r.n}}</span><div class="stp"><button onClick="{{r.dn}}" aria-label="Diminuisci">−</button><span>{{r.v}}</span><button onClick="{{r.up}}" aria-label="Aumenta">+</button></div></div>
+      </sc-for>
+      <div style="margin-top:10px;background:#EEF0FC;border-radius:6px;padding:12px 14px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:13px;color:#1F35C7;font-weight:600">Media con questi voti</span><span style="font-size:13px;font-weight:650;color:#1F35C7">{{simD}}</span></div>
+        <div style="font-size:28px;font-weight:750;letter-spacing:-0.03em;line-height:1.1;color:#1F35C7">{{simW}}</div>
+        <div style="position:relative;height:16px;margin:8px 0 2px" aria-hidden="true"><span style="position:absolute;left:0;right:0;top:7px;height:2px;background:#C9CFF3"></span><span style="position:absolute;top:2px;left:{{nowPct}}%;width:2px;height:12px;background:#000;margin-left:-1px"></span><span style="position:absolute;top:3px;left:{{simPct}}%;width:10px;height:10px;border-radius:5px;background:#1F35C7;margin-left:-5px"></span></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#3A3A36"><span>18</span><span>ora 26,42</span><span>30</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;color:#1F35C7"><span>aritmetica <b>{{simA}}</b></span><span>base <b>{{simB}}</b></span><span>CFU <b>{{simC}}</b></span></div>
+      </div>
+      <p class="mu" style="font-size:12px;margin:auto 0 0">La lode vale 30 nel calcolo. Puoi cambiarlo in Impostazioni.</p>
+    </aside>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { open: 'fis1', sim: [26, 25, 28, 27, 26] }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var done = [
+      ['an1', 'Analisi 1', 10, '27', '2 feb 2026', '1', [['2 feb 2026', 'scritto e orale', '27']], '88%', 'nessuna'],
+      ['geo', 'Geometria e algebra lineare', 8, '29', '16 feb 2026', '1', [['16 feb 2026', 'scritto', '29']], '92%', 'nessuna'],
+      ['inf', 'Informatica', 10, '30L', '22 giu 2026', '1', [['22 giu 2026', 'progetto e orale', '30 e lode']], '79%', 'progetto in C'],
+      ['fis1', 'Fisica 1', 12, '24', '24 giu 2026', '2', [['13 feb 2026', 'scritto', 'ritirato'], ['24 giu 2026', 'scritto e orale', '24, accettato']], '61%', 'orale su Gauss e conservazione dell’energia'],
+      ['eco', 'Economia e organizzazione', 6, '26', '9 lug 2026', '1', [['9 lug 2026', 'scritto', '26']], '70%', 'nessuna'],
+      ['chi', 'Chimica', 7, '22', '20 lug 2026', '2', [['19 feb 2026', 'scritto', '15, respinto'], ['20 lug 2026', 'scritto', '22, accettato']], '54%', 'nessuna'],
+      ['ing', 'Lingua inglese B2', 3, 'idoneo', '3 mar 2026', '1', [['3 mar 2026', 'test', 'idoneo']], 'n/d', 'non fa media']
+    ];
+    var plan = [['Analisi 2', 8, '3 dic, prova', 'prova in itinere', '#6A4FB3'], ['Fisica 2', 10, '19 gen 2027', 'da prenotare', '#1F7A8C'], ['Meccanica razionale', 8, '29 gen 2027', 'da prenotare', '#3F7D3A'], ['Elettrotecnica', 7, 'da fissare', '', '#B7791F'], ['Probabilità e statistica', 6, '8 feb 2027', '', '#93306E']];
+    var sumW = 1400, sumC = 53, sumA = 158, n = 6;
+    plan.forEach(function (p, i) { sumW += s.sim[i] * p[1]; sumC += p[1]; sumA += s.sim[i]; n++; });
+    function f(x, d) { return x.toFixed(d).replace('.', ','); }
+    function setS(i, dv) { var a = s.sim.slice(); a[i] = Math.max(18, Math.min(30, a[i] + dv)); self.setState({ sim: a }); }
+    var w = sumW / sumC;
+    return {
+      done: done.map(function (r) { return { n: r[1], cfu: r[2], v: r[3], d: r[4], t: r[5] === '1' ? '1' : r[5] + ' tentativi', hist: r[6].map(function (h) { return { d: h[0], k: h[1], e: h[2] }; }), pres: r[7], note: r[8], open: s.open === r[0], tog: function () { self.setState({ open: s.open === r[0] ? '' : r[0] }); } }; }),
+      plan: plan.map(function (p, i) { return { n: p[0], cfu: p[1], d: p[2], s: p[3], c: p[4], v: s.sim[i], up: function () { setS(i, 1); }, dn: function () { setS(i, -1); } }; }),
+      simW: f(w, 2), simA: f(sumA / n, 2), simB: f(w * 110 / 30, 1), simC: '' + (sumC + 3), simD: (w >= 1400 / 53 ? '+' : '−') + f(Math.abs(w - 1400 / 53), 2) + ' rispetto a ora',
+      nowPct: ((1400 / 53 - 18) / 12 * 100).toFixed(1), simPct: ((w - 18) / 12 * 100).toFixed(1)
+    };
+  }
+}
+</script>
+</body>
+</html>

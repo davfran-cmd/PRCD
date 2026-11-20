@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Modifica lezione</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:44px;padding:0 16px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:15px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.in{height:44px;border:1px solid #CFCFC9;border-radius:6px;padding:0 12px;font-size:15px;display:flex;align-items:center;gap:8px;background:#fff}
+.scope{width:100%;text-align:left;border:1px solid #CFCFC9;border-radius:8px;background:#fff;padding:14px 16px;font:inherit;color:#000;display:flex;flex-direction:column;gap:8px}
+.scope.on{border:2px solid #000;padding:13px 15px}
+.wk{width:20px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="cal" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;background:repeating-linear-gradient(0deg,#fff 0 48px,#EBEBE6 48px 49px)"></main>
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.32)"></div>
+  <section role="dialog" aria-modal="true" aria-labelledby="t" style="position:absolute;left:97px;top:36px;width:1000px;height:762px;background:#fff;border-radius:14px;display:flex;flex-direction:column;overflow:hidden">
+    <header style="display:flex;align-items:center;gap:12px;padding:14px 16px 14px 28px;border-bottom:1px solid #DCDCD6">
+      <span style="width:14px;height:14px;border-radius:2px;background:#3F7D3A"></span>
+      <h2 id="t" style="margin:0;font-size:20px;font-weight:700;letter-spacing:-0.01em">Meccanica razionale, giovedì 19 novembre</h2>
+      <span style="flex:1"></span>
+      <a class="btn" href="CalSettimana.dc.html" style="border:0;color:#1F35C7">Annulla</a>
+    </header>
+    <div style="display:grid;grid-template-columns:360px 1fr;flex:1;min-height:0">
+      <div style="padding:24px 28px;border-right:1px solid #DCDCD6;display:flex;flex-direction:column;gap:18px">
+        <div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:8px">Orario attuale</div>
+          <div class="mu" style="font-size:22px;font-weight:600;text-decoration:line-through">14:15–16:15</div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:8px">Nuovo orario</div>
+          <div class="in" style="margin-bottom:8px">giovedì 19 novembre</div>
+          <div style="display:flex;gap:8px;align-items:center"><span class="in" style="flex:1;font-weight:650;border:2px solid #1F35C7">16:30</span><span class="mu">–</span><span class="in" style="flex:1;font-weight:650;border:2px solid #1F35C7">18:30</span></div>
+        </div>
+        <div style="border-top:1px solid #EBEBE6;padding-top:16px;display:flex;flex-direction:column;gap:2px">
+          <div style="font-size:14px;font-weight:600;margin-bottom:6px">Altre azioni su questa lezione</div>
+          <button class="btn" style="justify-content:flex-start;border:0;padding:0;color:#B23A0A">Annulla la lezione</button>
+          <button class="btn" style="justify-content:flex-start;border:0;padding:0;color:#1F35C7">Aggiungi una lezione extra</button>
+          <button class="btn" style="justify-content:flex-start;border:0;padding:0;color:#1F35C7">Segna festività o sospensione</button>
+        </div>
+        <div style="margin-top:auto;background:#F2F2EF;border-radius:8px;padding:14px 16px;display:flex;gap:12px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" style="flex:none;margin-top:1px"><rect x="5" y="11" width="14" height="10" rx="1"></rect><path d="M8 11V7a4 4 0 018 0v4"></path></svg>
+          <div style="font-size:14px">Le presenze già registrate non cambiano mai. Le 7 lezioni del giovedì con presenza registrata conservano data, orario e stato originali.</div>
+        </div>
+      </div>
+      <div style="padding:24px 28px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:14px;font-weight:600">A quali lezioni si applica?</div>
+        <sc-for list="{{scopes}}" as="s" hint-placeholder-count="3">
+          <button class="scope {{s.cls}}" onClick="{{s.pick}}" role="radio" aria-checked="{{s.on}}">
+            <span style="display:flex;align-items:center;gap:10px"><span style="width:20px;height:20px;border-radius:10px;border:2px solid #000;display:flex;align-items:center;justify-content:center"><span style="width:10px;height:10px;border-radius:5px;background:{{s.dot}}"></span></span><span style="font-size:17px;font-weight:650">{{s.title}}</span></span>
+            <span class="mu" style="font-size:14px;padding-left:30px">{{s.desc}}</span>
+            <span style="display:flex;gap:4px;padding-left:30px;margin-top:2px"><sc-for list="{{s.weeks}}" as="w" hint-placeholder-count="16"><span class="wk" style="{{w.css}}">{{w.mark}}</span></sc-for></span>
+          </button>
+        </sc-for>
+        <div class="mu" style="display:flex;gap:16px;font-size:12px;padding-left:2px"><span style="display:flex;gap:5px;align-items:center"><span class="wk" style="width:12px;height:12px;background:#1F35C7"></span>cambia</span><span style="display:flex;gap:5px;align-items:center"><span class="wk" style="width:12px;height:12px;background:#E6E6E1"></span>resta com'è</span><span style="display:flex;gap:5px;align-items:center"><span class="wk" style="width:12px;height:12px;background:#E6E6E1;font-size:9px">●</span>presenza registrata, protetta</span><span>16 giovedì nel semestre</span></div>
+        <div style="margin-top:auto;border-top:2px solid #000;padding-top:14px;display:flex;align-items:center;gap:16px">
+          <p style="margin:0;flex:1;font-size:15px">{{summary}}</p>
+          <a class="btn p" href="CalSettimana.dc.html">{{cta}}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { s: 'one' }; }
+  renderVals() {
+    var self = this, cur = this.state.s;
+    function weeks(mode) {
+      var out = [];
+      for (var i = 1; i <= 16; i++) {
+        var past = i < 8, ch = false;
+        if (mode === 'one') ch = i === 8;
+        if (mode === 'next') ch = i >= 8;
+        if (mode === 'all') ch = i >= 8;
+        var exc = mode === 'all' && (i === 11 || i === 13);
+        out.push({ mark: past ? '●' : exc ? '×' : '', css: (ch ? 'background:#1F35C7;color:#fff;' : 'background:#E6E6E1;color:#5F5F59;') + 'font-size:9px' });
+      }
+      return out;
+    }
+    var defs = [
+      ['one', 'Solo questa lezione', 'Sposta giovedì 19 novembre. Gli altri giovedì restano alle 14:15.', 'Sposta solo giovedì 19 novembre alle 16:30–18:30.', 'Sposta questa lezione'],
+      ['next', 'Questa e le successive', 'Dal 19 novembre in poi, 9 lezioni. Le precedenti restano alle 14:15.', 'Dal 19 novembre al 14 gennaio Meccanica razionale del giovedì sarà alle 16:30–18:30.', 'Sposta 9 lezioni'],
+      ['all', 'Tutto l’orario del corso', 'Cambia lo slot del giovedì per l’intero semestre. Sostituisce anche i 2 spostamenti singoli già previsti (×).', 'Lo slot del giovedì diventa 16:30–18:30. Le 7 lezioni passate restano invariate; 2 spostamenti futuri vengono sostituiti.', 'Cambia l’orario']
+    ];
+    var me = defs.filter(function (d) { return d[0] === cur; })[0];
+    return {
+      scopes: defs.map(function (d) { return { title: d[1], desc: d[2], cls: d[0] === cur ? 'on' : '', on: d[0] === cur ? 'true' : 'false', dot: d[0] === cur ? '#000' : 'transparent', weeks: weeks(d[0]), pick: function () { self.setState({ s: d[0] }); } }; }),
+      summary: me[3], cta: me[4]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Calendario, settimana</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:15px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.btn.p{background:#1F35C7;border-color:#1F35C7;color:#fff}
+.btn.sel{box-shadow:inset 0 0 0 2px #000;border-color:#000;font-weight:650}
+.seg{display:inline-flex;border:1px solid #CFCFC9;border-radius:6px;overflow:hidden;height:40px}
+.seg a,.seg span{display:flex;align-items:center;padding:0 14px;font-size:14px;color:#000;text-decoration:none;border-right:1px solid #CFCFC9}
+.seg .on{background:#000;color:#fff;font-weight:600}
+.seg :last-child{border-right:0}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;height:28px;padding:0 10px;border-radius:14px;background:#F2F2EF}
+.ev{position:absolute;left:2px;right:3px;border-radius:4px;padding:4px 6px;overflow:hidden;font-size:12.5px;line-height:1.25}
+.ev b{font-weight:650;display:block}
+.hl{position:absolute;left:0;right:0;border-top:1px solid #EBEBE6}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="cal" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;position:relative">
+    <header style="height:72px;display:flex;align-items:center;gap:10px;padding:0 20px 0 24px">
+      <h1 style="margin:0;font-size:30px;font-weight:750;letter-spacing:-0.03em">Novembre 2026</h1>
+      <span class="mu" style="margin-left:4px">settimana 47</span>
+      <span style="flex:1"></span>
+      <div class="seg" role="group" aria-label="Vista"><span>Giorno</span><span class="on">Settimana</span><a href="CalMese.dc.html">Mese</a></div>
+      <button class="btn">Oggi</button>
+      <button class="btn" aria-label="Settimana precedente" style="width:40px;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <button class="btn" aria-label="Settimana successiva" style="width:40px;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+      <a class="btn p" href="EventoNuovo.dc.html" aria-label="Nuovo evento" style="width:40px;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></a>
+    </header>
+    <div style="display:flex;align-items:center;gap:8px;padding:0 24px 10px">
+      <span class="chip"><span style="width:10px;height:10px;border-radius:2px;background:#000"></span>Lezioni</span>
+      <span class="chip"><span style="width:10px;height:10px;border-radius:2px;border:2px solid #1F35C7"></span>Studio</span>
+      <span class="chip"><span style="width:10px;height:10px;border-radius:2px;border:1.5px solid #000"></span>iCloud, Personale</span>
+      <span class="chip"><span style="width:10px;height:10px;border-radius:2px;border:1.5px solid #8A8A83"></span>iCloud, Famiglia</span>
+      <a href="AppleCalendario.dc.html" style="font-size:13px;color:#1F35C7;text-decoration:none;margin-left:4px">Gestisci calendari</a>
+    </div>
+    <!-- day header -->
+    <div style="display:flex;padding-left:20px;border-bottom:1px solid #DCDCD6">
+      <span style="width:50px"></span>
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+        <div style="width:124px;height:50px;padding:4px 8px;display:flex;align-items:baseline;gap:6px;color:{{d.col}}"><span style="font-size:13px">{{d.wd}}</span><span style="font-size:24px;font-weight:{{d.w}};letter-spacing:-0.02em">{{d.n}}</span></div>
+      </sc-for>
+    </div>
+    <!-- all day -->
+    <div style="display:flex;padding-left:20px;border-bottom:1px solid #DCDCD6;height:30px;align-items:center">
+      <span class="mu" style="width:50px;font-size:11px">giornata</span>
+      <span style="width:248px"></span>
+      <span style="width:120px;height:22px;border-radius:4px;background:#F2F2EF;font-size:12px;padding:3px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Apertura iscrizioni appelli">Apertura iscrizioni appelli</span>
+    </div>
+    <!-- grid -->
+    <div style="position:relative;flex:1;padding-left:20px;overflow:hidden">
+      <div style="position:absolute;left:20px;top:10px;width:50px">
+        <sc-for list="{{hours}}" as="h" hint-placeholder-count="13"><div class="mu" style="position:absolute;top:{{h.top}}px;font-size:11px;transform:translateY(-7px)">{{h.label}}</div></sc-for>
+      </div>
+      <div style="position:absolute;left:70px;top:10px;width:868px;height:616px">
+        <sc-for list="{{hours}}" as="h" hint-placeholder-count="13"><div class="hl" style="top:{{h.top}}px"></div></sc-for>
+      </div>
+      <div style="position:absolute;left:70px;top:10px;display:flex;height:616px">
+        <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+          <div style="width:124px;height:616px;position:relative;border-left:1px solid #EBEBE6;background:{{d.bg}}">
+            <sc-for list="{{d.ev}}" as="e" hint-placeholder-count="2">
+              <div class="ev" style="top:{{e.top}}px;height:{{e.h}}px;{{e.css}}"><b>{{e.t}}</b><span>{{e.s}}</span></div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <!-- now line, Friday -->
+      <div style="position:absolute;left:566px;top:528px;width:124px;height:2px;background:#1F35C7"></div>
+      <div style="position:absolute;left:560px;top:524px;width:10px;height:10px;border-radius:5px;background:#1F35C7"></div>
+      <!-- popover -->
+      <div role="dialog" aria-label="Lezione di Analisi 2" style="position:absolute;left:692px;top:204px;width:250px;background:#fff;border:1px solid #CFCFC9;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,0.14);padding:14px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:12px;height:12px;border-radius:2px;background:#6A4FB3"></span><span style="font-size:18px;font-weight:700">Analisi 2</span></div>
+        <div class="mu" style="font-size:13px;margin-top:2px">Lezione 23 di 48. Ven 20 novembre, 14:15–16:15</div>
+        <div style="font-size:13px;font-weight:600;margin:10px 0 6px">Presenza</div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:4px">
+          <sc-for list="{{opts}}" as="o" hint-placeholder-count="4">
+            <button class="btn {{o.cls}}" onClick="{{o.pick}}" style="height:34px;justify-content:flex-start;font-size:14px;padding:0 12px;gap:10px"><span class="g {{o.g}}" style="display:inline-block;flex:none;box-sizing:border-box;width:14px;height:14px;border-radius:2px;{{o.gs}}"></span>{{o.label}}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #EBEBE6">
+          <a class="btn" href="Corso.dc.html" style="flex:1;padding:0 8px">Apri corso</a>
+          <a class="btn" href="LezioneModifica.dc.html" style="flex:1;padding:0 8px">Modifica</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { st: 't' }; }
+  renderVals() {
+    var self = this, H = 47;
+    var C = { an2: '#6A4FB3', fis2: '#1F7A8C', mr: '#3F7D3A', el: '#B7791F', ps: '#93306E' };
+    var N = { an2: 'Analisi 2', fis2: 'Fisica 2', mr: 'Meccanica raz.', el: 'Elettrotecnica', ps: 'Probabilità' };
+    function hm(x) { var h = Math.floor(x), m = Math.round((x - h) * 60); return h + ':' + (m < 10 ? '0' : '') + m; }
+    function L(c, a, b, extra, sel) { return { t: N[c], s: hm(a) + '–' + hm(b) + (extra || ''), top: (a - 8) * H, h: (b - a) * H - 2, css: 'background:' + C[c] + ';color:#fff' + (sel ? ';box-shadow:0 0 0 2px #fff,0 0 0 4px #000;z-index:2' : '') }; }
+    function P(t, a, b, kind) {
+      var css = kind === 'study' ? 'background:#fff;border:2px solid #1F35C7;color:#000' : kind === 'fam' ? 'background:#fff;border:1.5px solid #8A8A83;color:#000' : 'background:#fff;border:1.5px solid #000;color:#000';
+      return { t: t, s: hm(a), top: (a - 8) * H, h: (b - a) * H - 2, css: css };
+    }
+    var ghost = { t: 'Spostata', s: 'era 14:15', top: (14.25 - 8) * H, h: 2 * H - 2, css: 'background:repeating-linear-gradient(135deg,#fff 0 5px,#EEF3EE 5px 10px);border:1.5px dashed #3F7D3A;color:#3F7D3A' };
+    var days = [
+      { wd: 'lun', n: 16, ev: [L('an2', 10.25, 12.25), L('fis2', 14.25, 17.25), P('Palestra', 18.5, 20, 'pers')] },
+      { wd: 'mar', n: 17, ev: [L('mr', 8.25, 10.25), L('el', 13.25, 16.25), P('Cena coinquilini', 20, 21, 'pers')] },
+      { wd: 'mer', n: 18, ev: [L('an2', 8.25, 10.25), L('ps', 10.5, 12.25), L('el', 14.25, 16.25), P('Studio in biblioteca', 16.75, 19, 'study')] },
+      { wd: 'gio', n: 19, ev: [L('fis2', 10.25, 12.25), P('Pranzo con Luca', 12.5, 13.5, 'pers'), ghost, L('mr', 16.5, 18.5, ', spostata')] },
+      { wd: 'ven', n: 20, today: true, ev: [L('fis2', 8.25, 10.25), L('ps', 10.5, 12.25), L('an2', 14.25, 16.25, '', true), P('Calcetto', 20.5, 21, 'pers')] },
+      { wd: 'sab', n: 21, ev: [P('Mercato con la mamma', 10, 12, 'fam'), P('Cena da Marta', 20, 21, 'pers')] },
+      { wd: 'dom', n: 22, ev: [P('Ripasso Analisi 2', 9.5, 11.5, 'study')] }
+    ].map(function (d) { return Object.assign(d, { col: d.today ? '#1F35C7' : '#000', w: d.today ? 750 : 450, bg: d.today ? '#FAFAFD' : 'transparent' }); });
+    var hours = [];
+    for (var h = 8; h <= 21; h++) hours.push({ label: h + ':00', top: (h - 8) * H });
+    var st = this.state.st;
+    var defs = [['a', 'Presente', 'background:#000'], ['x', 'Assente', 'border:2px solid #C2410C'], ['t', 'Da confermare', 'border:1.5px dashed #77776F'], ['r', 'Recuperata', 'border:2px solid #000;background:linear-gradient(135deg,#000 50%,#fff 50%)']];
+    var opts = defs.map(function (d) { return { label: d[1], gs: d[2], g: '', cls: st === d[0] ? 'sel' : '', pick: function () { self.setState({ st: d[0] }); } }; });
+    return { days: days, hours: hours, opts: opts };
+  }
+}
+</script>
+</body>
+</html>

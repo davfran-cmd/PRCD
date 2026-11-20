@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Statistiche</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.q{padding:18px 24px 18px 0;min-width:0;overflow:hidden}
+.q h2{margin:0;font-size:19px;font-weight:700;letter-spacing:-0.015em;line-height:1.2}
+.q p{margin:6px 0 0;font-size:13.5px;color:#3A3A36;max-width:60ch}
+.ax{font-size:11px;color:#5F5F59;position:absolute}
+.seg{display:inline-flex;border:1px solid #CFCFC9;border-radius:6px;overflow:hidden;height:40px}
+.seg button{border:0;border-right:1px solid #CFCFC9;background:#fff;font:inherit;font-size:14px;padding:0 14px;color:#000}
+.seg button:last-child{border-right:0}
+.seg .on{background:#000;color:#fff;font-weight:600}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="sta" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;padding:24px 32px 0;display:flex;flex-direction:column">
+    <header style="display:flex;align-items:flex-end;gap:12px">
+      <h1 style="margin:0;font-size:40px;line-height:1;font-weight:750;letter-spacing:-0.035em;flex:1">Statistiche</h1>
+      <div class="seg" role="group" aria-label="Periodo"><button>Semestre</button><button class="on">Tutto il percorso</button></div>
+    </header>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto;margin-top:18px;border-top:2px solid #000;flex:1">
+      <!-- Q1 scatter -->
+      <section class="q" style="border-right:1px solid #DCDCD6;border-bottom:1px solid #DCDCD6">
+        <h2>Chi frequenta di più prende voti più alti?</h2>
+        <p>Nei 6 esami del primo anno i voti più alti stanno dove la presenza è più alta (r = 0,86). Informatica è l'eccezione: 30 e lode con il 79%. Sono pochi dati e contano anche difficoltà del corso e ore di studio, quindi leggilo come una tendenza, non come una causa.</p>
+        <div style="position:relative;margin:18px 0 0 34px;width:370px;height:196px;border-left:1px solid #000;border-bottom:1px solid #000">
+          <svg width="370" height="196" style="position:absolute;inset:0;overflow:hidden" aria-hidden="true"><line x1="0" y1="127" x2="370" y2="-13" stroke="#9A9A93" stroke-width="1.2" stroke-dasharray="4 4"></line><line x1="0" y1="65" x2="370" y2="65" stroke="#EBEBE6"></line><line x1="0" y1="131" x2="370" y2="131" stroke="#EBEBE6"></line></svg>
+          <sc-for list="{{pts}}" as="p" hint-placeholder-count="6">
+            <div style="position:absolute;left:{{p.x}}px;top:{{p.y}}px;transform:translate(-6px,-6px);display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:6px;background:#000;flex:none"></span><span style="font-size:12px;white-space:nowrap;background:#fff">{{p.n}} {{p.v}}</span></div>
+          </sc-for>
+          <span class="ax" style="left:-28px;top:-6px">30</span><span class="ax" style="left:-28px;top:59px">26</span><span class="ax" style="left:-28px;top:125px">22</span><span class="ax" style="left:-28px;top:186px">18</span>
+          <span class="ax" style="left:-4px;top:200px">50%</span><span class="ax" style="left:174px;top:200px">75%</span><span class="ax" style="left:350px;top:200px">100%</span>
+        </div>
+        <div class="mu" style="font-size:12px;margin:22px 0 0 34px">Asse orizzontale: presenza al corso. Verticale: voto finale.</div>
+      </section>
+      <!-- Q2 weekly -->
+      <section class="q" style="padding-left:24px;padding-right:0;border-bottom:1px solid #DCDCD6">
+        <h2>La presenza sta calando?</h2>
+        <p>Un po', da metà ottobre: dal 96% delle prime tre settimane al 78% delle ultime cinque. Le assenze sono quasi tutte di venerdì.</p>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:170px;margin-top:22px;border-bottom:1px solid #000;position:relative">
+          <div style="position:absolute;left:0;right:0;bottom:136px;border-top:1px dashed #9A9A93"></div><span class="ax" style="right:0;bottom:140px">80%, la tua soglia</span>
+          <sc-for list="{{weeks}}" as="w" hint-placeholder-count="16">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%"><span style="font-size:11px;font-weight:600">{{w.l}}</span><span style="width:100%;height:{{w.h}}px;background:{{w.c}}"></span></div>
+          </sc-for>
+        </div>
+        <div class="mu" style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px"><span>sett. 1</span><span>sett. 8, oggi</span><span>sett. 16</span></div>
+        <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:14px;font-size:12px;text-align:center">
+          <span><b style="font-size:16px">3</b><br><span class="mu">assenze lun</span></span><span><b style="font-size:16px">2</b><br><span class="mu">mar</span></span><span><b style="font-size:16px">2</b><br><span class="mu">mer</span></span><span><b style="font-size:16px">1</b><br><span class="mu">gio</span></span><span><b style="font-size:16px;color:#B23A0A">9</b><br><span class="mu">ven</span></span>
+        </div>
+      </section>
+      <!-- Q3 semesters -->
+      <section class="q" style="border-right:1px solid #DCDCD6">
+        <h2>Come si confrontano i semestri?</h2>
+        <p>Il 2° semestre ha avuto meno presenza ma una media leggermente più alta. Il semestre in corso ha la presenza migliore finora.</p>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{sems}}" as="s" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:110px 1fr 54px;gap:10px;align-items:center;font-size:13px">
+              <span style="font-weight:600">{{s.n}}</span>
+              <span style="display:flex;flex-direction:column;gap:3px"><span style="height:12px;width:{{s.p}}%;background:#000"></span><span style="height:12px;width:{{s.mw}}%;background:{{s.mc}}"></span></span>
+              <span style="text-align:right;line-height:1.35">{{s.pl}}<br><b>{{s.m}}</b></span>
+            </div>
+          </sc-for>
+          <div class="mu" style="display:flex;gap:16px;font-size:12px"><span style="display:flex;gap:6px;align-items:center"><span style="width:12px;height:12px;background:#000"></span>presenza</span><span style="display:flex;gap:6px;align-items:center"><span style="width:12px;height:12px;background:#1F35C7"></span>media ponderata, scala 18–30</span></div>
+        </div>
+      </section>
+      <!-- Q4 study -->
+      <section class="q" style="padding-left:24px;padding-right:0">
+        <h2>Dove va il tuo tempo di studio?</h2>
+        <p>39 ore registrate a novembre, 9 sessioni completate su 12 pianificate. Probabilità ha sia la presenza più bassa sia meno studio.</p>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{study}}" as="s" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:150px 1fr 40px 48px;gap:10px;align-items:center;font-size:13px"><span style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:2px;background:{{s.c}}"></span>{{s.n}}</span><span style="height:14px;background:#F2F2EF"><span style="display:block;height:14px;width:{{s.w}}%;background:{{s.c}}"></span></span><span style="text-align:right;font-weight:650">{{s.h}} h</span><span class="mu" style="text-align:right">{{s.p}}</span></div>
+          </sc-for>
+          <div class="mu" style="font-size:12px;text-align:right">ultima colonna: presenza</div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var W = 370, H = 196;
+    var raw = [['Analisi 1', 88, 27], ['Geometria', 92, 29], ['Informatica', 79, 30], ['Fisica 1', 61, 24], ['Economia', 70, 26], ['Chimica', 54, 22]];
+    var pts = raw.map(function (r) { return { n: r[0], v: r[2] === 30 ? '30L' : r[2], x: Math.round((r[1] - 50) / 50 * W), y: Math.round((30 - r[2]) / 12 * H) }; });
+    var wk = [100, 92, 96, 83, 75, 83, 67, 83];
+    var weeks = [];
+    for (var i = 0; i < 16; i++) { var v = wk[i]; weeks.push({ l: v != null ? v : '', h: v != null ? Math.round(v * 1.7) : 4, c: v != null ? (v < 80 ? '#C2410C' : '#000') : '#EBEBE6' }); }
+    function mw(m) { return Math.round((m - 18) / 12 * 100); }
+    var sems = [
+      { n: '1° sem. 25/26', p: 78, pl: '78%', m: '26,24', mw: mw(26.24), mc: '#1F35C7' },
+      { n: '2° sem. 25/26', p: 70, pl: '70%', m: '26,57', mw: mw(26.57), mc: '#1F35C7' },
+      { n: '1° sem. 26/27', p: 81, pl: '81%', m: 'esami da fare', mw: 0, mc: '#1F35C7' }
+    ];
+    var st = [['Fisica 2', '#1F7A8C', 14, '75%'], ['Analisi 2', '#6A4FB3', 11, '87%'], ['Meccanica razionale', '#3F7D3A', 7, '94%'], ['Elettrotecnica', '#B7791F', 5, '81%'], ['Probabilità', '#93306E', 2, '69%']];
+    return { pts: pts, weeks: weeks, sems: sems, study: st.map(function (s) { return { n: s[0], c: s[1], h: s[2], w: Math.round(s[2] / 14 * 100), p: s[3] }; }) };
+  }
+}
+</script>
+</body>
+</html>

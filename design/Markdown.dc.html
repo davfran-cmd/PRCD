@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Nota: Legge di Ampère</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&amp;family=STIX+Two+Text:ital,wght@0,400;1,400&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;flex-direction:column;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.ib{width:44px;height:44px;border:0;background:transparent;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#000}
+.art{font-family:'Newsreader',Georgia,serif;font-size:18.5px;line-height:1.6;color:#141414}
+.art h1{font-family:'Schibsted Grotesk',sans-serif;font-size:40px;line-height:1.05;letter-spacing:-0.035em;font-weight:750;margin:0 0 6px}
+.art h2{font-family:'Schibsted Grotesk',sans-serif;font-size:21px;letter-spacing:-0.015em;font-weight:700;margin:30px 0 8px}
+.art p{margin:0 0 14px}
+.m{font-family:'STIX Two Text',serif;font-style:italic}
+.mr{font-family:'STIX Two Text',serif;font-style:normal}
+.wl{color:#1F35C7;text-decoration:none;border-bottom:1px solid #B8C0F0}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-family:'STIX Two Text',serif;font-size:0.92em;line-height:1.15;margin:0 2px}
+.fr span:first-child{border-bottom:1px solid currentColor;padding:0 3px}
+.tb{width:100%;border-collapse:collapse;font-family:'Schibsted Grotesk',sans-serif;font-size:14.5px;margin:6px 0 18px}
+.tb th{text-align:left;font-weight:650;border-bottom:1.5px solid #000;padding:6px 8px 6px 0}
+.tb td{border-bottom:1px solid #EBEBE6;padding:7px 8px 7px 0;vertical-align:middle}
+.toc a{display:block;padding:6px 0 6px 10px;font-size:14px;color:#000;text-decoration:none;border-left:2px solid #EBEBE6}
+.toc a.on{border-left-color:#000;font-weight:650}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app" style="flex-direction:row">
+  <nav aria-label="Sezioni" style="width:64px;flex:none;background:#F2F2EF;border-right:1px solid #DCDCD6;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px">
+    <span style="font-weight:800;font-size:18px;height:40px;display:flex;align-items:center">L</span>
+    <a href="Main.dc.html" aria-label="Oggi" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#000"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg></a>
+    <a href="CalSettimana.dc.html" aria-label="Calendario" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#000"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="1"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg></a>
+    <a href="Universita.dc.html" aria-label="Università" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#000"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"></path><path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"></path></svg></a>
+    <a href="Documenti.dc.html" aria-label="Documenti" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#000;background:#fff;border-radius:6px;box-shadow:inset 0 0 0 1px #DCDCD6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h6l2 2h10v11H3z"></path></svg></a>
+    <a href="Statistiche.dc.html" aria-label="Statistiche" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#000"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 20V11M11 20V5M17 20v-6M2 20h20"></path></svg></a>
+    <span style="width:28px;border-top:1px solid #DCDCD6;margin:8px 0"></span>
+    <a href="Corso.dc.html" title="Analisi 2" aria-label="Analisi 2" style="width:36px;height:30px;margin:3px 0;border-radius:2px;background:#6A4FB3;color:#fff;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;">A2</a><a href="Corso.dc.html" title="Fisica 2" aria-label="Fisica 2" style="width:36px;height:30px;margin:3px 0;border-radius:2px;background:#1F7A8C;color:#fff;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #F2F2EF,0 0 0 4px #000">F2</a><a href="Corso.dc.html" title="Meccanica razionale" aria-label="Meccanica razionale" style="width:36px;height:30px;margin:3px 0;border-radius:2px;background:#3F7D3A;color:#fff;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;">MR</a><a href="Corso.dc.html" title="Elettrotecnica" aria-label="Elettrotecnica" style="width:36px;height:30px;margin:3px 0;border-radius:2px;background:#B7791F;color:#fff;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;">EL</a><a href="Corso.dc.html" title="Probabilità e statistica" aria-label="Probabilità e statistica" style="width:36px;height:30px;margin:3px 0;border-radius:2px;background:#93306E;color:#fff;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;">PS</a>
+  </nav>
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+  <header style="height:60px;display:flex;align-items:center;gap:4px;padding:0 14px;border-bottom:1px solid #DCDCD6">
+    <a class="ib" href="Documenti.dc.html" aria-label="Torna a Documenti" style="width:auto;padding:0 10px;gap:6px;text-decoration:none;color:#1F35C7;font-size:15px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Fisica 2</a>
+    <span style="flex:1;text-align:center;font-weight:650">14 Legge di Ampère</span>
+    <div style="display:inline-flex;border:1px solid #CFCFC9;border-radius:6px;overflow:hidden;height:36px;margin-right:8px"><span style="display:flex;align-items:center;padding:0 12px;font-size:14px;background:#000;color:#fff;font-weight:600">Leggi</span><span style="display:flex;align-items:center;padding:0 12px;font-size:14px">Modifica</span></div>
+    <button class="ib" aria-label="Dimensione testo"><span style="font-family:'Newsreader',serif;font-size:20px">Aa</span></button>
+    <button class="ib" aria-label="Annota con Apple Pencil"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path><path d="M14 7l3 3"></path></svg></button>
+    <button class="ib" aria-label="Preferito"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3L12 17.5 6.5 20.4l1-6.3L3 9.7l6.2-.9z"></path></svg></button>
+    <button class="ib" aria-label="Schermo intero"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button>
+  </header>
+  <div style="display:flex;flex:1;min-height:0">
+    <nav class="toc" aria-label="Indice" style="width:196px;padding:28px 14px 0 24px;flex:none">
+      <div class="mu" style="font-size:13px;margin-bottom:8px">In questa nota</div>
+      <a href="#" class="on">Enunciato</a><a href="#">Filo rettilineo infinito</a><a href="#">Configurazioni notevoli</a><a href="#">Verifica numerica</a><a href="#">Domande per l'esame</a>
+      <div class="mu" style="font-size:12px;margin-top:26px">Lettura</div>
+      <div style="height:3px;background:#EBEBE6;margin-top:6px"><div style="width:38%;height:3px;background:#000"></div></div>
+      <div class="mu" style="font-size:12px;margin-top:6px">circa 6 minuti</div>
+    </nav>
+    <article class="art" style="flex:1;min-width:0;padding:30px 36px 0;overflow:hidden">
+      <div style="max-width:640px">
+        <div class="mu" style="font-family:'Schibsted Grotesk',sans-serif;font-size:13px;margin-bottom:10px">Lezione 14, giovedì 12 novembre</div>
+        <h1>Legge di Ampère</h1>
+        <h2 style="margin-top:22px">Enunciato</h2>
+        <p>In condizioni stazionarie la circuitazione del campo magnetico <span class="m">B</span> lungo una qualsiasi linea chiusa <span class="m">γ</span> è proporzionale alla corrente <span class="m">I</span><sub class="mr">conc</sub> concatenata con la linea:</p>
+        <div style="display:flex;align-items:center;justify-content:center;position:relative;margin:4px 0 16px;font-size:26px;font-family:'STIX Two Text',serif">
+          <span class="mr" style="font-size:34px;line-height:1">∮</span><sub class="m" style="font-size:15px;align-self:flex-end;margin-right:6px">γ</sub><b class="mr">B</b><span class="mr" style="margin:0 6px">·</span><span class="mr">d</span><b class="mr">l</b><span class="mr" style="margin:0 12px">=</span><span class="m">μ</span><sub class="mr" style="font-size:15px;align-self:flex-end">0</sub><span class="m" style="margin-left:4px">I</span><sub class="mr" style="font-size:15px;align-self:flex-end">conc</sub>
+          <span class="mu" style="position:absolute;right:0;font-family:'Schibsted Grotesk',sans-serif;font-size:14px">(14.1)</span>
+        </div>
+        <p>Vale solo per correnti stazionarie: con campi variabili nel tempo serve il termine di spostamento di Maxwell, vedi <a class="wl" href="#">[[15 Induzione e corrente di spostamento]]</a>.</p>
+        <h2>Configurazioni notevoli</h2>
+        <table class="tb">
+          <thead><tr><th>Sorgente</th><th>Campo</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td>Filo rettilineo infinito</td><td><span class="m">B</span> <span class="mr">=</span> <span class="fr"><span><span class="m">μ</span>₀<span class="m">I</span></span><span>2π<span class="m">r</span></span></span></td><td class="mu">linee circolari</td></tr>
+            <tr><td>Solenoide ideale</td><td><span class="m">B</span> <span class="mr">=</span> <span class="m">μ</span>₀<span class="m">nI</span></td><td class="mu">nullo all'esterno</td></tr>
+            <tr><td>Toroide</td><td><span class="m">B</span> <span class="mr">=</span> <span class="fr"><span><span class="m">μ</span>₀<span class="m">NI</span></span><span>2π<span class="m">r</span></span></span></td><td class="mu">confinato nel nucleo</td></tr>
+          </tbody>
+        </table>
+        <div style="display:flex;gap:18px;align-items:center;margin-bottom:14px">
+          <figure style="margin:0;width:170px;flex:none">
+            <svg width="170" height="120" viewBox="0 0 170 120" role="img" aria-label="Linee di campo circolari attorno a un filo"><circle cx="85" cy="60" r="16" fill="none" stroke="#000" stroke-width="1"></circle><circle cx="85" cy="60" r="32" fill="none" stroke="#000" stroke-width="1"></circle><circle cx="85" cy="60" r="50" fill="none" stroke="#000" stroke-width="1"></circle><circle cx="85" cy="60" r="4" fill="#1F35C7"></circle><path d="M117 56l4 4 4-4" fill="none" stroke="#000" stroke-width="1.2"></path></svg>
+            <figcaption class="mu" style="font-family:'Schibsted Grotesk',sans-serif;font-size:12px">ampere-filo.png, incorporata</figcaption>
+          </figure>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.55;background:#F4F4F1;padding:12px 14px;border-radius:6px;flex:1;min-width:0;white-space:pre;overflow:hidden"><div><span style="color:#1F35C7">from</span> math <span style="color:#1F35C7">import</span> pi</div><div>mu0 = <span style="color:#B23A0A">4e-7</span> * pi</div><div><span style="color:#1F35C7">def</span> <span style="font-weight:700">B_filo</span>(I, r):</div><div style="padding-left:4ch"><span style="color:#3F7D3A"># campo a distanza r, in tesla</span></div><div style="padding-left:4ch"><span style="color:#1F35C7">return</span> mu0 * I / (<span style="color:#B23A0A">2</span> * pi * r)</div></div>
+        </div>
+      </div>
+    </article>
+    <aside style="width:230px;border-left:1px solid #DCDCD6;padding:28px 18px 0;flex:none;font-size:13.5px">
+      <div style="font-weight:650;margin-bottom:6px">Proprietà</div>
+      <div style="display:grid;grid-template-columns:70px 1fr;row-gap:6px;padding-bottom:14px;border-bottom:1px solid #DCDCD6">
+        <span class="mu">corso</span><span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:2px;background:#1F7A8C"></span>Fisica 2</span>
+        <span class="mu">lezione</span><span>14</span>
+        <span class="mu">data</span><span>2026-11-12</span>
+        <span class="mu">tags</span><span>lezione, da-rivedere</span>
+      </div>
+      <div style="font-weight:650;margin:14px 0 6px">Note che citano questa</div>
+      <a class="wl" href="#" style="display:block;border:0;padding:4px 0">Formulario</a>
+      <a class="wl" href="#" style="display:block;border:0;padding:4px 0">15 Induzione e corrente di spostamento</a>
+      <a class="wl" href="#" style="display:block;border:0;padding:4px 0">Ripasso per la prova</a>
+      <div style="font-weight:650;margin:18px 0 6px">Annotazioni a penna</div>
+      <div class="mu">2 segni a margine. Visibili solo su iPad.</div>
+      <div style="font-weight:650;margin:18px 0 6px">Sorgente</div>
+      <div class="mu" style="word-break:break-all">Vault Obsidian / Fisica 2 / 14 Legge di Ampère.md</div>
+    </aside>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

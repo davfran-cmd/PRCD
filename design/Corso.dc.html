@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Fisica 2</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:14px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.tabs{display:flex;gap:26px;border-bottom:1px solid #DCDCD6}
+.tabs button{height:44px;border:0;background:transparent;font:inherit;font-size:15px;color:#5F5F59;padding:0;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs .on{color:#000;font-weight:650;border-bottom-color:#000}
+.col{padding:18px 22px;border-right:1px solid #DCDCD6;min-width:0;overflow:hidden}
+.ch{margin:0 0 12px;font-size:17px;font-weight:650}
+.g{display:inline-block;width:12px;height:12px;border-radius:2px;flex:none}
+.g.a{background:#000}.g.x{border:2px solid #C2410C}.g.t{border:1.5px dashed #77776F}.g.r{border:2px solid #000;background:linear-gradient(135deg,#000 50%,#fff 50%)}
+.lr{display:grid;grid-template-columns:62px 1fr 44px;align-items:center;min-height:44px;border-top:1px solid #EBEBE6;gap:8px;font-size:14px}
+.lr button{width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center}
+.dr{display:flex;align-items:center;gap:10px;min-height:44px;border-top:1px solid #EBEBE6;font-size:14px;color:#000;text-decoration:none}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="uni" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="padding:22px 32px 0">
+      <a href="Universita.dc.html" style="font-size:14px;color:#1F35C7;text-decoration:none">Università</a>
+      <div style="display:flex;align-items:flex-end;gap:18px;margin-top:6px">
+        <span style="width:44px;height:44px;background:#1F7A8C;border-radius:3px;flex:none;margin-bottom:6px"></span>
+        <h1 style="margin:0;font-size:64px;line-height:0.95;font-weight:780;letter-spacing:-0.045em">Fisica 2</h1>
+        <div class="mu" style="font-size:14px;line-height:1.35;margin-left:12px;padding-bottom:4px">10 CFU, 1° semestre 2026/27<br>28 settembre – 15 gennaio</div>
+        <span style="flex:1"></span>
+        <div style="font-size:14px;line-height:1.5;text-align:right;padding-bottom:4px"><b>lun</b> 14:15–17:15<br><b>gio</b> 10:15–12:15<br><b>ven</b> 08:15–10:15</div>
+        <button class="btn" style="margin-bottom:4px">Modifica</button>
+      </div>
+      <nav class="tabs" style="margin-top:18px"><button class="on">Panoramica</button><button>Lezioni</button><button>Esame</button><button>Materiali</button></nav>
+    </header>
+    <div style="display:grid;grid-template-columns:350px 1fr 300px;flex:1;min-height:0;padding-left:10px">
+      <section class="col">
+        <h2 class="ch">Presenze</h2>
+        <div style="display:flex;align-items:baseline;gap:10px"><span style="font-size:52px;font-weight:780;letter-spacing:-0.04em;line-height:1">{{pct}}</span><span class="mu" style="font-size:14px">{{att}} su {{held}} lezioni svolte</span></div>
+        <div style="display:flex;height:8px;margin:14px 0 6px;gap:2px"><div style="flex:{{att}};background:#000"></div><div style="flex:{{rec}};background:linear-gradient(135deg,#000 50%,#fff 50%);box-shadow:inset 0 0 0 1.5px #000"></div><div style="flex:{{abs}};background:#fff;box-shadow:inset 0 0 0 1.5px #C2410C"></div><div style="flex:24;background:#EBEBE6"></div></div>
+        <div class="mu" style="display:flex;justify-content:space-between;font-size:12px"><span>{{abs}} assenze aperte, {{rec}} recuperate</span><span>24 da svolgere</span></div>
+        <div style="margin-top:16px;font-size:13px;font-weight:600;display:flex;justify-content:space-between"><span>Ultime lezioni</span><span class="mu" style="font-weight:400">tocca il quadrato per cambiare</span></div>
+        <div style="margin-top:6px">
+          <sc-for list="{{lessons}}" as="l" hint-placeholder-count="7">
+            <div class="lr"><span style="font-weight:600">{{l.d}}</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{l.t}}</span><button onClick="{{l.cycle}}" aria-label="Stato: {{l.label}}"><span class="g {{l.s}}"></span></button></div>
+          </sc-for>
+        </div>
+      </section>
+      <section class="col">
+        <h2 class="ch">Esame</h2>
+        <div style="display:flex;align-items:baseline;gap:12px;border-top:2px solid #000;padding-top:12px"><span style="font-size:22px;font-weight:700">Scritto, martedì 19 gennaio</span><span class="mu">tra 60 giorni</span></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px"><a href="Esami.dc.html" style="font-size:14px;color:#1F35C7;text-decoration:none">Apri nel libretto</a></div>
+        <div style="margin-top:14px;font-size:14px">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid #EBEBE6"><span>1ª prova in itinere, 6 nov</span><span style="font-weight:650">24/30</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid #EBEBE6"><span>2ª prova in itinere, 18 dic</span><span class="mu">in programma</span></div>
+        </div>
+        <h2 class="ch" style="margin-top:22px">Studio</h2>
+        <div class="mu" style="font-size:13px;margin:-6px 0 8px">Argomenti del programma, segnati da te</div>
+        <sc-for list="{{topics}}" as="t" hint-placeholder-count="6">
+          <div style="padding:7px 0 8px;border-top:1px solid #EBEBE6;font-size:14px"><div style="display:flex;justify-content:space-between;gap:12px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{t.n}}</span><span class="mu" style="font-size:13px;flex:none">{{t.p}}%</span></div><div style="height:4px;background:#EBEBE6;margin-top:6px;display:flex"><span style="width:{{t.p}}%;background:#1F7A8C"></span></div></div>
+        </sc-for>
+      </section>
+      <section class="col" style="border-right:0;padding-right:32px">
+        <h2 class="ch" style="display:flex;justify-content:space-between;align-items:baseline">Materiali<a href="Documenti.dc.html" style="font-size:14px;color:#1F35C7;text-decoration:none;font-weight:400">Cartella</a></h2>
+        <div class="mu" style="font-size:13px;margin-bottom:4px">Note</div>
+        <a class="dr" href="Markdown.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg><span style="flex:1">14 Legge di Ampère</span><span class="mu" style="font-size:12px">oggi</span></a>
+        <a class="dr" href="Markdown.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg><span style="flex:1">13 Forza di Lorentz</span><span class="mu" style="font-size:12px">16 nov</span></a>
+        <a class="dr" href="Markdown.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 12h7M9 16h5"></path></svg><span style="flex:1">Formulario</span><span class="mu" style="font-size:12px">preferito</span></a>
+        <div class="mu" style="font-size:13px;margin:14px 0 4px">PDF</div>
+        <a class="dr" href="PDF.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path></svg><span style="flex:1">Mazzoldi, Fisica II</span><span class="mu" style="font-size:12px">p. 212</span></a>
+        <a class="dr" href="PDF.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path></svg><span style="flex:1">Slide, magnetostatica</span><span class="mu" style="font-size:12px">48 pp.</span></a>
+        <a class="dr" href="PDF.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path></svg><span style="flex:1">Temi d'esame 2022–2025</span><span class="mu" style="font-size:12px">12 pp.</span></a>
+        <button class="btn" style="margin-top:14px;width:100%;border-style:dashed">Collega un documento</button>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { L: [['ven 20', 'Circuiti RL, extracorrente', 'a'], ['gio 19', 'Induzione, legge di Faraday', 'a'], ['lun 16', 'Ampère, applicazioni', 'x'], ['ven 13', 'Esercitazione magnetostatica', 'a'], ['gio 12', 'Circuitazione e legge di Ampère', 'x'], ['lun 9', 'Biot-Savart', 'r'], ['ven 6', 'Prova in itinere', 'a']] };
+  }
+  renderVals() {
+    var self = this, order = ['a', 'x', 'r', 't'], lab = { a: 'presente', x: 'assente', r: 'recuperata', t: 'da confermare' };
+    var L = this.state.L;
+    var lessons = L.map(function (l, i) {
+      return { d: l[0], t: l[1], s: l[2], label: lab[l[2]], cycle: function () { var n = L.slice(); n[i] = [l[0], l[1], order[(order.indexOf(l[2]) + 1) % 4]]; self.setState({ L: n }); } };
+    });
+    var dA = L.filter(function (l) { return l[2] === 'a'; }).length - 4;
+    var dX = L.filter(function (l) { return l[2] === 'x'; }).length - 2;
+    var dR = L.filter(function (l) { return l[2] === 'r'; }).length - 1;
+    var att = 18 + dA, abs = 4 + dX, rec = 2 + dR;
+    return {
+      lessons: lessons, att: att, abs: abs, rec: rec, held: 24, pct: Math.round(att / 24 * 100) + '%',
+      topics: [{ n: 'Elettrostatica nel vuoto', p: 100 }, { n: 'Conduttori e dielettrici', p: 100 }, { n: 'Corrente elettrica', p: 90 }, { n: 'Magnetostatica', p: 55 }, { n: 'Induzione elettromagnetica', p: 15 }, { n: 'Onde elettromagnetiche', p: 0 }]
+    };
+  }
+}
+</script>
+</body>
+</html>

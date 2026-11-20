@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>PDF: Mazzoldi, Fisica II</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;flex-direction:column;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.ib{width:44px;height:44px;border:0;background:transparent;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#000}
+.th{width:96px;height:132px;background:#fff;box-shadow:0 0 0 1px #CFCFC9;margin:0 auto;padding:10px 9px;display:flex;flex-direction:column;gap:4px;border:0}
+.th i{display:block;height:3px;background:#D4D4CE}
+.pg{font-family:'STIX Two Text',serif;font-size:14.5px;line-height:1.55;color:#111;text-align:justify;hyphens:auto}
+.pg p{margin:0 0 10px}
+.hit{background:#DCE1FB;box-shadow:0 0 0 1px #1F35C7}
+.hit.cur{background:#1F35C7;color:#fff}
+.m{font-style:italic}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <header style="height:60px;display:flex;align-items:center;gap:6px;padding:0 14px;border-bottom:1px solid #DCDCD6">
+    <a class="ib" href="Documenti.dc.html" style="width:auto;padding:0 10px;gap:6px;text-decoration:none;color:#1F35C7;font-size:15px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Fisica 2</a>
+    <span style="font-weight:650;margin-left:8px">Mazzoldi, Nigro, Voci, Fisica II</span>
+    <span style="flex:1"></span>
+    <div style="height:40px;width:300px;border:2px solid #1F35C7;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 8px 0 10px;font-size:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg><span style="flex:1">circuitazione</span><span class="mu">{{hit}} di 31</span><button class="ib" onClick="{{prev}}" aria-label="Risultato precedente" style="width:30px;height:30px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button><button class="ib" onClick="{{next}}" aria-label="Risultato successivo" style="width:30px;height:30px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+    <button class="ib" aria-label="Rimuovi segnalibro"><svg width="20" height="20" viewBox="0 0 24 24" fill="#000" stroke="#000" stroke-width="1.6" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></button>
+    <button class="ib" aria-label="Annota con Apple Pencil"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></button>
+    <button class="ib" aria-label="Schermo intero"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button>
+  </header>
+  <div style="display:flex;flex:1;min-height:0">
+    <aside style="width:150px;border-right:1px solid #DCDCD6;background:#F2F2EF;display:flex;flex-direction:column;flex:none">
+      <div style="display:flex;padding:8px;gap:2px;font-size:12px"><span style="flex:1;text-align:center;padding:6px 0;background:#fff;border-radius:4px;font-weight:650;box-shadow:0 0 0 1px #DCDCD6">Pagine</span><span style="flex:1;text-align:center;padding:6px 0">Segnalibri</span></div>
+      <div style="display:flex;flex-direction:column;gap:14px;padding:8px 0 0;overflow:hidden">
+        <sc-for list="{{thumbs}}" as="t" hint-placeholder-count="4">
+          <div style="text-align:center"><button class="th" style="box-shadow:{{t.ring}}"><i style="width:60%;height:5px;background:#9A9A93"></i><i></i><i></i><i style="width:80%"></i><i></i><i style="height:28px;background:#EBEBE6"></i><i></i><i style="width:70%"></i></button><div style="font-size:12px;margin-top:4px;font-weight:{{t.w}}">{{t.n}}{{t.b}}</div></div>
+        </sc-for>
+      </div>
+    </aside>
+    <div style="flex:1;background:#E6E6E1;display:flex;justify-content:center;padding-top:22px;overflow:hidden;position:relative">
+      <article class="pg" style="position:relative;width:600px;height:760px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.12);padding:48px 58px">
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#5F5F59;margin-bottom:22px"><span>212</span><span class="m">Capitolo 8, Proprietà magnetiche delle correnti</span></div>
+        <div style="font-size:20px;font-weight:600;margin-bottom:12px">8.4 Legge di Ampère</div>
+        <p>Consideriamo il campo magnetico prodotto da un filo rettilineo indefinito percorso dalla corrente <span class="m">i</span>. Le linee di campo sono circonferenze concentriche al filo e il modulo del campo dipende solo dalla distanza <span class="m">r</span>. Calcoliamo la <span class="hit {{c1}}">circuitazione</span> di <b>B</b> lungo una di queste circonferenze.</p>
+        <div style="text-align:center;font-size:17px;margin:10px 0 14px">∮ <b>B</b> · d<b>s</b> = <span class="m">B</span> 2π<span class="m">r</span> = μ<sub>0</sub> <span class="m">i</span><span style="float:right;font-size:13px">(8.21)</span></div>
+        <p>Il risultato non dipende dal raggio della circonferenza scelta. Più in generale si dimostra che la <span class="hit {{c2}}">circuitazione</span> del campo magnetico lungo una qualsiasi linea chiusa che concateni il filo vale sempre μ<sub>0</sub><span class="m">i</span>, mentre è nulla se la linea non concatena alcuna corrente.</p>
+        <p>Se più correnti sono concatenate con la linea, per il principio di sovrapposizione la <span class="hit {{c3}}">circuitazione</span> è proporzionale alla loro somma algebrica, con il segno determinato dal verso di percorrenza della linea secondo la regola della mano destra.</p>
+        <div style="display:flex;gap:18px;align-items:center;margin:14px 0">
+          <svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Figura 8.12, linea chiusa attorno a due fili"><ellipse cx="75" cy="55" rx="62" ry="40" fill="none" stroke="#111" stroke-width="1"></ellipse><circle cx="58" cy="55" r="5" fill="none" stroke="#111"></circle><circle cx="58" cy="55" r="1.5" fill="#111"></circle><circle cx="96" cy="55" r="5" fill="none" stroke="#111"></circle><path d="M93 52l6 6M99 52l-6 6" stroke="#111"></path></svg>
+          <span style="font-size:12.5px" class="m">Figura 8.12. Linea chiusa concatenata con due correnti di verso opposto: il contributo complessivo è μ<sub>0</sub>(i<sub>1</sub> − i<sub>2</sub>).</span>
+        </div>
+        <p>Questa proprietà, valida per correnti stazionarie, costituisce la legge di Ampère. Essa permette di calcolare facilmente il campo nei casi dotati di simmetria elevata, come il solenoide e il toroide, che studieremo nei paragrafi seguenti.</p>
+        <svg width="210" height="70" viewBox="0 0 210 70" aria-label="Annotazione a penna" role="img" style="position:absolute;left:52px;top:236px;opacity:0.85"><path d="M8 40c20-24 50-30 80-14s60 10 100-16" fill="none" stroke="#1F35C7" stroke-width="2.4" stroke-linecap="round"></path><path d="M30 60c10-4 20 4 32-2" fill="none" stroke="#1F35C7" stroke-width="2.2" stroke-linecap="round"></path></svg>
+      </article>
+      <div style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.97);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.14);height:48px;display:flex;align-items:center;gap:6px;padding:0 8px 0 16px;font-size:14px">
+        <span><b>212</b> <span class="mu">/ 612</span></span>
+        <span style="width:220px;height:4px;background:#DCDCD6;margin:0 10px;position:relative"><span style="position:absolute;left:0;top:0;height:4px;width:35%;background:#000"></span><span style="position:absolute;left:35%;top:-6px;width:16px;height:16px;border-radius:8px;background:#fff;box-shadow:0 0 0 1.5px #000;margin-left:-8px"></span></span>
+        <button class="ib" aria-label="Riduci" style="width:36px;height:36px;font-size:20px">−</button><span style="width:44px;text-align:center">125%</span><button class="ib" aria-label="Ingrandisci" style="width:36px;height:36px;font-size:20px">+</button>
+      </div>
+      <div style="position:absolute;top:16px;right:16px;background:#000;color:#fff;border-radius:8px;padding:10px 14px;font-size:13px;max-width:220px">Ripreso da p. 212, dove avevi lasciato martedì.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { h: 12 }; }
+  renderVals() {
+    var self = this, h = this.state.h;
+    var thumbs = [210, 211, 212, 213, 214].map(function (n) { return { n: n, b: n === 212 ? ', segnalibro' : '', w: n === 212 ? 700 : 400, ring: n === 212 ? '0 0 0 3px #1F35C7' : '0 0 0 1px #CFCFC9' }; });
+    return {
+      thumbs: thumbs, hit: h,
+      c1: h === 11 ? 'cur' : '', c2: h === 12 ? 'cur' : '', c3: h === 13 ? 'cur' : '',
+      next: function () { self.setState({ h: Math.min(13, h + 1) }); },
+      prev: function () { self.setState({ h: Math.max(11, h - 1) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

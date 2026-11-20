@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Registra presenze</title>
+<script src="./_runtime/react.js"></script>
+<script src="./_runtime/react-dom.js"></script>
+<script src="./_runtime/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{width:1194px;height:834px;display:flex;background:#fff;color:#000;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;overflow:hidden;position:relative}
+.mu{color:#5F5F59}
+.btn{height:40px;padding:0 14px;border:1px solid #CFCFC9;background:#fff;border-radius:6px;font:inherit;font-weight:550;font-size:14px;color:#000;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none}
+.g{display:inline-block;width:12px;height:12px;border-radius:2px;flex:none}
+.g.a{background:#000}.g.x{border:2px solid #C2410C}.g.t{border:1.5px dashed #77776F}.g.r{border:2px solid #000;background:linear-gradient(135deg,#000 50%,#fff 50%)}
+.st{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #CFCFC9;border-radius:8px;overflow:hidden;width:440px;flex:none}
+.st button{height:48px;border:0;border-right:1px solid #CFCFC9;background:#fff;font:inherit;font-size:14px;color:#000;display:flex;align-items:center;justify-content:center;gap:7px}
+.st button:last-child{border-right:0}
+.st .sa{background:#000;color:#fff;font-weight:650}
+.st .sx{background:#C2410C;color:#fff;font-weight:650}
+.st .sr{background:#FBE6DC;color:#7A2A08;font-weight:650}
+.st .st2{background:#F2F2EF;font-weight:650}
+.st .sa .g.a{background:#fff}.st .sx .g.x{border-color:#fff}
+.lr{display:flex;align-items:center;gap:14px;min-height:62px;border-top:1px solid #EBEBE6}
+button:focus-visible,a:focus-visible{outline:2px solid #1F35C7;outline-offset:2px}
+</style>
+</helmet>
+<div class="app">
+  <dc-import name="Sidebar" active="uni" hint-size="240px,834px"></dc-import>
+  <main style="flex:1;min-width:0;display:grid;grid-template-columns:1fr 280px">
+    <section style="padding:24px 28px 0 32px;display:flex;flex-direction:column;min-width:0">
+      <div style="display:flex;align-items:flex-end;gap:12px">
+        <div style="flex:1">
+          <h1 style="margin:0;font-size:40px;line-height:1;font-weight:750;letter-spacing:-0.035em">Registra presenze</h1>
+          <p class="mu" style="margin:8px 0 0">Settimana 16–20 novembre. {{left}}</p>
+        </div>
+        <button class="btn" aria-label="Settimana precedente" style="width:40px;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+        <button class="btn" onClick="{{allP}}">Segna da confermare come presenti</button>
+      </div>
+      <div style="margin-top:18px;border-top:2px solid #000;overflow:hidden">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+          <div>
+            <sc-if value="{{r.head}}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;font-weight:650;padding:10px 0 4px">{{r.day}}</div></sc-if>
+            <div class="lr" style="background:{{r.bg}}">
+              <span style="width:44px;font-weight:600;font-size:14px">{{r.h}}</span>
+              <span style="width:10px;height:10px;border-radius:2px;background:{{r.c}}"></span>
+              <span style="flex:1;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{r.n}}</span>
+              <div class="st" role="radiogroup" aria-label="Presenza {{r.n}}">
+                <sc-for list="{{r.opts}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" onClick="{{o.pick}}" role="radio" aria-checked="{{o.on}}"><span class="g {{o.g}}"></span>{{o.l}}</button></sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+    <aside style="border-left:1px solid #DCDCD6;background:#FAFAF8;padding:24px 22px;display:flex;flex-direction:column;gap:18px">
+      <div>
+        <h2 style="margin:0 0 10px;font-size:15px;font-weight:650">Dalla notifica</h2>
+        <div style="background:rgba(255,255,255,0.96);border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.14);overflow:hidden">
+          <div style="padding:12px 14px;display:flex;gap:10px"><span style="width:28px;height:28px;border-radius:7px;background:#000;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none">L</span><span style="font-size:13px;line-height:1.3"><b>Analisi 2 è finita</b><br>Eri a lezione oggi, 14:15–16:15?</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #DCDCD6;font-size:14px;text-align:center"><span style="padding:11px;border-right:1px solid #DCDCD6;color:#1F35C7;font-weight:600">Presente</span><span style="padding:11px;color:#1F35C7">Assente</span></div>
+        </div>
+        <p class="mu" style="font-size:13px;margin:8px 0 0">Arriva alla fine di ogni lezione. Si risponde senza aprire l'app.</p>
+      </div>
+      <div style="border-top:1px solid #DCDCD6;padding-top:16px">
+        <h2 style="margin:0 0 10px;font-size:15px;font-weight:650">Gesti nel calendario</h2>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
+          <div style="display:flex;gap:10px;align-items:center"><span style="width:56px;height:26px;border-radius:4px;background:#000;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center">⟶</span>scorri a destra: presente</div>
+          <div style="display:flex;gap:10px;align-items:center"><span style="width:56px;height:26px;border-radius:4px;background:#C2410C;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center">⟵</span>scorri a sinistra: assente</div>
+          <div style="display:flex;gap:10px;align-items:center"><span style="width:56px;height:26px;border-radius:4px;border:1px solid #CFCFC9;font-size:12px;display:flex;align-items:center;justify-content:center">✓</span>Apple Pencil: spunta sul blocco</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid #DCDCD6;padding-top:16px;font-size:14px">
+        <h2 style="margin:0 0 10px;font-size:15px;font-weight:650">Tastiera</h2>
+        <div style="display:grid;grid-template-columns:44px 1fr;row-gap:6px"><b>P</b><span>presente</span><b>A</b><span>assente</span><b>R</b><span>recuperata</span><b>↓</b><span>lezione successiva</span></div>
+      </div>
+      <p class="mu" style="font-size:13px;margin:auto 0 0">Le lezioni non registrate restano “da confermare” e non contano nella percentuale finché non le confermi.</p>
+    </aside>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { v: ['a', 'x', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 't'] };
+  }
+  renderVals() {
+    var self = this, v = this.state.v;
+    var C = { an2: '#6A4FB3', fis2: '#1F7A8C', mr: '#3F7D3A', el: '#B7791F', ps: '#93306E' };
+    var N = { an2: 'Analisi 2', fis2: 'Fisica 2', mr: 'Meccanica razionale', el: 'Elettrotecnica', ps: 'Probabilità e statistica' };
+    var L = [['Lunedì 16', '10:15', 'an2'], ['Lunedì 16', '14:15', 'fis2'], ['Martedì 17', '08:15', 'mr'], ['Martedì 17', '13:15', 'el'], ['Mercoledì 18', '08:15', 'an2'], ['Mercoledì 18', '10:30', 'ps'], ['Mercoledì 18', '14:15', 'el'], ['Giovedì 19', '10:15', 'fis2'], ['Giovedì 19', '16:30', 'mr'], ['Venerdì 20', '08:15', 'fis2'], ['Venerdì 20', '10:30', 'ps'], ['Venerdì 20', '14:15', 'an2']];
+    var defs = [['a', 'Presente', 'sa'], ['x', 'Assente', 'sx'], ['r', 'Recuperata', 'sr'], ['t', 'Da conf.', 'st2']];
+    function set(i, s) { var n = v.slice(); n[i] = s; self.setState({ v: n }); }
+    var rows = L.slice(4).map(function (l, k) {
+      var i = k + 4;
+      return {
+        head: k === 0 || L[i - 1][0] !== l[0], day: l[0], h: l[1], c: C[l[2]], n: N[l[2]],
+        bg: v[i] === 't' ? '#F4F5FD' : 'transparent',
+        opts: defs.map(function (d) { return { l: d[1], g: d[0], cls: v[i] === d[0] ? d[2] : '', on: v[i] === d[0] ? 'true' : 'false', pick: function () { set(i, d[0]); } }; })
+      };
+    });
+    var tbc = v.filter(function (x) { return x === 't'; }).length;
+    return {
+      rows: rows,
+      left: tbc ? (tbc === 1 ? '1 lezione da confermare.' : tbc + ' lezioni da confermare.') : 'Tutto registrato.',
+      allP: function () { self.setState({ v: v.map(function (x) { return x === 't' ? 'a' : x; }) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
