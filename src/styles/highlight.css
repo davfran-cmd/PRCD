@@ -1,0 +1,12 @@
+/* Syntax highlighting for code blocks: a restrained, ink-on-paper palette (all >= 4.5:1 on #F2F2EF). */
+.hljs { color: #000; }
+.hljs-comment, .hljs-quote { color: #5f5f59; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-doctag { color: #1f35c7; font-weight: 600; }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute { color: #3f7d3a; }
+.hljs-number, .hljs-symbol, .hljs-bullet, .hljs-meta { color: #b23a0a; }
+.hljs-title, .hljs-section, .hljs-function .hljs-title, .hljs-class .hljs-title { color: #6a4fb3; font-weight: 600; }
+.hljs-built_in, .hljs-type, .hljs-name, .hljs-selector-id, .hljs-selector-class { color: #1f7a8c; }
+.hljs-variable, .hljs-template-variable, .hljs-params { color: #000; }
+.hljs-deletion { color: #b23a0a; text-decoration: line-through; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }

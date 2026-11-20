@@ -176,6 +176,8 @@ export interface DocumentRecord {
   favorite: boolean;
   tags: string[];
   pageCount: number | null;
+  /** True only for notes created inside PRCD. Imported files are never edited. */
+  editable: boolean;
   addedAt: string;
   lastOpenedAt: string | null;
   updatedAt: string;
@@ -213,6 +215,7 @@ export interface Settings {
   excludeCancelled: boolean;
   lodeValue: number; // 30 or 31
   graduationScale: number; // 110
+  degreeCfuTarget: number; // 180 (triennale), 120 (magistrale)…
   weekStartsOnMonday: boolean;
   calendarView: 'day' | 'week' | 'month';
   visibleCategories: EventCategory[];
@@ -223,6 +226,7 @@ export interface Settings {
   appleDefaultCalendarId: string | null;
   appleVisibleCalendarIds: string[];
   appleSyncLessons: boolean;
+  dismissedDuplicates: string[];
   appleLastSyncAt: string | null;
   endOfLessonReminder: boolean;
   lastBackupAt: string | null;

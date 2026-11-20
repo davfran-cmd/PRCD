@@ -170,6 +170,7 @@ export const MIGRATIONS: Migration[] = [
         favorite INTEGER NOT NULL DEFAULT 0,
         tags TEXT NOT NULL DEFAULT '[]',
         page_count INTEGER,
+        editable INTEGER NOT NULL DEFAULT 0,
         added_at TEXT NOT NULL,
         last_opened_at TEXT,
         updated_at TEXT NOT NULL

@@ -9,7 +9,7 @@ import { newId } from '../domain/ids';
 import type { DocKind, DocumentRecord, Folder, PdfBookmark, PdfState } from '../domain/types';
 import type { FileStore } from '../storage/fileStore';
 
-const DOC: RowSpec = { bool: ['favorite'], json: ['tags'] };
+const DOC: RowSpec = { bool: ['favorite', 'editable'], json: ['tags'] };
 
 export const MARKDOWN_EXT = ['md', 'markdown', 'mdown'];
 export const IMAGE_EXT = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'avif', 'bmp', 'heic'];
@@ -237,7 +237,7 @@ export class DocsRepo {
     for (let i = 2; ; i++) if (!taken.has(`${stem} (${i})${ext}`.toLowerCase())) return `${stem} (${i})${ext}`;
   }
 
-  async addDocument(input: { data: Blob | Uint8Array; fileName: string; folderId: string | null; courseId?: string | null; tags?: string[] }): Promise<DocumentRecord> {
+  async addDocument(input: { data: Blob | Uint8Array; fileName: string; folderId: string | null; courseId?: string | null; tags?: string[]; editable?: boolean }): Promise<DocumentRecord> {
     const fileName = this.uniqueFileName(input.folderId, input.fileName.replace(/[/\\]/g, '-'));
     const kind = kindOf(fileName);
     const mime = mimeOf(fileName);
@@ -247,7 +247,7 @@ export class DocsRepo {
     const now = new Date().toISOString();
     const doc: DocumentRecord = {
       id: newId(), folderId: input.folderId, name: displayName(fileName), fileName, kind, mime, size: blob.size, storageKey,
-      courseId: input.courseId ?? this.folder(input.folderId ?? '')?.courseId ?? null, favorite: false, tags: input.tags ?? [], pageCount: null, addedAt: now, lastOpenedAt: null, updatedAt: now,
+      courseId: input.courseId ?? this.folder(input.folderId ?? '')?.courseId ?? null, favorite: false, tags: input.tags ?? [], pageCount: null, editable: input.editable ?? false, addedAt: now, lastOpenedAt: null, updatedAt: now,
     };
     try {
       this.db.transaction(() => {
@@ -259,6 +259,23 @@ export class DocsRepo {
     }
     if (kind === 'markdown') await this.indexText(doc.id, blob);
     return doc;
+  }
+
+  /** A new note written inside PRCD (the only kind of document the app lets you edit). */
+  async createNote(name: string, folderId: string | null, courseId: string | null = null, text = ''): Promise<DocumentRecord> {
+    const n = name.trim().replace(/[/\\]/g, '-') || 'Nuova nota';
+    return this.addDocument({ data: new Blob([text], { type: 'text/markdown' }), fileName: `${n}.md`, folderId, courseId, editable: true });
+  }
+
+  /** Save the text of an in-app note. Imported documents are read-only and are refused. */
+  async updateNoteText(id: string, text: string): Promise<void> {
+    const d = this.document(id);
+    if (!d) throw new ValidationError('Documento non trovato');
+    if (!d.editable) throw new ValidationError('I documenti importati non si modificano: la copia originale resta intatta.');
+    const blob = new Blob([text], { type: 'text/markdown' });
+    await this.files.put(d.storageKey, blob);
+    updateRow(this.db, 'documents', 'id', id, { size: blob.size, updatedAt: new Date().toISOString() }, DOC);
+    await this.indexText(id, blob);
   }
 
   async indexText(docId: string, blob: Blob): Promise<void> {

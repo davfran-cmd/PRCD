@@ -137,7 +137,7 @@ export function Field({ label, children, hint }: { label: string; children: Reac
 export function PageHeader({ title, sub, back, actions, size = 'm' }: { title: ReactNode; sub?: ReactNode; back?: ReactNode; actions?: ReactNode; size?: 'l' | 'm' | 's' }) {
   return (
     <header style={st('display:flex;align-items:flex-end;gap:12px;flex:none;flex-wrap:wrap')}>
-      <div style={st('flex:1;min-width:0')}>
+      <div style={st('flex:1 1 300px;min-width:0')}>
         {back}
         <h1 className={`pt ${size === 'm' ? 'm' : size === 's' ? 's' : ''}`} style={st('margin-top:2px')}>{title}</h1>
         {sub && <p className="mu" style={st('margin:8px 0 0')}>{sub}</p>}

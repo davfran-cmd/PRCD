@@ -138,6 +138,7 @@ export function whenLabel(date: ISODate, today: ISODate): string {
   const d = diffDays(date, today);
   if (d === 0) return 'oggi';
   if (d === 1) return 'domani';
+  if (d > 1 && d < 7) return ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'][weekdayISO(date) - 1];
   return formatDayShort(date);
 }
 
