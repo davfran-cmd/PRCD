@@ -7,11 +7,13 @@ import type { FileStore } from '../storage/fileStore';
 import { localNow, todayISO } from '../domain/dates';
 import type { Settings } from '../domain/types';
 import type { CalendarService } from '../calendar/service';
+import type { DocsRepo } from '../documents/docsRepo';
 
 export interface Services {
   db: Database;
   repo: Repo;
   files: FileStore;
+  docs: DocsRepo;
   calendar: CalendarService;
 }
 
