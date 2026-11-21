@@ -234,14 +234,16 @@ export function Oggi() {
                 <span className="mu" style={st('font-size:14px')}>{dash.recoveryDone} di {dash.recoveryTotal} fatte</span>
               </div>
               {dash.toRecover.length === 0 && <p className="mu" style={st('margin:4px 0')}>Nessuna assenza da recuperare.</p>}
-              {dash.toRecover.slice(0, 2).map((l) => (
-                <div key={l.id} className="rc">
-                  <Swatch color={l.color} />
-                  <span className="nm"><b>{l.courseName}</b><span>{formatDayShort(l.date)}</span></span>
-                  <Btn size="s" onClick={() => void ui.run(() => repo.setAttendance(l.id, 'recovered'), 'Segnata come recuperata')}>Recuperata</Btn>
-                </div>
-              ))}
-              {dash.toRecover.length > 2 && <A to="/presenze" style={st('margin-top:auto;font-size:14px;color:#1F35C7;text-decoration:none')}>Altre {dash.toRecover.length - 2} lezioni</A>}
+              <div style={st('overflow:auto;min-height:0;flex:1')}>
+                {dash.toRecover.map((l) => (
+                  <div key={l.id} className="rc">
+                    <Swatch color={l.color} />
+                    <span className="nm"><b>{l.courseName}</b><span>{formatDayShort(l.date)}</span></span>
+                    <Btn size="s" onClick={() => void ui.run(() => repo.setAttendance(l.id, 'recovered'), 'Segnata come recuperata')}>Recuperata</Btn>
+                  </div>
+                ))}
+              </div>
+              {dash.toRecover.length > 0 && <A to="/presenze" style={st('margin-top:8px;font-size:14px;color:#1F35C7;text-decoration:none;flex:none')}>Vai alle presenze</A>}
             </section>
 
             <section className="tile" style={st('grid-column:10 / span 3;grid-row:5 / span 2')}>

@@ -11,6 +11,14 @@ import type { DocumentRecord } from '../domain/types';
 import { formatDateMedium } from '../domain/dates';
 
 const SIZES = [16, 18.5, 21];
+function loadIndexOpen(): boolean {
+  try {
+    return localStorage.getItem('prcd.reader.index') !== 'off';
+  } catch {
+    return true;
+  }
+}
+
 function loadSize(): number {
   try {
     const v = Number(localStorage.getItem('prcd.reader.size'));
@@ -40,10 +48,10 @@ export function Reader({ id }: { id: string }) {
   const back = doc.folderId ? `/documenti?f=${doc.folderId}` : '/documenti';
   return (
     <div className="app">
-      {!immersive && <Sidebar active="doc" />}
-      <main className="main">
+      {!immersive && <Sidebar active="doc" overlay />}
+      <main className="main reader-main">
         {!immersive && (
-          <header style={st('display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #DCDCD6;flex:none;flex-wrap:wrap')}>
+          <header style={st('display:flex;align-items:center;gap:12px;padding:12px 20px 12px 64px;border-bottom:1px solid #DCDCD6;flex:none;flex-wrap:wrap')}>
             <A to={back} className="btn s" aria-label="Indietro">{Icon.left}Libreria</A>
             {course && <span style={st('display:flex;align-items:center;gap:6px;font-size:13px')}><span className="sw" style={{ background: course.color }} />{course.name}</span>}
             <h1 style={st('margin:0;font-size:20px;font-weight:700;letter-spacing:-0.01em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{doc.name}</h1>
@@ -81,6 +89,15 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
   const scroller = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(loadSize);
   const [pct, setPct] = useState(0);
+  const [indexOpen, setIndexOpen] = useState(loadIndexOpen);
+  const toggleIndex = () => setIndexOpen((v) => {
+    try {
+      localStorage.setItem('prcd.reader.index', v ? 'off' : 'on');
+    } catch {
+      /* not persisted: fine */
+    }
+    return !v;
+  });
   const course = useQuery((r) => (doc.courseId ? r.course(doc.courseId) : undefined), [doc.courseId]);
   const backlinks = useQuery(() => docs.backlinks(doc), [doc.id, text]);
   const version = useQuery(() => `${doc.id}:${docs.document(doc.id)?.updatedAt}`, [doc.id]);
@@ -208,7 +225,7 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
 
   return (
     <div style={st('display:flex;flex:1;min-height:0')}>
-      {rendered.headings.length > 1 && !editing && (
+      {rendered.headings.length > 1 && !editing && indexOpen && (
         <nav aria-label="Indice" className="scroll" style={st('width:220px;border-right:1px solid #DCDCD6;padding:18px 14px;flex:none;background:#FAFAF8')}>
           <div className="mu" style={st('font-size:13px;margin-bottom:8px')}>Indice</div>
           {rendered.headings.map((h) => <button key={h.id} onClick={() => document.getElementById(h.id)?.scrollIntoView()} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 0, padding: `4px 0 4px ${(h.level - 1) * 12}px`, fontSize: 13.5, color: '#3A3A36' }}>{h.text}</button>)}
@@ -222,6 +239,7 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
           <div style={st('display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap')}>
             {tags.map((t) => <span key={t} className="tag">{t.startsWith('#') ? t : `#${t}`}</span>)}
             <span style={st('flex:1')} />
+            {rendered.headings.length > 1 && !editing && <Btn size="s" aria-pressed={indexOpen} onClick={toggleIndex}>{indexOpen ? 'Nascondi indice' : 'Indice'}</Btn>}
             <span className="mu" style={st('font-size:12px')}>{formatDateMedium(doc.updatedAt.slice(0, 10))} · {doc.size < 1024 ? `${doc.size} B` : `${Math.round(doc.size / 1024)} KB`}</span>
             <Btn size="s" aria-label="Dimensione del testo" title="Dimensione del testo" onClick={cycleSize}><span style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>Aa</span></Btn>
             {doc.editable && !editing && <Btn size="s" onClick={() => { setDraft(text ?? ''); setEditing(true); }}>Modifica</Btn>}

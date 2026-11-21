@@ -79,7 +79,7 @@ export function Corso({ id }: { id: string }) {
         </header>
 
         {tab === 'panoramica' && (
-          <div className="scroll grid-md-1" style={st('display:grid;grid-template-columns:350px 1fr 300px;flex:1;padding-left:10px')}>
+          <div className="scroll grid-md-1" style={st('display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);flex:1;padding-left:10px')}>
             <section className="col" style={colStyle}>
               <h2 style={chStyle}>Presenze</h2>
               <div style={st('display:flex;align-items:baseline;gap:10px')}>
@@ -116,26 +116,6 @@ export function Corso({ id }: { id: string }) {
               </div>
             </section>
 
-            <section className="col" style={colStyle}>
-              <h2 style={chStyle}>Esame</h2>
-              <ExamBlock entry={entry} courseId={id} attempts={attempts} today={now.today} />
-              <h2 style={{ ...chStyle, marginTop: 22 }}>Studio</h2>
-              <div className="mu" style={st('font-size:13px;margin:-6px 0 8px')}>Argomenti del programma, segnati da te</div>
-              {topics.map((t) => (
-                <div key={t.id} style={st('padding:7px 0 8px;border-top:1px solid #EBEBE6;font-size:14px')}>
-                  <div style={st('display:flex;justify-content:space-between;gap:12px')}>
-                    <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0')}>{t.title}</span>
-                    <span className="mu" style={st('font-size:13px;flex:none')}>{t.progress}%</span>
-                  </div>
-                  <input type="range" min={0} max={100} step={5} value={t.progress} aria-label={`Avanzamento: ${t.title}`} onChange={(e) => repo.setTopicProgress(t.id, Number(e.target.value))} style={{ width: '100%', accentColor: course.color, margin: '6px 0 0' }} />
-                </div>
-              ))}
-              <form style={st('display:flex;gap:8px;margin-top:8px')} onSubmit={(e) => { e.preventDefault(); void ui.run(() => { repo.addTopic(id, newTopic); setNewTopic(''); }); }}>
-                <input className="in" style={st('flex:1;height:36px;font-size:14px')} placeholder="Aggiungi un argomento" value={newTopic} onChange={(e) => setNewTopic(e.target.value)} aria-label="Nuovo argomento" />
-                <Btn size="s" disabled={!newTopic.trim()}>Aggiungi</Btn>
-              </form>
-            </section>
-
             <MaterialsColumn courseId={id} materials={materials} />
           </div>
         )}
@@ -149,6 +129,21 @@ export function Corso({ id }: { id: string }) {
         {tab === 'esame' && (
           <div className="scroll" style={st('flex:1;padding:18px 32px;max-width:760px')}>
             <ExamBlock entry={entry} courseId={id} attempts={attempts} today={now.today} full />
+            <h2 style={{ ...chStyle, marginTop: 22 }}>Studio</h2>
+            <div className="mu" style={st('font-size:13px;margin:-6px 0 8px')}>Argomenti del programma, segnati da te</div>
+            {topics.map((t) => (
+              <div key={t.id} style={st('padding:7px 0 8px;border-top:1px solid #EBEBE6;font-size:14px')}>
+                <div style={st('display:flex;justify-content:space-between;gap:12px')}>
+                  <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0')}>{t.title}</span>
+                  <span className="mu" style={st('font-size:13px;flex:none')}>{t.progress}%</span>
+                </div>
+                <input type="range" min={0} max={100} step={5} value={t.progress} aria-label={`Avanzamento: ${t.title}`} onChange={(e) => repo.setTopicProgress(t.id, Number(e.target.value))} style={{ width: '100%', accentColor: course.color, margin: '6px 0 0' }} />
+              </div>
+            ))}
+            <form style={st('display:flex;gap:8px;margin-top:8px')} onSubmit={(e) => { e.preventDefault(); void ui.run(() => { repo.addTopic(id, newTopic); setNewTopic(''); }); }}>
+              <input className="in" style={st('flex:1;height:36px;font-size:14px')} placeholder="Aggiungi un argomento" value={newTopic} onChange={(e) => setNewTopic(e.target.value)} aria-label="Nuovo argomento" />
+              <Btn size="s" disabled={!newTopic.trim()}>Aggiungi</Btn>
+            </form>
           </div>
         )}
 

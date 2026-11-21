@@ -62,11 +62,13 @@ export function Calendario({ view }: { view: View }) {
           <h1 className="pt s" style={st('margin:0')}>{cap}</h1>
           {view === 'settimana' && <span className="mu" style={st('margin-left:4px')}>settimana {isoWeekKey(date).split('-W')[1].replace(/^0/, '')}</span>}
           <span style={st('flex:1')} />
-          <Seg label="Vista" value={view} onChange={(v) => go(v, date)} options={[{ value: 'giorno', label: 'Giorno' }, { value: 'settimana', label: 'Settimana' }, { value: 'mese', label: 'Mese' }]} />
-          <Btn onClick={() => go(view, now.today)}>Oggi</Btn>
-          <button className="btn icon-btn" aria-label="Precedente" onClick={() => step(-1)}>{Icon.left}</button>
-          <button className="btn icon-btn" aria-label="Successivo" onClick={() => step(1)}>{Icon.right}</button>
-          <button className="btn p icon-btn" aria-label="Nuovo evento" onClick={() => openNew(view === 'mese' ? sel : date)}>{Icon.plus}</button>
+          <span style={st('display:flex;gap:10px;align-items:center;flex-wrap:nowrap;flex:none')}>
+            <Seg label="Vista" value={view} onChange={(v) => go(v, date)} options={[{ value: 'giorno', label: 'Giorno' }, { value: 'settimana', label: 'Settimana' }, { value: 'mese', label: 'Mese' }]} />
+            <Btn onClick={() => go(view, now.today)}>Oggi</Btn>
+            <button className="btn icon-btn" aria-label="Precedente" onClick={() => step(-1)}>{Icon.left}</button>
+            <button className="btn icon-btn" aria-label="Successivo" onClick={() => step(1)}>{Icon.right}</button>
+            <button className="btn p icon-btn" aria-label="Nuovo evento" onClick={() => openNew(view === 'mese' ? sel : date)}>{Icon.plus}</button>
+          </span>
         </header>
         <div style={st('display:flex;align-items:center;gap:8px;padding:0 24px 10px;flex-wrap:wrap;flex:none')}>
           <button className={`chip ${settings.showLessons ? '' : 'off'}`} aria-pressed={settings.showLessons} onClick={() => repo.updateSettings({ showLessons: !settings.showLessons })}><Swatch color="#000" />Lezioni</button>

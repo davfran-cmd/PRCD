@@ -90,7 +90,7 @@ textarea.in { height: auto; padding: 10px 12px; line-height: 1.4; resize: vertic
 .g.sm { width: 9px; height: 9px; }
 .g.sm.x, .g.sm.r { border-width: 1.5px; }
 .strip .g { width: 10px; height: 10px; border-width: 1.5px; }
-.g.lg { width: 16px; height: 16px; }
+.g.lg { width: 19px; height: 19px; }
 .g.lg.x, .g.lg.r { border-width: 2.5px; }
 .g.lg.t { border-width: 2px; }
 /* A row of attendance squares that scrolls sideways; it opens on the latest lessons. */
@@ -225,12 +225,18 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
 }
 
 /* ---------- responsive (design: Adattamenti) ----------
-   > 1000pt  fixed sidebar, 12-column dashboard (iPad landscape)
-   600-1000  collapsible sidebar panel, 6-column dashboard (iPad portrait, Split View)
+   > 1100pt  fixed sidebar, 12-column dashboard (iPad landscape)
+   600-1100  collapsible sidebar panel, 6-column dashboard (iPad portrait, Split View)
    < 600pt   sidebar reduced to icons + course monograms, one column                          */
 .sb-toggle, .sb-scrim { display: none; }
 .sb .mono { display: none; }
-@media (max-width: 1000px) {
+/* Slide-over sidebar: on narrow windows, and in the reader at any width (body.sb-overlay). */
+body.sb-overlay .sb { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; width: 240px; transform: translateX(-102%); transition: transform 0.18s ease; }
+body.sb-overlay.sb-open .sb { transform: none; box-shadow: 0 0 48px rgba(0, 0, 0, 0.28); }
+body.sb-overlay .sb-scrim { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, 0.28); }
+body.sb-overlay.sb-open .sb-scrim { display: block; }
+body.sb-overlay .sb-toggle { display: flex; position: fixed; top: 6px; left: 8px; z-index: 30; width: 44px; height: 44px; align-items: center; justify-content: center; border: 1px solid var(--rule); border-radius: 8px; background: #fff; }
+@media (max-width: 1100px) {
   .sb { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; width: 240px; transform: translateX(-102%); transition: transform 0.18s ease; }
   body.sb-open .sb { transform: none; box-shadow: 0 0 48px rgba(0, 0, 0, 0.28); }
   .sb-scrim { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, 0.28); }
@@ -277,3 +283,4 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
   .sheet { border-radius: 14px 14px 0 0; align-self: flex-end; }
   .scrim { padding: 0; }
 }
+body.sb-overlay .main.reader-main { padding-top: 0 !important; }

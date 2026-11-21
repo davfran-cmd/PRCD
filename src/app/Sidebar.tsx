@@ -28,7 +28,7 @@ const NAV: Array<{ key: Section; to: string; label: string; icon: ReactElement }
   { key: 'sta', to: '/statistiche', label: 'Statistiche', icon: Icon.bars },
 ];
 
-export function Sidebar({ active }: { active: Section }) {
+export function Sidebar({ active, overlay }: { active: Section; overlay?: boolean }) {
   const now = useNow();
   const dash = useQuery((r) => dashboard(r, now.local), [now.local.slice(0, 13)]);
   const threshold = useQuery((r) => r.getSettings().attendanceThreshold);
@@ -40,6 +40,36 @@ export function Sidebar({ active }: { active: Section }) {
     document.body.classList.toggle('sb-open', open);
     return () => document.body.classList.remove('sb-open');
   }, [open]);
+  // overlay: the sidebar stays hidden at every width (reader) and slides over the page on demand.
+  useEffect(() => {
+    if (!overlay) return;
+    document.body.classList.add('sb-overlay');
+    return () => document.body.classList.remove('sb-overlay');
+  }, [overlay]);
+  // Swipe in from the left edge opens the panel, swipe left closes it (whenever the sidebar is a panel).
+  useEffect(() => {
+    let x0: number | null = null;
+    let y0 = 0;
+    const isPanel = () => document.body.classList.contains('sb-overlay') || window.matchMedia('(max-width: 1100px) and (min-width: 601px)').matches;
+    const start = (e: TouchEvent) => {
+      const t = e.touches[0];
+      x0 = isPanel() && (t.clientX < 24 || document.body.classList.contains('sb-open')) ? t.clientX : null;
+      y0 = t.clientY;
+    };
+    const end = (e: TouchEvent) => {
+      if (x0 === null) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - x0;
+      if (Math.abs(t.clientY - y0) < 60) {
+        if (dx > 50) setOpen(true);
+        else if (dx < -50) setOpen(false);
+      }
+      x0 = null;
+    };
+    window.addEventListener('touchstart', start, { passive: true });
+    window.addEventListener('touchend', end, { passive: true });
+    return () => { window.removeEventListener('touchstart', start); window.removeEventListener('touchend', end); };
+  }, []);
   useEffect(() => {
     const onToggle = () => setOpen((o) => !o);
     window.addEventListener('prcd:toggle-sidebar', onToggle);

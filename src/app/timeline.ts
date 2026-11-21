@@ -166,7 +166,9 @@ export function buildTimeline(repo: Repo, from: ISODate, to: ISODate, settings: 
   );
   for (const i of items) if (ids.has(i.key)) i.conflict = true;
 
-  return items.sort((a, b) => a.start.localeCompare(b.start) || a.title.localeCompare(b.title));
+  // Same start: alphabetical, except lessons without a time (imported from Procedo), which the user
+  // wants in the reverse order, as Procedo showed them.
+  return items.sort((a, b) => a.start.localeCompare(b.start) || (a.kind === 'lesson' && b.kind === 'lesson' && a.allDay && b.allDay ? b.title.localeCompare(a.title) : a.title.localeCompare(b.title)));
 }
 
 export function itemsOnDay(items: TimelineItem[], date: ISODate): TimelineItem[] {
