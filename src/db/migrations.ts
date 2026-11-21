@@ -247,6 +247,23 @@ export const MIGRATIONS: Migration[] = [
       `CREATE INDEX idx_external_start ON external_events(starts_at)`,
     ],
   },
+  {
+    version: 2,
+    name: 'lessons without a known time (imported from Procedo)',
+    up: [
+      // Procedo recorded the day of a lesson but not its time: such lessons are shown as all-day items
+      // until the user sets a time (any edit of date/time clears the flag).
+      `ALTER TABLE lessons ADD COLUMN time_unknown INTEGER NOT NULL DEFAULT 0`,
+      `CREATE TABLE import_map (
+        source TEXT NOT NULL,
+        source_kind TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        local_id TEXT NOT NULL,
+        imported_at TEXT NOT NULL,
+        PRIMARY KEY (source, source_kind, source_id)
+      )`,
+    ],
+  },
 ];
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

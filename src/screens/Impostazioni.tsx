@@ -11,6 +11,8 @@ import { addDays, formatDateMedium } from '../domain/dates';
 import { SemestersModal } from './Universita';
 import { APP_NAME } from '../domain/settings';
 import { requestNotificationPermission } from '../app/notifications';
+import { applyProcedoImport, planProcedoImport, type ProcedoPlan } from '../db/importProcedo';
+import { Modal } from '../ui/components';
 
 const CATS = [
   ['generale', 'Generale'],
@@ -166,6 +168,7 @@ function Dati() {
   const settings = useQuery((r) => r.getSettings());
   const [usage, setUsage] = useState({ files: 0, db: 0, notes: 0 });
   const fileInput = useRef<HTMLInputElement>(null);
+  const procedoInput = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const docCount = useQuery(() => docs.documents().length, []);
 
@@ -211,6 +214,15 @@ function Dati() {
     if (fileInput.current) fileInput.current.value = '';
   };
 
+  const onPickProcedo = async (file: File | undefined) => {
+    if (procedoInput.current) procedoInput.current.value = '';
+    if (!file) return;
+    await ui.run(async () => {
+      const plan = planProcedoImport(await file.text(), repo); // read-only: throws on invalid files
+      ui.modal((close) => <ProcedoImportModal plan={plan} fileName={file.name} onClose={close} />);
+    });
+  };
+
   return (
     <>
       <H t="Dati e backup" sub="Tutto è salvato solo su questo dispositivo. Nessun account, nessun server." />
@@ -227,6 +239,8 @@ function Dati() {
       <SRow t="Esporta un archivio completo" small={`Un file .prcd con dati, note e PDF${settings.lastBackupAt ? `. Ultimo: ${formatDateMedium(settings.lastBackupAt.slice(0, 10))}` : ''}`}><Btn disabled={!!busy} onClick={() => void exportArchive()}>Esporta</Btn></SRow>
       <SRow t="Ripristina da un archivio" small="Sostituisce i dati attuali dopo una conferma e un controllo di integrità"><Btn disabled={!!busy} onClick={() => fileInput.current?.click()}>Scegli file</Btn></SRow>
       <input ref={fileInput} type="file" accept=".prcd,.zip,application/zip" hidden onChange={(e) => void onPick(e.target.files?.[0])} />
+      <SRow t="Importa un backup di Procedo" small="Il file procedo-backup-….json della vecchia app. Si aggiunge ai dati attuali: niente viene sovrascritto e reimportarlo non crea doppioni."><Btn disabled={!!busy} onClick={() => procedoInput.current?.click()}>Scegli file</Btn></SRow>
+      <input ref={procedoInput} type="file" accept=".json,application/json" hidden onChange={(e) => void onPickProcedo(e.target.files?.[0])} />
       {busy && <p className="mu" style={st('font-size:13px')}>{busy}</p>}
       <SRow t="Copie di sicurezza automatiche" small="PRCD conserva una copia del database all’avvio (una al giorno, le ultime 7) e prima di ogni aggiornamento o ripristino."><SnapshotsInfo /></SRow>
       <h3 style={st('margin:26px 0 6px;font-size:15px;font-weight:650')}>Esporta dati</h3>
@@ -271,5 +285,52 @@ function Tastiera() {
       <SRow t="Chiudere un foglio o una finestra"><b>Esc</b></SRow>
       <SRow t="Lettore PDF: pagina successiva o precedente"><b>→ · ←</b></SRow>
     </>
+  );
+}
+
+function ProcedoImportModal({ plan, fileName, onClose }: { plan: ProcedoPlan; fileName: string; onClose: () => void }) {
+  const { repo } = useServices();
+  const ui = useUi();
+  const [working, setWorking] = useState(false);
+  const c = plan.counts;
+  const nothing = c.semesters + c.courses + c.lessons + c.exams === 0;
+  const go = () =>
+    void ui.run(async () => {
+      setWorking(true);
+      try {
+        const r = await applyProcedoImport(plan, repo);
+        onClose();
+        ui.toast(`Importati ${r.courses} corsi, ${r.lessons} lezioni e ${r.attempts} esiti d’esame da Procedo`);
+        navigate('/universita');
+      } finally {
+        setWorking(false);
+      }
+    });
+  return (
+    <Modal title="Importa da Procedo" onClose={onClose} width={580} actions={<Btn variant="p" disabled={working || nothing} onClick={go}>{working ? 'Importo…' : 'Importa'}</Btn>}>
+      <div style={st('padding:16px 28px 24px')}>
+        <div style={st('font-weight:650')}>{fileName}</div>
+        {plan.exportedAt && <div className="mu" style={st('font-size:13px')}>esportato il {formatDateMedium(plan.exportedAt.slice(0, 10))}</div>}
+        <div style={st('display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:12px;border-top:2px solid #000')}>
+          {([[c.semesters, 'semestri nuovi'], [c.courses, 'corsi nuovi'], [c.lessons, 'lezioni nuove'], [c.exams, 'esami nuovi']] as Array<[number, string]>).map(([n, l]) => (
+            <div key={l} style={st('padding:10px 0')}><div style={st('font-size:28px;font-weight:750;letter-spacing:-0.03em')}>{n}</div><div className="mu" style={st('font-size:13px')}>{l}</div></div>
+          ))}
+        </div>
+        {c.alreadyImported > 0 && <p className="mu" style={st('font-size:13px;margin:6px 0 0')}>{c.alreadyImported} elementi erano già stati importati: restano come sono.</p>}
+        {nothing && <p style={st('font-size:14px')}>Non c’è niente di nuovo da importare.</p>}
+        <p style={st('font-size:14px;margin:14px 0 0')}>Le lezioni di Procedo non hanno un orario: arrivano come lezioni “di giornata” con la loro presenza. Puoi aggiungere l’orario settimanale dalla pagina del corso.</p>
+        {plan.warnings.length > 0 && (
+          <details style={st('margin-top:12px;font-size:13px')} open={plan.warnings.length <= 4}><summary>{plan.warnings.length} avvisi</summary>
+            <ul style={st('padding-left:18px;max-height:140px;overflow:auto;margin:6px 0 0')}>{plan.warnings.map((w, i) => <li key={i}>{w}</li>)}</ul>
+          </details>
+        )}
+        {plan.notImported.length > 0 && (
+          <details style={st('margin-top:8px;font-size:13px')}><summary>Cosa non viene importato</summary>
+            <ul style={st('padding-left:18px;margin:6px 0 0')}>{plan.notImported.map((w, i) => <li key={i}>{w}</li>)}</ul>
+          </details>
+        )}
+        <p className="mu" style={st('font-size:12px;margin:14px 0 0')}>Prima di importare, PRCD salva una copia dei dati attuali. L’operazione è tutto o niente.</p>
+      </div>
+    </Modal>
   );
 }

@@ -4,9 +4,11 @@ import { LATEST_VERSION, MIGRATIONS } from '../src/db/migrations';
 import { Repo, ValidationError } from '../src/db/repo';
 import { clockAt, makeRepo, seedDesign, SEM } from './helpers';
 
+const BASE = LATEST_VERSION; // schema version shipped by the app; tests add BASE + 1
+
 afterEach(() => {
   // remove any test migration appended by a test
-  while (MIGRATIONS[MIGRATIONS.length - 1].version > 1) MIGRATIONS.pop();
+  while (MIGRATIONS[MIGRATIONS.length - 1].version > BASE) MIGRATIONS.pop();
 });
 
 describe('database & migrations', () => {
@@ -106,11 +108,11 @@ describe('database & migrations', () => {
     await first.db.flush();
     first.db.close();
 
-    MIGRATIONS.push({ version: 2, name: 'test: add column', up: ['ALTER TABLE semesters ADD COLUMN note TEXT'] });
+    MIGRATIONS.push({ version: BASE + 1, name: 'test: add column', up: ['ALTER TABLE semesters ADD COLUMN note TEXT'] });
     const db = await Database.open(p);
-    expect(db.version).toBe(2);
+    expect(db.version).toBe(BASE + 1);
     expect(new Repo(db).semesters()).toHaveLength(1);
-    expect(await p.listSnapshots()).toEqual([{ name: 'pre-migration-v1', size: expect.any(Number) }]);
+    expect(await p.listSnapshots()).toEqual([{ name: `pre-migration-v${BASE}`, size: expect.any(Number) }]);
   });
 
   it('a failing migration rolls back, reports the error and leaves the stored database untouched', async () => {
@@ -121,13 +123,13 @@ describe('database & migrations', () => {
     first.db.close();
     const stored = new Uint8Array((await p.load())!);
 
-    MIGRATIONS.push({ version: 2, name: 'test: broken', up: ['ALTER TABLE semesters ADD COLUMN ok TEXT', 'THIS IS NOT SQL'] });
-    await expect(Database.open(p)).rejects.toThrow(/Migrazione 2/);
+    MIGRATIONS.push({ version: BASE + 1, name: 'test: broken', up: ['ALTER TABLE semesters ADD COLUMN ok TEXT', 'THIS IS NOT SQL'] });
+    await expect(Database.open(p)).rejects.toThrow(new RegExp(`Migrazione ${BASE + 1}`));
     expect(Array.from((await p.load())!)).toEqual(Array.from(stored));
     expect(await p.listSnapshots()).toHaveLength(1); // the pre-migration copy exists as well
     MIGRATIONS.pop();
     const ok = await Database.open(p); // and the app still opens at the old version
-    expect(ok.version).toBe(1);
+    expect(ok.version).toBe(BASE);
     expect(new Repo(ok).semesters()).toHaveLength(1);
   });
 

@@ -218,7 +218,7 @@ export function collectLocalItems(repo: Repo, settings: Settings, win: SyncWindo
       if (l.cancelled) continue;
       const c = courses.get(l.courseId);
       if (!c) continue;
-      items.push({ kind: 'lesson', localId: l.id, title: c.name, notes: l.topic, start: lessonStart(l), end: lessonEnd(l), allDay: false, alarm: null, calendarId: managedCalendarId });
+      items.push({ kind: 'lesson', localId: l.id, title: c.name, notes: l.topic, start: lessonStart(l), end: lessonEnd(l), allDay: l.timeUnknown, alarm: null, calendarId: managedCalendarId });
     }
   }
   const exceptions = repo.eventExceptions();

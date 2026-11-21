@@ -1,6 +1,6 @@
 # Schema del database
 
-Fonte di verità: [`src/db/migrations.ts`](../src/db/migrations.ts) (versione corrente: **1**, in `PRAGMA user_version`). SQLite (sql.js) con `PRAGMA foreign_keys = ON`. Date e orari sono stringhe *floating* (`YYYY-MM-DD`, `HH:MM`, `YYYY-MM-DDTHH:MM`); gli istanti (`created_at`…) sono ISO 8601 UTC. I booleani sono `INTEGER 0/1`. Gli id sono UUID v4 (`TEXT`).
+Fonte di verità: [`src/db/migrations.ts`](../src/db/migrations.ts) (versione corrente: **2**, in `PRAGMA user_version`; la v2 aggiunge `lessons.time_unknown` e `import_map`). SQLite (sql.js) con `PRAGMA foreign_keys = ON`. Date e orari sono stringhe *floating* (`YYYY-MM-DD`, `HH:MM`, `YYYY-MM-DDTHH:MM`); gli istanti (`created_at`…) sono ISO 8601 UTC. I booleani sono `INTEGER 0/1`. Gli id sono UUID v4 (`TEXT`).
 
 > `start` e `end` sono parole riservate di SQL: le colonne si chiamano `starts_at` / `ends_at` (il codice le espone come `start` / `end`).
 
@@ -11,7 +11,7 @@ Fonte di verità: [`src/db/migrations.ts`](../src/db/migrations.ts) (versione co
 | `semesters` | Periodo accademico | `name`, `start_date`, `end_date` (`CHECK end ≥ start`), `archived` |
 | `courses` | Corso di un semestre | `semester_id` → semesters (RESTRICT), `name`, `color`, `cfu` (≥0), `exam_kind` (`graded`/`eligibility`), `archived`, `hidden` |
 | `timetable_rules` | Slot settimanale ricorrente | `slot_id` (lineage degli split), `course_id` (CASCADE), `weekday` 1–7, `start_time`, `end_time`, `valid_from`, `valid_to` |
-| `lessons` | **Occorrenza** di lezione con id permanente | `course_id` (CASCADE), `rule_id` (SET NULL), `original_date` (data dello slot), `date`/`start_time`/`end_time` (valori reali), `kind` (`regular`/`extra`), `cancelled` + `cancel_reason` (`cancelled`/`holiday`), `is_exception`, `topic`, `attendance` (`attended`/`absent`/`to_confirm`/`recovered`), `attendance_at`, `note` |
+| `lessons` | **Occorrenza** di lezione con id permanente | `course_id` (CASCADE), `rule_id` (SET NULL), `original_date` (data dello slot), `date`/`start_time`/`end_time` (valori reali), `kind` (`regular`/`extra`), `cancelled` + `cancel_reason` (`cancelled`/`holiday`), `is_exception`, `time_unknown` (giorno noto, orario no: lezioni importate da Procedo), `topic`, `attendance` (`attended`/`absent`/`to_confirm`/`recovered`), `attendance_at`, `note` |
 | `semester_closures` | Festività/sospensioni | `semester_id` (NULL = tutti), `start_date`, `end_date`, `label` |
 | `exam_attempts` | Tentativi d'esame e prove in itinere | `course_id` (CASCADE), `date`, `time`, `component`, `is_midterm`, `outcome` (`planned`/`passed`/`failed`/`rejected`/`withdrawn`), `grade` (0–30), `lode`, `eligible`, `booked`, `label`, `note` |
 | `study_topics` | Argomenti di studio segnati dall'utente | `course_id` (CASCADE), `title`, `progress` 0–100, `position` |
@@ -55,6 +55,7 @@ Le lezioni **non** sono eventi ricorrenti: sono righe di `lessons` (vedi sopra).
 
 | Tabella | Scopo |
 |---|---|
+| `import_map` | Id della fonte importata → id locale (`source`, `source_kind`, `source_id`, `local_id`, `imported_at`): rende l'import da Procedo ripetibile senza doppioni |
 | `settings` | Chiave/valore JSON (impostazioni dell'app: soglia presenze, valore della lode, scala di laurea, calendario visibile, stato dell'integrazione Apple…) |
 | `meta` | Riservata a metadati interni |
 

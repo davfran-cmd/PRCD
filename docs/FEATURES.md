@@ -40,6 +40,9 @@ Legenda — **T** = coperto da test automatici (Vitest, nessun browser) · **B**
 - Breakpoint del design (Adattamenti): >1000 barra fissa; 600–1000 barra a scomparsa con dashboard a righe per importanza; <600 barra a icone con monogrammi dei corsi · **B** (Oggi, Università, Presenze, Calendario in verticale; Oggi a 520 px)
 - Scorciatoie ⌘/Ctrl: 1–5 sezioni, K ricerca, N nuovo evento, ⇧N nuova nota, R presenze, T calendario su oggi, \ barra laterale · **non provate nel browser**
 
+### Import da Procedo
+- Backup `.json` della vecchia app Procedo: anteprima senza scrivere, snapshot, transazione unica, reimport senza doppioni né sovrascritture ([IMPORT_PROCEDO.md](IMPORT_PROCEDO.md)) · **T B** (file d'esempio ufficiale importato nel browser: 4 semestri, 5 corsi, 8 lezioni, 3 esiti; media 30,00 su 2 esami, 15 CFU). Le lezioni di Procedo non hanno orario: arrivano come lezioni "di giornata".
+
 ### Altro
 - Ricerca globale, impostazioni (9 categorie), notifiche locali di fine lezione (**N**).
 
@@ -78,7 +81,6 @@ Il brief chiede di non ridisegnare; questi punti del design **non** sono impleme
 - I PDF si aprono da blob URL: su nativo il file viene letto in memoria.
 
 **Funzionale**
-- **Importatore da file JSON strutturato**: non implementato — si attende il formato dell'utente.
 - Eventi ricorrenti personali sincronizzati con Apple per occorrenza (finestra −30/+180 giorni), non come serie.
 - Le modifiche al titolo/note di un evento *lezione* fatte in Apple vengono ignorate (il titolo appartiene al corso).
 - Le correlazioni statistiche richiedono esami superati **con presenze registrate nell'app**.

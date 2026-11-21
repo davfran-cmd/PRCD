@@ -86,7 +86,7 @@ export function Oggi() {
                   <Btn size="lg" variant="p" onClick={() => ui.modal((close) => (dash.semester ? <CourseModal semesterId={dash.semester.id} onClose={close} /> : <SemesterModal onClose={close} />))}>
                     {dash.semester ? 'Aggiungi il primo corso' : 'Crea il primo semestre'}
                   </Btn>
-                  <Btn size="lg" onClick={() => navigate('/impostazioni/dati')}>Ripristina da un archivio</Btn>
+                  <Btn size="lg" onClick={() => navigate('/impostazioni/dati')}>Importa da Procedo o ripristina un archivio</Btn>
                 </>
               }
             />

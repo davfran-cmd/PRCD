@@ -67,7 +67,7 @@ export function buildTimeline(repo: Repo, from: ISODate, to: ISODate, settings: 
         date: l.date,
         start: lessonStart(l),
         end: lessonEnd(l),
-        allDay: false,
+        allDay: l.timeUnknown, // imported without a time: shown as an all-day item
         title: c.name,
         subtitle: l.topic,
         color: c.color,

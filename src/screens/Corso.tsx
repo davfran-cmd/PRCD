@@ -106,7 +106,7 @@ export function Corso({ id }: { id: string }) {
                 {lastLessons.slice(0, 7).map((l) => (
                   <div key={l.id} className="lrow" style={lrStyle}>
                     <span style={st('font-weight:600')}>{formatDayShort(l.date).replace(/ \w+$/, '')}</span>
-                    <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.topic || `${l.startTime}–${l.endTime}`}</span>
+                    <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.topic || (l.timeUnknown ? 'orario non indicato' : `${l.startTime}–${l.endTime}`)}</span>
                     <button style={cycleBtn} onClick={() => void ui.run(() => repo.setAttendance(l.id, nextAttendanceStatus(l.attendance)))} aria-label={`Stato: ${ATTENDANCE_LABELS[l.attendance]}`}>
                       <span className={`g ${glyphOf(l.attendance)}`} />
                     </button>
@@ -224,7 +224,7 @@ function LessonsList({ courseId, nowLocal }: { courseId: string; nowLocal: strin
             return (
               <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '90px 110px 1fr auto auto', gap: 10, alignItems: 'center', minHeight: 46, borderTop: '1px solid #EBEBE6', fontSize: 14, opacity: l.cancelled ? 0.55 : 1 }}>
                 <span style={{ fontWeight: 600, textDecoration: l.cancelled ? 'line-through' : 'none' }}>{formatDayShort(l.date)}</span>
-                <span>{l.startTime}–{l.endTime}</span>
+                <span>{l.timeUnknown ? 'orario n.d.' : `${l.startTime}–${l.endTime}`}</span>
                 <span className="mu" style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.cancelled ? (l.cancelReason === 'holiday' ? 'festività' : 'annullata') : l.kind === 'extra' ? 'extra' : l.isException ? 'spostata' : ''} {l.topic}</span>
                 <button style={cycleBtn} disabled={l.cancelled} onClick={() => void ui.run(() => repo.setAttendance(l.id, nextAttendanceStatus(l.attendance)))} aria-label={`Presenza: ${ATTENDANCE_LABELS[l.attendance]}`} title={ATTENDANCE_LABELS[l.attendance]}>
                   <Glyph s={l.attendance === 'to_confirm' && !past ? 'f' : glyphOf(l.attendance)} />

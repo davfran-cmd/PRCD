@@ -97,7 +97,7 @@ export function Presenze() {
                   const future = lessonStart(l) > now.local;
                   return (
                     <div key={l.id} className="lr" onClick={() => setSel(l.id)} style={{ background: l.attendance === 'to_confirm' && !future && !l.cancelled ? '#F4F5FD' : sel === l.id ? '#FAFAF8' : 'transparent', outline: sel === l.id ? '2px solid #1F35C7' : 'none', outlineOffset: -2, opacity: l.cancelled ? 0.5 : 1 }}>
-                      <span style={st('width:44px;font-weight:600;font-size:14px')}>{l.startTime}</span>
+                      <span style={st('width:44px;font-weight:600;font-size:14px')} title={l.timeUnknown ? 'Orario non indicato' : undefined}>{l.timeUnknown ? '—' : l.startTime}</span>
                       <span className="sw" style={{ background: c?.color ?? '#000' }} />
                       <span style={st('flex:1;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>
                         {c?.name}

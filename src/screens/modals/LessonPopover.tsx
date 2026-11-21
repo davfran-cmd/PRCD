@@ -23,7 +23,7 @@ export function LessonPopover({ lessonId, onClose }: { lessonId: string; onClose
       <div style={st('padding:18px 24px 22px')}>
         <div className="mu" style={st('font-size:14px')}>
           {nth > 0 ? `Lezione ${nth} di ${count.length}. ` : ''}
-          {formatDayLong(lesson.date)}, {lesson.startTime}–{lesson.endTime}
+          {formatDayLong(lesson.date)}, {lesson.timeUnknown ? 'orario non indicato' : `${lesson.startTime}–${lesson.endTime}`}
           {lesson.cancelled ? ' · annullata' : lesson.isException ? ' · spostata' : ''}
         </div>
         <div style={st('font-size:13px;font-weight:600;margin:14px 0 6px')}>Presenza</div>

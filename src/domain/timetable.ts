@@ -90,6 +90,7 @@ export function newLesson(
     cancelled: false,
     cancelReason: null,
     isException: false,
+    timeUnknown: false,
     topic: base.topic ?? '',
     attendance: 'to_confirm',
     attendanceAt: null,

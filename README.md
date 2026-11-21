@@ -51,6 +51,7 @@ In sviluppo, dalla console del browser:
 - [Schema del database](docs/SCHEMA.md)
 - [Build per iPad e permessi Apple Calendar](docs/IOS_BUILD.md) — con la checklist di verifica nativa
 - [Backup e ripristino](docs/BACKUP.md)
+- [Import dei backup di Procedo](docs/IMPORT_PROCEDO.md)
 - [Funzionalità e limiti](docs/FEATURES.md)
 
 ## Principi non negoziabili

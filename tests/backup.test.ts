@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ArchiveError, createArchive, eraseAllData, inspectArchive, restoreArchive, dumpJson } from '../src/db/backup';
 import { Database } from '../src/db/database';
+import { LATEST_VERSION } from '../src/db/migrations';
 import { Repo } from '../src/db/repo';
 import { MemoryFileStore } from '../src/storage/fileStore';
 import { insertRow } from '../src/db/rows';
@@ -60,7 +61,7 @@ describe('backup and restore', () => {
     const entries = unzipSync(archive);
     expect(Object.keys(entries).sort()).toEqual(['data.json', 'database.sqlite', 'files/f/doc-1', 'manifest.json']);
     const manifest = JSON.parse(strFromU8(entries['manifest.json']));
-    expect(manifest).toMatchObject({ format: 'prcd-archive', version: 1, appVersion: '9.9.9', schemaVersion: 1 });
+    expect(manifest).toMatchObject({ format: 'prcd-archive', version: 1, appVersion: '9.9.9', schemaVersion: LATEST_VERSION });
     expect(manifest.files[0]).toMatchObject({ key: 'f/doc-1', size: src.pdf.length });
     expect(manifest.files[0].sha256).toMatch(/^[0-9a-f]{64}$/);
     const data = JSON.parse(strFromU8(entries['data.json']));

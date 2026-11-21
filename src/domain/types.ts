@@ -65,6 +65,8 @@ export interface Lesson {
   cancelReason: CancelReason | null;
   /** True once the user moved/edited this single occurrence away from its rule. */
   isException: boolean;
+  /** Day known, time not (lessons imported from Procedo). Shown as all-day until a time is set. */
+  timeUnknown: boolean;
   topic: string; // optional free text ("Circuiti RL, extracorrente")
   attendance: AttendanceStatus;
   attendanceAt: string | null; // ISO instant of the last attendance change

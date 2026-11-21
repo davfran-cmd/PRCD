@@ -41,7 +41,7 @@ export class ValidationError extends Error {}
 
 const SEM: RowSpec = { bool: ['archived'] };
 const COURSE: RowSpec = { bool: ['archived', 'hidden'] };
-const LESSON: RowSpec = { bool: ['cancelled', 'isException'] };
+const LESSON: RowSpec = { bool: ['cancelled', 'isException', 'timeUnknown'] };
 const ATTEMPT: RowSpec = { bool: ['isMidterm', 'lode', 'eligible', 'booked'] };
 const EVENT: RowSpec = { bool: ['allDay', 'completed'], json: ['recurrence'] };
 const EXCEPTION: RowSpec = { bool: ['cancelled'] };
@@ -401,7 +401,8 @@ export class Repo {
     this.db.transaction(() => {
       for (const p of cs.rulesToUpdate) updateRow(this.db, 'timetable_rules', 'id', p.id, { ...p.set, updatedAt: this.nowIso() });
       for (const r of cs.rulesToInsert) insertRow(this.db, 'timetable_rules', r);
-      for (const p of cs.lessonsToUpdate) this.patchLesson(p.id, p.set);
+      // Any explicit date/time edit gives the lesson a real time.
+      for (const p of cs.lessonsToUpdate) this.patchLesson(p.id, { ...p.set, timeUnknown: false });
       for (const l of cs.lessonsToInsert) insertRow(this.db, 'lessons', l, LESSON);
       // Housekeeping: a superseded rule with an empty validity and no lesson left is just an artefact.
       this.db.run('DELETE FROM timetable_rules WHERE valid_to < valid_from AND id NOT IN (SELECT rule_id FROM lessons WHERE rule_id IS NOT NULL)');

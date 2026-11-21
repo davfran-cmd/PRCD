@@ -1,0 +1,244 @@
+{
+  "app": "procedo",
+  "version": 1,
+  "exportedAt": "2026-11-20T18:30:00.000Z",
+  "state": {
+    "v": 1,
+    "theme": "scuro",
+    "remind": true,
+    "remindDays": 5,
+    "auto": true,
+    "autoP": "S",
+    "degreeCfu": 180,
+    "degreeSet": true,
+    "target": 27.5,
+    "semesters": [
+      {
+        "id": "sem_curr01",
+        "title": "1° Semestre",
+        "year": "2026/2027",
+        "start": "2026-09-23",
+        "status": "current",
+        "createdAt": 1727000000000
+      },
+      {
+        "id": "sem_arch01",
+        "title": "2° Semestre",
+        "year": "2025/2026",
+        "start": "2026-03-04",
+        "status": "archived",
+        "createdAt": 1709000000000,
+        "archivedAt": 1725000000000
+      },
+      {
+        "id": "sem_arch02",
+        "title": "1° Semestre",
+        "year": "2025/2026",
+        "start": "2025-09-22",
+        "status": "archived",
+        "createdAt": 1695000000000,
+        "archivedAt": 1706000000000
+      }
+    ],
+    "courses": [
+      {
+        "id": "crs_am",
+        "semId": "sem_curr01",
+        "name": "Analisi Matematica II",
+        "code": "AM",
+        "tint": "#6155F5",
+        "prof": "Prof. Bianchi",
+        "cfu": 9,
+        "days": [
+          1,
+          3,
+          5
+        ],
+        "createdAt": 1727000100000,
+        "autoUntil": "2026-11-20",
+        "lessons": [
+          {
+            "id": "les_am01",
+            "date": "2026-09-23",
+            "topic": "Serie numeriche: definizione e criteri",
+            "p": "S",
+            "a": true,
+            "study": true,
+            "t": 1727100000000
+          },
+          {
+            "id": "les_am02",
+            "date": "2026-09-25",
+            "topic": "Criterio del rapporto e della radice",
+            "p": "S",
+            "a": true,
+            "study": true,
+            "t": 1727200000000
+          },
+          {
+            "id": "les_am03",
+            "date": "2026-09-27",
+            "topic": "Serie di potenze",
+            "p": "S",
+            "a": true,
+            "study": false,
+            "t": 1727300000000
+          },
+          {
+            "id": "les_am04",
+            "date": "2026-09-30",
+            "topic": "Convergenza uniforme",
+            "p": "M",
+            "a": false,
+            "study": false,
+            "t": 1727500000000
+          },
+          {
+            "id": "les_am05",
+            "date": "2026-10-02",
+            "topic": "",
+            "p": "S",
+            "a": false,
+            "study": false,
+            "t": 1727700000000,
+            "auto": true,
+            "chk": true
+          }
+        ]
+      },
+      {
+        "id": "crs_fi",
+        "semId": "sem_curr01",
+        "name": "Fisica Generale",
+        "code": "FG",
+        "tint": "#34C759",
+        "prof": "Prof.ssa Verdi",
+        "cfu": 12,
+        "days": [
+          2,
+          4
+        ],
+        "createdAt": 1727000200000,
+        "autoUntil": "2026-11-20",
+        "lessons": [
+          {
+            "id": "les_fi01",
+            "date": "2026-09-24",
+            "topic": "Moto armonico",
+            "p": "S",
+            "a": true,
+            "study": true,
+            "t": 1727150000000
+          },
+          {
+            "id": "les_fi02",
+            "date": "2026-09-26",
+            "topic": "Onde meccaniche",
+            "p": "R",
+            "a": false,
+            "study": false,
+            "t": 1727250000000
+          }
+        ]
+      },
+      {
+        "id": "crs_prog_old",
+        "semId": "sem_arch01",
+        "name": "Programmazione",
+        "code": "PR",
+        "tint": "#FF2D55",
+        "prof": "Prof. Neri",
+        "cfu": 6,
+        "days": [
+          1,
+          4
+        ],
+        "createdAt": 1709000100000,
+        "autoUntil": "2026-06-15",
+        "lessons": [
+          {
+            "id": "les_pr01",
+            "date": "2026-03-05",
+            "topic": "Introduzione a Java",
+            "p": "S",
+            "a": true,
+            "study": true,
+            "t": 1709500000000
+          }
+        ]
+      }
+    ],
+    "exams": [
+      {
+        "id": "exm_prog",
+        "name": "Programmazione",
+        "cfu": 6,
+        "status": "passed",
+        "kind": "voto",
+        "grade": 30,
+        "date": "2026-07-10",
+        "sim": null,
+        "courseId": "crs_prog_old",
+        "tint": "#FF2D55",
+        "code": "PR",
+        "createdAt": 1720600000000
+      },
+      {
+        "id": "exm_ing",
+        "name": "Inglese B2",
+        "cfu": 3,
+        "status": "passed",
+        "kind": "idoneita",
+        "grade": null,
+        "date": "2026-05-20",
+        "sim": null,
+        "courseId": null,
+        "tint": "#00C3D0",
+        "code": "IN",
+        "createdAt": 1716200000000
+      },
+      {
+        "id": "exm_am",
+        "name": "Analisi Matematica II",
+        "cfu": 9,
+        "status": "todo",
+        "kind": "voto",
+        "grade": null,
+        "date": "",
+        "sim": 26,
+        "courseId": "crs_am",
+        "tint": "#6155F5",
+        "code": "AM",
+        "createdAt": 1727000300000
+      },
+      {
+        "id": "exm_fi",
+        "name": "Fisica Generale",
+        "cfu": 12,
+        "status": "todo",
+        "kind": "voto",
+        "grade": null,
+        "date": "",
+        "sim": 24,
+        "courseId": "crs_fi",
+        "tint": "#34C759",
+        "code": "FG",
+        "createdAt": 1727000400000
+      },
+      {
+        "id": "exm_lode",
+        "name": "Algebra Lineare",
+        "cfu": 6,
+        "status": "passed",
+        "kind": "voto",
+        "grade": 31,
+        "date": "2026-02-14",
+        "sim": null,
+        "courseId": null,
+        "tint": "#9B5DE5",
+        "code": "AL",
+        "createdAt": 1708000000000
+      }
+    ]
+  }
+}
