@@ -123,10 +123,20 @@ function addMinutesIso(dt: string, m: number): string {
   return `${dt.slice(0, 10)}T${String(Math.min(23, Math.floor(total / 60))).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
 }
 
+/** Black or white text, whichever reads better on a course colour (imported colours can be light, e.g. yellow). */
+function textOn(hex: string): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return '#fff';
+  const n = parseInt(m[1], 16);
+  const lin = (c: number) => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+  const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+  return (1.05 / (L + 0.05)) >= ((L + 0.05) / 0.05) ? '#fff' : '#000';
+}
+
 function eventStyle(i: TimelineItem): React.CSSProperties {
   if (i.kind === 'lesson') {
     if (i.cancelled) return { background: '#fff', border: '1.5px dashed #77776F', color: '#77776F', textDecoration: 'line-through' };
-    return { background: i.color, color: '#fff', ...(i.moved ? { boxShadow: 'inset 0 0 0 2px #fff' } : {}) };
+    return { background: i.color, color: textOn(i.color), ...(i.moved ? { boxShadow: 'inset 0 0 0 2px #fff' } : {}) };
   }
   if (i.kind === 'external') return { background: '#fff', border: '1.5px solid #8A8A83', color: '#000' };
   if (i.kind === 'exam' || i.category === 'deadline') return { background: '#FFF3EC', border: '1.5px solid #C2410C', color: '#7A2A08' };
@@ -218,7 +228,10 @@ function TimeGrid({ days, items, today, nowLocal, onOpen, onNew }: { days: ISODa
 }
 
 function eventStyleBar(i: TimelineItem): React.CSSProperties {
-  return { height: 22, borderRadius: 4, background: '#F2F2EF', fontSize: 12, padding: '0 6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: i.kind === 'external' ? '1px solid #8A8A83' : 0, textAlign: 'left', width: '100%' };
+  const base: React.CSSProperties = { height: 22, borderRadius: 4, background: '#F2F2EF', fontSize: 12, padding: '0 6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: i.kind === 'external' ? '1px solid #8A8A83' : 0, textAlign: 'left', width: '100%' };
+  // Lessons without a time (imported from Procedo) sit in this row: same course colour as the timed blocks.
+  if (i.kind === 'lesson') return { ...base, ...eventStyle(i), fontWeight: 550 };
+  return base;
 }
 
 // ------------------------------------------------------------------------------------ month

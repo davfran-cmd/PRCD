@@ -5,7 +5,7 @@ import { dashboard, whenLabel } from '../app/queries';
 import { buildTimeline, itemsOnDay, type TimelineItem } from '../app/timeline';
 import { addDays, formatDayLong, formatDayLongLower, formatDayShort, formatNumberIT, WEEKDAYS_IT, parseISODate, weekdayISO } from '../domain/dates';
 import { ATTENDANCE_LABELS } from '../domain/attendance';
-import { Btn, Check, Empty, Glyph, Icon, Swatch } from '../ui/components';
+import { Btn, Check, Empty, Glyph, GlyphStrip, Icon, Swatch } from '../ui/components';
 import { st } from '../ui/style';
 import { EventModal } from './modals/EventModal';
 import { LessonPopover } from './modals/LessonPopover';
@@ -71,7 +71,6 @@ export function Oggi() {
             <Btn size="lg" onClick={() => ui.modal((close) => <EventModal date={now.today} onClose={close} />)}>
               {Icon.plus}Evento
             </Btn>
-            <Btn size="lg" onClick={() => void ui.run(async () => { const n = await docs.createNote('Nuova nota', null); navigate(`/documento/${n.id}`); })}>Nota</Btn>
             <A to="/presenze" className="btn lg p">Registra presenze</A>
           </div>
         </header>
@@ -93,7 +92,7 @@ export function Oggi() {
           </div>
         ) : (
           <div className="bento">
-            <section className="tile" style={st('grid-column:1 / span 5;grid-row:1 / span 4')}>
+            <section className="tile" style={st('grid-column:1 / span 5;grid-row:1 / span 3')}>
               <div className="th">
                 <h2>Oggi</h2>
                 <A to="/calendario">Apri calendario</A>
@@ -203,33 +202,29 @@ export function Oggi() {
               )}
             </section>
 
-            <section className="tile" style={st('grid-column:1 / span 5;grid-row:5 / span 2')}>
+            <section className="tile" style={st('grid-column:1 / span 5;grid-row:4 / span 3')}>
               <div className="th">
                 <h2>Presenze del semestre</h2>
                 <A to="/universita">Dettaglio</A>
               </div>
-              <div style={st('display:flex;flex-direction:column;gap:7px;overflow:auto;min-height:0')}>
+              <div style={st('display:flex;flex-direction:column;gap:12px;overflow:auto;min-height:0;margin-top:2px')}>
                 {dash.summaries.map((s) => {
                   const p = s.stats.percentage;
                   const lo = p !== null && p < settings.attendanceThreshold;
-                  const held = s.strip.filter((g) => g !== 'f');
                   return (
-                    <A key={s.course.id} to={`/corso/${s.course.id}`} style={st('display:grid;grid-template-columns:112px minmax(0,1fr) 38px;align-items:center;gap:10px;color:#000;text-decoration:none')}>
-                      <span style={st('display:flex;align-items:center;gap:8px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>
-                        <Swatch color={s.course.color} />
-                        {s.course.name}
+                    <A key={s.course.id} to={`/corso/${s.course.id}`} style={st('display:flex;flex-direction:column;gap:5px;color:#000;text-decoration:none;min-width:0')}>
+                      <span style={st('display:flex;align-items:center;gap:9px;min-width:0')}>
+                        <Swatch color={s.course.color} size={12} />
+                        <span style={st('flex:1;font-size:16px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{s.course.name}</span>
+                        <span style={{ fontWeight: 700, fontSize: 18, color: lo ? '#B23A0A' : '#000' }}>{p === null ? '–' : `${formatNumberIT(p, 0)}%`}</span>
                       </span>
-                      <span className="strip" style={st('display:flex;gap:3px;flex-wrap:nowrap;min-width:0;overflow:hidden')}>
-                        {held.slice(-12).map((g, i) => <Glyph key={i} s={g} />)}
-                      </span>
-                      <span style={{ textAlign: 'right', fontWeight: 650, fontSize: 14, color: lo ? '#B23A0A' : '#000' }}>{p === null ? '–' : `${formatNumberIT(p, 0)}%`}</span>
+                      <GlyphStrip glyphs={s.strip.filter((g) => g !== 'f')} label={`Presenze di ${s.course.name}`} />
                     </A>
                   );
                 })}
               </div>
-              <div className="mu" style={st('display:flex;gap:12px;font-size:12px;margin-top:auto;padding-top:8px;white-space:nowrap;flex-wrap:wrap')}>
+              <div className="mu" style={st('display:flex;gap:10px;font-size:12px;margin-top:auto;padding-top:8px;white-space:nowrap;flex-wrap:wrap')}>
                 <Legend g="a" l="presente" /><Legend g="x" l="assente" /><Legend g="r" l="recuperata" /><Legend g="t" l="da confermare" />
-                <span style={st('margin-left:auto')}>ultime 12 lezioni</span>
               </div>
             </section>
 

@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 import { st } from './style';
 import type { AttendanceStatus } from '../domain/types';
 import type { StripGlyph } from '../domain/attendance';
@@ -25,6 +25,29 @@ export const Icon = {
 
 export function Glyph({ s, small }: { s: StripGlyph | 'a' | 'x' | 'r' | 't' | 'f'; small?: boolean }) {
   return <span className={`g ${s}${small ? ' sm' : ''}`} />;
+}
+
+/**
+ * Attendance squares in one row that scrolls sideways. It opens on the most recent lessons (plus the next two
+ * still to come, if any): scroll left to see the older ones.
+ */
+export function GlyphStrip({ glyphs, label, style }: { glyphs: Array<StripGlyph | 'a' | 'x' | 'r' | 't' | 'f'>; label?: string; style?: CSSProperties }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const key = glyphs.join('');
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !el.children.length) return;
+    let last = -1;
+    glyphs.forEach((g, i) => { if (g !== 'f') last = i; });
+    const target = el.children[Math.min(glyphs.length - 1, Math.max(0, last + 2))] as HTMLElement;
+    el.scrollLeft = Math.max(0, target.offsetLeft - el.offsetLeft + target.offsetWidth - el.clientWidth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return (
+    <span ref={ref} className="gstrip" aria-label={label} style={style}>
+      {glyphs.map((g, i) => <span key={i} className={`g ${g} lg`} />)}
+    </span>
+  );
 }
 
 const STATUS_GLYPH: Record<AttendanceStatus, 'a' | 'x' | 'r' | 't'> = { attended: 'a', absent: 'x', recovered: 'r', to_confirm: 't' };

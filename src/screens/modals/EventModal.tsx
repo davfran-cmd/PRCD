@@ -13,7 +13,18 @@ const DEFAULT_DUR: Record<EventCategory, number> = { event: 120, appointment: 30
 const CTA: Record<EventCategory, string> = { event: 'Aggiungi evento', deadline: 'Aggiungi scadenza', appointment: 'Aggiungi appuntamento', study: 'Aggiungi sessione' };
 const DURS: Array<[number, string]> = [[30, '30 min'], [60, '1 h'], [120, '2 h'], [180, '3 h']];
 const REMINDERS: Array<[number | null, string]> = [[null, 'Nessuno'], [0, 'All’ora'], [15, '15 minuti prima'], [60, '1 ora prima'], [1440, '1 giorno prima']];
-const COLORS: Array<[string | null, string, string]> = [[null, 'Automatico (colore del corso o della categoria)', 'auto'], ['#1F35C7', 'Oltremare', '#1F35C7'], ['#000000', 'Inchiostro', '#000000'], ['#5F5F59', 'Grafite', '#5F5F59']];
+const COLORS: Array<[string | null, string]> = [
+  [null, 'Automatico (colore del corso o della categoria)'],
+  ['#1F35C7', 'Oltremare'],
+  ['#6A4FB3', 'Viola'],
+  ['#93306E', 'Prugna'],
+  ['#B42318', 'Rosso'],
+  ['#B7791F', 'Ocra'],
+  ['#3F7D3A', 'Muschio'],
+  ['#1F7A8C', 'Petrolio'],
+  ['#5F5F59', 'Grafite'],
+  ['#000000', 'Inchiostro'],
+];
 
 type RepeatKind = 'never' | 'daily' | 'weekly' | 'custom';
 
@@ -150,7 +161,7 @@ export function EventModal({ date, time, eventId, occurrenceDate, onClose }: Pro
         <label htmlFor="ev-desc" className="sr-only">Descrizione</label>
         <textarea id="ev-desc" rows={2} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrizione" style={st('width:100%;margin-top:10px;border:0;font:inherit;font-size:15px;color:#5F5F59;resize:none;background:transparent;outline:none')} />
         <div style={st('margin-top:6px')}>
-          <Field label="Corso" hint="facoltativo, collega l’evento al corso">
+          <Field label="Corso">
             <select className="in" aria-label="Corso" value={courseId ?? ''} onChange={(e) => setCourseId(e.target.value || null)} style={st('min-width:200px')}>
               <option value="">Nessuno</option>
               {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -217,9 +228,9 @@ export function EventModal({ date, time, eventId, occurrenceDate, onClose }: Pro
             {!appleEnabled && <span className="mu" style={st('font-size:13px')}>Per inviare eventi ad Apple attiva l’integrazione in Calendari.</span>}
           </Field>
           <Field label="Colore">
-            <span style={st('display:flex;gap:8px;align-items:center')}>
-              {COLORS.map(([c, name, swatch]) => (
-                <button key={name} type="button" title={name} aria-label={name} aria-pressed={color === c} onClick={() => setColor(c)} style={{ width: 28, height: 28, borderRadius: 4, padding: 0, border: c === null ? '1.5px dashed #5F5F59' : 'none', background: c ?? '#fff', boxShadow: color === c ? '0 0 0 2px #fff,0 0 0 3px #000' : 'none', fontSize: 10, color: '#5F5F59' }}>{swatch === 'auto' ? 'A' : ''}</button>
+            <span style={st('display:flex;gap:8px;align-items:center;flex-wrap:wrap')}>
+              {COLORS.map(([c, name]) => (
+                <button key={name} type="button" title={name} aria-label={name} aria-pressed={color === c} onClick={() => setColor(c)} style={{ width: 28, height: 28, borderRadius: 4, padding: 0, border: c === null ? '1.5px dashed #5F5F59' : 'none', background: c ?? '#fff', boxShadow: color === c ? '0 0 0 2px #fff,0 0 0 3px #000' : 'none', fontSize: 10, color: '#5F5F59' }}>{c === null ? 'A' : ''}</button>
               ))}
             </span>
           </Field>
@@ -231,10 +242,11 @@ export function EventModal({ date, time, eventId, occurrenceDate, onClose }: Pro
         </div>
         {errors.length > 0 && title.length + description.length > 0 && <p style={st('color:#B23A0A;font-size:13px;margin:8px 0 0')}>{errors[0]}.</p>}
       </div>
-      <footer className="mu" style={st('padding:12px 28px;border-top:1px solid #EBEBE6;font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-top:12px')}>
-        <span>Esc per chiudere</span>
-        {existing ? <button className="btn ghost" style={st('color:#B23A0A;height:32px')} onClick={remove}>Elimina evento</button> : <span />}
-      </footer>
+      {existing && (
+        <footer style={st('padding:12px 28px;border-top:1px solid #EBEBE6;display:flex;justify-content:flex-end;align-items:center;margin-top:12px')}>
+          <button className="btn ghost" style={st('color:#B23A0A;height:32px')} onClick={remove}>Elimina evento</button>
+        </footer>
+      )}
     </Modal>
   );
 }

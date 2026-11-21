@@ -6,7 +6,7 @@ import { courseSummary, librettoEntries, slotLabel } from '../app/queries';
 import { ATTENDANCE_LABELS, nextAttendanceStatus } from '../domain/attendance';
 import { diffDays, formatDateMedium, formatDayLongLower, formatDayShort, formatNumberIT, formatMonthYear } from '../domain/dates';
 import { formatGrade } from '../domain/grades';
-import { Btn, Empty, Glyph, Icon, Modal, glyphOf } from '../ui/components';
+import { Btn, Empty, Icon, Modal, glyphOf } from '../ui/components';
 import { st } from '../ui/style';
 import { CourseModal } from './modals/CourseModal';
 import { LessonEditModal } from './modals/LessonEditModal';
@@ -215,21 +215,21 @@ function LessonsList({ courseId, nowLocal }: { courseId: string; nowLocal: strin
   for (const l of lessons) byMonth.set(l.date.slice(0, 7), [...(byMonth.get(l.date.slice(0, 7)) ?? []), l]);
   if (!lessons.length) return <Empty title="Nessuna lezione" body="Aggiungi giorni e orari al corso per generare le lezioni." />;
   return (
-    <div style={st('max-width:760px')}>
+    <div style={st('max-width:820px')}>
       {[...byMonth].map(([m, ls]) => (
         <div key={m}>
-          <div style={st('font-size:13px;font-weight:650;padding:14px 0 4px')}>{formatMonthYear(`${m}-01`)}</div>
+          <div style={st('font-size:16px;font-weight:700;padding:20px 0 6px')}>{formatMonthYear(`${m}-01`)}</div>
           {ls.map((l) => {
             const past = `${l.date}T${l.startTime}` < nowLocal;
             return (
-              <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '90px 110px 1fr auto auto', gap: 10, alignItems: 'center', minHeight: 46, borderTop: '1px solid #EBEBE6', fontSize: 14, opacity: l.cancelled ? 0.55 : 1 }}>
+              <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '120px 130px 1fr auto auto', gap: 14, alignItems: 'center', minHeight: 60, borderTop: '1px solid #EBEBE6', fontSize: 17, opacity: l.cancelled ? 0.55 : 1 }}>
                 <span style={{ fontWeight: 600, textDecoration: l.cancelled ? 'line-through' : 'none' }}>{formatDayShort(l.date)}</span>
                 <span>{l.timeUnknown ? 'orario n.d.' : `${l.startTime}–${l.endTime}`}</span>
                 <span className="mu" style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.cancelled ? (l.cancelReason === 'holiday' ? 'festività' : 'annullata') : l.kind === 'extra' ? 'extra' : l.isException ? 'spostata' : ''} {l.topic}</span>
                 <button style={cycleBtn} disabled={l.cancelled} onClick={() => void ui.run(() => repo.setAttendance(l.id, nextAttendanceStatus(l.attendance)))} aria-label={`Presenza: ${ATTENDANCE_LABELS[l.attendance]}`} title={ATTENDANCE_LABELS[l.attendance]}>
-                  <Glyph s={l.attendance === 'to_confirm' && !past ? 'f' : glyphOf(l.attendance)} />
+                  <span className={`g lg ${l.attendance === 'to_confirm' && !past ? 'f' : glyphOf(l.attendance)}`} style={{ width: 22, height: 22 }} />
                 </button>
-                <Btn size="s" onClick={() => ui.modal((close) => <LessonEditModal lessonId={l.id} onClose={close} />)}>Modifica</Btn>
+                <Btn onClick={() => ui.modal((close) => <LessonEditModal lessonId={l.id} onClose={close} />)}>Modifica</Btn>
               </div>
             );
           })}

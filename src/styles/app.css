@@ -90,6 +90,12 @@ textarea.in { height: auto; padding: 10px 12px; line-height: 1.4; resize: vertic
 .g.sm { width: 9px; height: 9px; }
 .g.sm.x, .g.sm.r { border-width: 1.5px; }
 .strip .g { width: 10px; height: 10px; border-width: 1.5px; }
+.g.lg { width: 16px; height: 16px; }
+.g.lg.x, .g.lg.r { border-width: 2.5px; }
+.g.lg.t { border-width: 2px; }
+/* A row of attendance squares that scrolls sideways; it opens on the latest lessons. */
+.gstrip { display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 2px 0; }
+.gstrip::-webkit-scrollbar { display: none; }
 .sw { width: 10px; height: 10px; border-radius: 2px; flex: none; }
 .ck { width: 22px; height: 22px; border: 1.5px solid #000; border-radius: 3px; background: #fff; padding: 0; display: flex; align-items: center; justify-content: center; flex: none; }
 .ck.on { background: #000; }
@@ -169,7 +175,7 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
 .st .st2 { background: var(--ground); font-weight: 650; }
 
 .tabs { display: flex; gap: 26px; border-bottom: 1px solid var(--rule); }
-.tabs button { height: 44px; border: 0; background: transparent; font-size: 15px; color: var(--muted); padding: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button { height: 48px; border: 0; background: transparent; font-size: 17px; color: var(--muted); padding: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .tabs .on { color: #000; font-weight: 650; border-bottom-color: #000; }
 
 /* ---------- modal */
@@ -239,7 +245,7 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
   .bento > .tile:nth-child(4) { order: 2; }
   .bento > .tile:nth-child(2) { order: 3; flex: 0 0 calc(50% - 5px) !important; }
   .bento > .tile:nth-child(3) { order: 4; flex: 0 0 calc(50% - 5px) !important; }
-  .bento > .tile:nth-child(5) { order: 5; }
+  .bento > .tile:nth-child(5) { order: 1; }
   .bento > .tile:nth-child(6) { order: 6; flex: 0 0 calc(50% - 5px) !important; }
   .bento > .tile:nth-child(7) { order: 7; flex: 0 0 calc(50% - 5px) !important; }
   /* flex:1 children have a 0 flex-basis, which collapses the tile's intrinsic height: size them by content here */

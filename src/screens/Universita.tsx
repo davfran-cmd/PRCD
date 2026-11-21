@@ -3,8 +3,8 @@ import { Sidebar } from '../app/Sidebar';
 import { A } from '../app/router';
 import { useNow, useQuery, useServices, useUi } from '../app/AppContext';
 import { librettoAverages, semesterSummaries } from '../app/queries';
-import { formatNumberIT, formatDateMedium, WEEKDAY_LETTERS_IT, formatDayShort } from '../domain/dates';
-import { Btn, Empty, Glyph, Modal, PageHeader, ConfirmDialog, Field } from '../ui/components';
+import { formatNumberIT, formatDateMedium, formatDayShort } from '../domain/dates';
+import { Btn, Empty, Glyph, GlyphStrip, Modal, PageHeader, ConfirmDialog, Field } from '../ui/components';
 import { st } from '../ui/style';
 import { CourseModal } from './modals/CourseModal';
 import { computeAttendance } from '../domain/attendance';
@@ -44,10 +44,10 @@ export function Universita() {
         />
 
         <div className="kpis" style={st('display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:22px;border-top:2px solid #000;border-bottom:1px solid #DCDCD6')}>
-          <Kpi value={<>{avg.totalCfu}<span className="mu" style={st('font-size:20px;font-weight:500;letter-spacing:0')}> / {settings.degreeCfuTarget}</span></>} label="CFU acquisiti" first />
-          <Kpi value={avg.weighted === null ? '–' : formatNumberIT(avg.weighted, 2)} label={`media ponderata su ${avg.gradedExams} ${avg.gradedExams === 1 ? 'esame' : 'esami'}`} />
-          <Kpi value={semStats.percentage === null ? '–' : `${formatNumberIT(semStats.percentage, 0)}%`} label="presenza media del semestre" />
-          <Kpi value={toRecover} label="assenze ancora da recuperare" last />
+          <Kpi value={semStats.percentage === null ? '–' : `${formatNumberIT(semStats.percentage, 0)}%`} label="presenza media del semestre" first />
+          <Kpi value={toRecover} label="assenze ancora da recuperare" />
+          <Kpi value={<>{avg.totalCfu}<span className="mu" style={st('font-size:20px;font-weight:500;letter-spacing:0')}> / {settings.degreeCfuTarget}</span></>} label="CFU acquisiti" />
+          <Kpi value={avg.weighted === null ? '–' : formatNumberIT(avg.weighted, 2)} label={`media ponderata su ${avg.gradedExams} ${avg.gradedExams === 1 ? 'esame' : 'esami'}`} last />
         </div>
 
         <div style={st('display:flex;align-items:center;gap:12px;margin:18px 0 6px;flex-wrap:wrap')}>
@@ -65,35 +65,28 @@ export function Universita() {
           <Empty title="Nessun corso in questo semestre" body="Aggiungi un corso con giorni e orari: PRCD crea da solo tutte le lezioni fino alla fine del semestre." actions={<Btn size="lg" variant="p" onClick={() => sem && ui.modal((close) => <CourseModal semesterId={sem.id} onClose={close} />)}>Aggiungi il primo corso</Btn>} />
         ) : (
           <div style={st('overflow-x:auto')}>
-            <div style={st('min-width:760px')}>
-              <div className="tr th" style={st('grid-template-columns:230px 44px 96px minmax(0,1fr) 52px 96px 110px')}>
-                <span>Corso</span><span>CFU</span><span>Giorni</span><span>Lezioni del semestre</span><span style={st('text-align:right')}>Pres.</span><span>Da recuperare</span><span>Esame</span>
+            <div style={st('min-width:700px')}>
+              <div className="tr th" style={st('grid-template-columns:220px 44px minmax(0,1fr) 60px 110px 110px')}>
+                <span>Corso</span><span>CFU</span><span>Lezioni del semestre</span><span style={st('text-align:right')}>Pres.</span><span>Da recuperare</span><span>Esame</span>
               </div>
               {summaries.map((s) => {
                 const p = s.stats.percentage;
                 const lo = p !== null && p < settings.attendanceThreshold;
                 return (
-                  <A key={s.course.id} to={`/corso/${s.course.id}`} className="tr" style={st('grid-template-columns:230px 44px 96px minmax(0,1fr) 52px 96px 110px')}>
+                  <A key={s.course.id} to={`/corso/${s.course.id}`} className="tr" style={st('grid-template-columns:220px 44px minmax(0,1fr) 60px 110px 110px')}>
                     <span style={st('display:grid;grid-template-columns:12px minmax(0,1fr);align-items:center;gap:10px;font-weight:600;min-width:0')} title={s.course.name}>
                       <span style={{ width: 12, height: 12, borderRadius: 2, background: s.course.color }} />
                       <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{s.course.name}</span>
                     </span>
                     <span>{s.course.cfu}</span>
-                    <span style={st('display:flex;gap:3px')}>
-                      {[1, 2, 3, 4, 5].map((wd) => (
-                        <span key={wd} style={{ width: 16, height: 22, borderRadius: 2, background: s.weekdays.includes(wd) ? s.course.color : '#F2F2EF', color: s.weekdays.includes(wd) ? '#fff' : '#9A9A93', fontSize: 10, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>{WEEKDAY_LETTERS_IT[wd - 1]}</span>
-                      ))}
-                    </span>
-                    <span style={st('display:flex;gap:2px;flex-wrap:wrap;max-width:300px')}>
-                      {s.strip.map((g, i) => <span key={i} className={`g ${g} sm`} />)}
-                    </span>
+                    <GlyphStrip glyphs={s.strip} label={`Lezioni di ${s.course.name}`} />
                     <span style={{ textAlign: 'right', fontWeight: 650, fontSize: 17, color: lo ? '#B23A0A' : '#000' }}>{p === null ? '–' : `${formatNumberIT(p, 0)}%`}</span>
                     <span>{s.stats.absent === 0 ? '–' : `${s.stats.absent} ${s.stats.absent === 1 ? 'lezione' : 'lezioni'}`}</span>
                     <span style={st('font-size:14px')}>{examLabel(s)}</span>
                   </A>
                 );
               })}
-              <div className="mu" style={st('font-size:13px;margin-top:10px;border-top:1px solid #EBEBE6;padding-top:10px')}>Ogni quadrato è una lezione. Le lezioni ancora da svolgere sono in grigio chiaro.</div>
+              <div className="mu" style={st('font-size:13px;margin-top:10px;border-top:1px solid #EBEBE6;padding-top:10px')}>Ogni quadrato è una lezione. Le lezioni ancora da svolgere sono in grigio chiaro. Scorri la riga verso sinistra per vedere le precedenti.</div>
             </div>
           </div>
         )}
