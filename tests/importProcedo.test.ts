@@ -133,6 +133,26 @@ describe('Procedo backup import', () => {
     expect(r).toMatchObject({ lessons: 0, slots: 5 });
   });
 
+  it('asks the lesson times: new lessons get them, recorded ones too (attendance kept), empty days stay all-day', async () => {
+    const { repo } = await makeRepo(now);
+    const plan = planProcedoImport(example(), repo);
+    expect(plan.timeable.map((t) => [t.name, t.weekdays])).toEqual([['Analisi Matematica II', [1, 3, 5]], ['Fisica Generale', [2, 4]]]);
+    const am = plan.timeable[0].sourceId;
+    const r = await applyProcedoImport(plan, repo, { now: now(), times: { [am]: { 1: { startTime: '08:30', endTime: '10:30' }, 3: { startTime: '14:30', endTime: '16:00' } } } });
+    expect(r.timed).toBeGreaterThan(0);
+    const course = repo.courses().find((c) => c.name === 'Analisi Matematica II')!;
+    const ls = repo.lessonsForCourse(course.id);
+    const mon = ls.filter((l) => l.date === '2026-11-23')[0]; // future Monday: timed
+    expect(mon).toMatchObject({ startTime: '08:30', endTime: '10:30', timeUnknown: false });
+    const past = ls.find((l) => l.date === '2026-09-23')!; // recorded Wednesday: gets the time, keeps attendance
+    expect(past).toMatchObject({ startTime: '14:30', timeUnknown: false, attendance: 'attended', ruleId: null });
+    const fri = ls.find((l) => l.date === '2026-11-27')!; // Friday left empty: still all-day
+    expect(fri.timeUnknown).toBe(true);
+    // Analisi now has its own timed slots: a later import does not ask for it again
+    const again = planProcedoImport(example(), repo);
+    expect(again.timeable.map((t) => t.name)).toEqual(['Fisica Generale']); // Analisi has timed slots now
+  });
+
   it('keeps a snapshot of the data before importing', async () => {
     const { repo, persistence } = await makeRepo(now);
     repo.createSemester({ name: 'Mio', startDate: '2026-01-01', endDate: '2026-02-01' });

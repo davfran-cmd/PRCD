@@ -5,7 +5,7 @@
  */
 import type { Database } from './database';
 import { fromRow, insertRow, selectAll, selectOne, updateRow, type RowSpec } from './rows';
-import { addDays, isISODate, localNow, type ISODate, type HM } from '../domain/dates';
+import { addDays, isISODate, localNow, weekdayISO, type ISODate, type HM } from '../domain/dates';
 import { newId } from '../domain/ids';
 import { DEFAULT_SETTINGS } from '../domain/settings';
 import {
@@ -267,7 +267,7 @@ export class Repo {
    * Day-only weekly slot from `fromDate` to the end of the semester: lessons are all-day items without a
    * time (used to continue courses imported from Procedo, which never recorded times).
    */
-  addDayOnlySlot(courseId: string, weekday: number, fromDate: ISODate): TimetableRule | null {
+  addDayOnlySlot(courseId: string, weekday: number, fromDate: ISODate, time?: { startTime: HM; endTime: HM }): TimetableRule | null {
     const course = this.course(courseId);
     if (!course) throw new ValidationError('Corso non trovato');
     const sem = this.semester(course.semesterId);
@@ -276,7 +276,8 @@ export class Repo {
     if (validFrom > sem.endDate || !Number.isInteger(weekday) || weekday < 1 || weekday > 7) return null;
     const now = this.nowIso();
     const id = newId();
-    const rule: TimetableRule = { id, slotId: id, courseId, weekday, startTime: '00:00', endTime: '23:59', validFrom, validTo: sem.endDate, timeUnknown: true, createdAt: now, updatedAt: now };
+    if (time) validateRuleShape(weekday, time.startTime, time.endTime, validFrom, sem.endDate);
+    const rule: TimetableRule = { id, slotId: id, courseId, weekday, startTime: time?.startTime ?? '00:00', endTime: time?.endTime ?? '23:59', validFrom, validTo: sem.endDate, timeUnknown: !time, createdAt: now, updatedAt: now };
     this.db.transaction(() => {
       insertRow(this.db, 'timetable_rules', rule, RULE);
       this.generateForRule(rule, sem.id);
@@ -355,6 +356,29 @@ export class Repo {
 
   allLessons(): Lesson[] {
     return selectAll<Lesson>(this.db, 'SELECT * FROM lessons ORDER BY date, start_time', [], LESSON);
+  }
+
+  /**
+   * Gives a time to a day-only slot and to its lessons that still have no time (identity and attendance
+   * unchanged), and to the course's lessons without a slot (imported from Procedo) on the same weekday.
+   */
+  setDayTime(courseId: string, weekday: number, startTime: HM, endTime: HM): number {
+    validateRuleShape(weekday, startTime, endTime, '2000-01-01', '2000-01-01');
+    let n = 0;
+    this.db.transaction(() => {
+      for (const r of this.rules(courseId)) {
+        if (r.weekday !== weekday || !r.timeUnknown) continue;
+        updateRow(this.db, 'timetable_rules', 'id', r.id, { startTime, endTime, timeUnknown: false, updatedAt: this.nowIso() }, RULE);
+      }
+      for (const l of this.lessonsForCourse(courseId)) {
+        if (!l.timeUnknown || weekdayISO(l.date) !== weekday) continue;
+        const rule = l.ruleId ? this.rule(l.ruleId) : null;
+        if (l.ruleId && (!rule || rule.weekday !== weekday)) continue;
+        this.patchLesson(l.id, { startTime, endTime, timeUnknown: false });
+        n += 1;
+      }
+    });
+    return n;
   }
 
   private patchLesson(id: string, set: object): void {

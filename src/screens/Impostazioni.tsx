@@ -11,7 +11,8 @@ import { addDays, formatDateMedium } from '../domain/dates';
 import { SemestersModal } from './Universita';
 import { APP_NAME } from '../domain/settings';
 import { requestNotificationPermission } from '../app/notifications';
-import { applyProcedoImport, planProcedoImport, type ProcedoPlan } from '../db/importProcedo';
+import { applyProcedoImport, planProcedoImport, type ProcedoPlan, type ProcedoTimes } from '../db/importProcedo';
+import { WEEKDAYS_IT, hmToMin, isHM } from '../domain/dates';
 import { Modal } from '../ui/components';
 
 const CATS = [
@@ -292,22 +293,72 @@ function ProcedoImportModal({ plan, fileName, onClose }: { plan: ProcedoPlan; fi
   const { repo } = useServices();
   const ui = useUi();
   const [working, setWorking] = useState(false);
+  // Procedo never saved lesson times: they are asked here, course by course and day by day.
+  const [step, setStep] = useState<'preview' | 'times'>('preview');
+  const [times, setTimes] = useState<Record<string, { startTime: string; endTime: string }>>({});
+  const key = (course: string, day: number) => `${course}|${day}`;
+  const setTime = (k: string, field: 'startTime' | 'endTime', v: string) => setTimes((t) => ({ ...t, [k]: { ...(t[k] ?? { startTime: '', endTime: '' }), [field]: v } }));
+  const problems = Object.entries(times).filter(([, t]) => (t.startTime || t.endTime) && !(isHM(t.startTime) && isHM(t.endTime) && hmToMin(t.endTime) > hmToMin(t.startTime)));
+  const missing = plan.timeable.reduce((n, tc) => n + tc.weekdays.filter((d) => !isHM(times[key(tc.sourceId, d)]?.startTime ?? '')).length, 0);
   const c = plan.counts;
-  const nothing = c.semesters + c.courses + c.lessons + c.exams + c.continued === 0;
+  const nothing = c.semesters + c.courses + c.lessons + c.exams + c.continued === 0 && plan.timeable.length === 0;
   const go = () =>
     void ui.run(async () => {
       setWorking(true);
       try {
-        const r = await applyProcedoImport(plan, repo);
+        const chosen: ProcedoTimes = {};
+        for (const [k, t] of Object.entries(times)) {
+          if (!isHM(t.startTime) || !isHM(t.endTime)) continue;
+          const [course, day] = k.split('|');
+          (chosen[course] ??= {})[Number(day)] = t;
+        }
+        const r = await applyProcedoImport(plan, repo, { times: chosen });
         onClose();
-        ui.toast(`Importati ${r.courses} corsi, ${r.lessons} lezioni e ${r.attempts} esiti d’esame da Procedo${r.slots ? `; ${r.slots} giorni di lezione continuano fino a fine semestre` : ''}`);
+        ui.toast(`Importati ${r.courses} corsi, ${r.lessons} lezioni e ${r.attempts} esiti d’esame da Procedo${r.slots ? `; le lezioni continuano fino a fine semestre` : ''}${r.timed ? `; ${r.timed} lezioni hanno ora l’orario` : ''}`);
         navigate('/universita');
       } finally {
         setWorking(false);
       }
     });
+  const next = plan.timeable.length > 0 && step === 'preview';
+  const action = next
+    ? <Btn variant="p" disabled={nothing} onClick={() => setStep('times')}>Avanti</Btn>
+    : <Btn variant="p" disabled={working || nothing || problems.length > 0} onClick={go}>{working ? 'Importo…' : 'Importa'}</Btn>;
+  if (step === 'times') {
+    return (
+      <Modal title="Orari delle lezioni" onClose={onClose} width={620} actions={action}>
+        <div style={st('padding:16px 28px 24px')}>
+          <p style={st('margin:0 0 6px;font-size:16px')}>Procedo non salvava gli orari. Scrivi quando si tiene ogni corso: le lezioni continueranno ogni settimana fino a fine semestre e quelle già registrate prendono l’orario del loro giorno, con le presenze intatte.</p>
+          <p className="mu" style={st('margin:0 0 10px;font-size:14px')}>Se lasci vuoto un giorno, quelle lezioni restano “di giornata”, senza orario.</p>
+          {plan.timeable.map((tc) => (
+            <div key={tc.sourceId} style={st('border-top:2px solid #000;padding:12px 0 6px;margin-top:8px')}>
+              <div style={st('display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;margin-bottom:6px')}><span className="sw" style={{ width: 14, height: 14, background: tc.color }} />{tc.name}</div>
+              {tc.weekdays.map((d) => {
+                const k = key(tc.sourceId, d);
+                const t = times[k] ?? { startTime: '', endTime: '' };
+                const bad = problems.some(([pk]) => pk === k);
+                return (
+                  <div key={d} style={st('display:flex;align-items:center;gap:10px;min-height:54px;border-top:1px solid #EBEBE6')}>
+                    <span style={st('width:110px;font-size:16px')}>{WEEKDAYS_IT[d - 1]}</span>
+                    <input className={`in ${bad ? 'err' : ''}`} type="time" aria-label={`${tc.name}, ${WEEKDAYS_IT[d - 1]}: inizio`} value={t.startTime} onChange={(e) => setTime(k, 'startTime', e.target.value)} style={st('width:120px')} />
+                    <span className="mu">–</span>
+                    <input className={`in ${bad ? 'err' : ''}`} type="time" aria-label={`${tc.name}, ${WEEKDAYS_IT[d - 1]}: fine`} value={t.endTime} onChange={(e) => setTime(k, 'endTime', e.target.value)} style={st('width:120px')} />
+                    {bad && <span style={st('color:#B23A0A;font-size:14px')}>la fine deve venire dopo l’inizio</span>}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+          <div style={st('display:flex;justify-content:space-between;align-items:center;margin-top:14px')}>
+            <Btn onClick={() => setStep('preview')}>Indietro</Btn>
+            <span className="mu" style={st('font-size:14px')}>{missing ? `${missing} ${missing === 1 ? 'giorno' : 'giorni'} ancora senza orario` : 'Tutti gli orari inseriti'}</span>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
   return (
-    <Modal title="Importa da Procedo" onClose={onClose} width={580} actions={<Btn variant="p" disabled={working || nothing} onClick={go}>{working ? 'Importo…' : 'Importa'}</Btn>}>
+    <Modal title="Importa da Procedo" onClose={onClose} width={580} actions={action}>
       <div style={st('padding:16px 28px 24px')}>
         <div style={st('font-weight:650')}>{fileName}</div>
         {plan.exportedAt && <div className="mu" style={st('font-size:13px')}>esportato il {formatDateMedium(plan.exportedAt.slice(0, 10))}</div>}
@@ -318,7 +369,7 @@ function ProcedoImportModal({ plan, fileName, onClose }: { plan: ProcedoPlan; fi
         </div>
         {c.alreadyImported > 0 && <p className="mu" style={st('font-size:13px;margin:6px 0 0')}>{c.alreadyImported} elementi erano già stati importati: restano come sono.</p>}
         {nothing && <p style={st('font-size:14px')}>Non c’è niente di nuovo da importare.</p>}
-        <p style={st('font-size:14px;margin:14px 0 0')}>Le lezioni di Procedo non hanno un orario: arrivano come lezioni “di giornata” con la loro presenza. Come in Procedo, ogni corso continua nei suoi giorni fino a fine semestre{c.continued ? ` (${c.continued} ${c.continued === 1 ? 'corso' : 'corsi'})` : ''}.</p>
+        <p style={st('font-size:14px;margin:14px 0 0')}>Procedo non salvava gli orari delle lezioni: {plan.timeable.length ? 'al passo successivo ti chiedo quelli di ogni corso, così le lezioni continuano ogni settimana fino a fine semestre.' : 'le lezioni arrivano “di giornata”, con la loro presenza.'}</p>
         {plan.warnings.length > 0 && (
           <details style={st('margin-top:12px;font-size:13px')} open={plan.warnings.length <= 4}><summary>{plan.warnings.length} avvisi</summary>
             <ul style={st('padding-left:18px;max-height:140px;overflow:auto;margin:6px 0 0')}>{plan.warnings.map((w, i) => <li key={i}>{w}</li>)}</ul>
