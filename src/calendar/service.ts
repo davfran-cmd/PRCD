@@ -162,6 +162,9 @@ export class CalendarService {
       const onVis = () => document.visibilityState === 'visible' && trigger('foreground');
       document.addEventListener('visibilitychange', onVis);
       this.unsubs.push(() => document.removeEventListener('visibilitychange', onVis));
+      // and every 5 minutes while the app is open, for changes EventKit does not report
+      const timer = setInterval(() => document.visibilityState === 'visible' && trigger('periodic'), 5 * 60 * 1000);
+      this.unsubs.push(() => clearInterval(timer));
     }
     this.unsubs.push(
       this.db.subscribe((tables) => {

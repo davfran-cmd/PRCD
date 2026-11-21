@@ -85,6 +85,52 @@ export function PdfViewer({ doc, immersive, onImmersive }: Props) {
   const total = pdf?.numPages ?? 0;
   const pageH = pageSize.h * scale;
 
+  // ---- pinch with two fingers to zoom: live preview with a CSS transform, then re-render at the new scale
+  const pagesBox = useRef<HTMLDivElement>(null);
+  const scaleRef = useRef(scale);
+  scaleRef.current = scale;
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    let start: { d: number; cx: number; cy: number; s: number } | null = null;
+    let ratio = 1;
+    const dist = (t: TouchList) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length !== 2) return;
+      const rect = el.getBoundingClientRect();
+      start = { d: dist(e.touches), cx: (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left, cy: (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top, s: scaleRef.current };
+      ratio = 1;
+    };
+    const onMove = (e: TouchEvent) => {
+      if (!start || e.touches.length !== 2) return;
+      e.preventDefault();
+      ratio = Math.min(4 / start.s, Math.max(0.4 / start.s, dist(e.touches) / start.d));
+      const box = pagesBox.current;
+      if (box) {
+        box.style.transformOrigin = `${el.scrollLeft + start.cx}px ${el.scrollTop + start.cy}px`;
+        box.style.transform = `scale(${ratio})`;
+      }
+    };
+    const onEnd = () => {
+      if (!start) return;
+      const st0 = start;
+      start = null;
+      const box = pagesBox.current;
+      if (box) box.style.transform = '';
+      if (Math.abs(ratio - 1) < 0.03) return;
+      const next = +(st0.s * ratio).toFixed(2);
+      const top = (el.scrollTop + st0.cy) * ratio - st0.cy;
+      const left = (el.scrollLeft + st0.cx) * ratio - st0.cx;
+      setZoom(next);
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.scrollTop = top; el.scrollLeft = left; }));
+    };
+    el.addEventListener('touchstart', onStart, { passive: true });
+    el.addEventListener('touchmove', onMove, { passive: false });
+    el.addEventListener('touchend', onEnd);
+    el.addEventListener('touchcancel', onEnd);
+    return () => { el.removeEventListener('touchstart', onStart); el.removeEventListener('touchmove', onMove); el.removeEventListener('touchend', onEnd); el.removeEventListener('touchcancel', onEnd); };
+  }, [pdf]);
+
   // ---- restore the last reading position once, after layout
   useEffect(() => {
     if (!pdf || !scroller.current || !initialScroll.current) return;
@@ -201,9 +247,11 @@ export function PdfViewer({ doc, immersive, onImmersive }: Props) {
             )}
           </aside>
         )}
-        <div ref={scroller} onScroll={onScroll} className="scroll" style={st('flex:1;min-width:0;background:#E9E9E5;padding:12px 0')}>
+        <div ref={scroller} onScroll={onScroll} className="scroll" style={st('flex:1;min-width:0;background:#E9E9E5;padding:12px 0;touch-action:pan-x pan-y')}>
           {loading && <p className="mu" style={st('text-align:center;padding:40px')}>Apro il PDF…</p>}
-          {pdf && Array.from({ length: total }, (_, i) => i + 1).map((n) => <PageView key={n} pdf={pdf} n={n} scale={scale} size={pageSize} near={Math.abs(n - page) <= 2} query={query} />)}
+          <div ref={pagesBox} style={{ minWidth: 'min-content' }}>
+            {pdf && Array.from({ length: total }, (_, i) => i + 1).map((n) => <PageView key={n} pdf={pdf} n={n} scale={scale} size={pageSize} near={Math.abs(n - page) <= 2} query={query} />)}
+          </div>
         </div>
         {query.trim() && (
           <aside style={st('width:230px;border-left:1px solid #DCDCD6;overflow:auto;padding:10px 12px;background:#fff;flex:none')}>

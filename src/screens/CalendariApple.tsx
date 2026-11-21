@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Sidebar } from '../app/Sidebar';
 import { A } from '../app/router';
-import { useNow, useQuery, useServices, useUi } from '../app/AppContext';
+import { useQuery, useServices, useUi } from '../app/AppContext';
 import { useCalendarState } from '../app/useCalendar';
 import { Btn, ConfirmDialog, Swatch, Toggle } from '../ui/components';
 import { st } from '../ui/style';
@@ -26,11 +26,9 @@ function fmtFields(f: Fields | null): string {
 export function CalendariApple() {
   const { repo, calendar } = useServices();
   const ui = useUi();
-  const now = useNow();
   const cal = useCalendarState();
   const settings = useQuery((r) => r.getSettings());
   const lessonsCount = useQuery((r) => r.courses({ semesterId: r.currentSemester()?.id }).length, []);
-  const authInfo = AUTH_TEXT[cal.auth] ?? AUTH_TEXT.notDetermined;
   const groups = new Map<string, typeof cal.calendars>();
   for (const c of cal.calendars) groups.set(c.sourceTitle || 'Altri', [...(groups.get(c.sourceTitle || 'Altri') ?? []), c]);
   const writable = cal.calendars.filter((c) => c.allowsModifications && !c.isManaged);
@@ -53,78 +51,95 @@ export function CalendariApple() {
     [cal.lastSyncAt, cal.calendars.length],
   );
 
+  const connected = cal.available && cal.enabled && cal.auth === 'fullAccess';
+  const toggleConnection = (v: boolean) => void ui.run(async () => {
+    if (!v) return calendar.disable();
+    if (['denied', 'restricted', 'writeOnly'].includes(cal.auth)) return void calendar.openSystemSettings();
+    const a = await calendar.enable();
+    if (a !== 'fullAccess') ui.toast('Accesso non concesso. Puoi cambiarlo in Impostazioni iPad > Privacy > Calendari.', { error: true });
+  });
+  const allVisible = cal.calendars.length > 0 && cal.calendars.every((c) => c.visible);
+  const syncLabel = cal.syncing ? 'Sincronizzazione in corso…' : cal.error ? cal.error : cal.lastSyncAt ? `Ultima sincronizzazione alle ${new Date(cal.lastSyncAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}` : 'Non ancora sincronizzato';
+
   return (
     <div className="app">
       <Sidebar active="cal" />
-      <main className="main stack-md" style={st('display:grid;grid-template-columns:minmax(360px,470px) 1fr;overflow:hidden')}>
-        <section className="scroll" style={st('padding:24px 28px;border-right:1px solid #DCDCD6')}>
-          <A to="/calendario" style={st('font-size:14px;color:#1F35C7;text-decoration:none')}>Calendario</A>
-          <h1 className="pt s" style={st('margin:4px 0 0')}>Calendari</h1>
-          <p className="mu" style={st('margin:6px 0 0;font-size:14px')}>Scegli cosa vedere e dove salvare. Le lezioni vivono in PRCD e, se vuoi, vengono pubblicate in Apple Calendario.</p>
-          <Group title="PRCD, su questo dispositivo" right="mostra" />
-          <Row swatch={<Swatch color="#000" size={14} />} name="Lezioni" sub={`generate dall'orario, ${lessonsCount} ${lessonsCount === 1 ? 'corso' : 'corsi'}`} on={settings.showLessons} onChange={(v) => repo.updateSettings({ showLessons: v })} />
-          <Row swatch={<Swatch color="#1F35C7" size={14} hollow />} name="Studio" on={settings.visibleCategories.includes('study')} onChange={() => toggleCat('study')} />
-          <Row swatch={<Swatch color="#C2410C" size={14} hollow />} name="Scadenze ed esami" on={settings.visibleCategories.includes('deadline')} onChange={() => toggleCat('deadline')} />
-          {cal.available && cal.enabled && cal.auth === 'fullAccess' ? (
-            [...groups].map(([source, cs]) => (
-              <div key={source}>
-                <Group title={source} right="mostra" />
-                {cs.map((c) => (
-                  <Row key={c.id} swatch={<Swatch color={c.color} size={14} hollow />} name={c.title} sub={c.isManaged ? `creato da PRCD, ${c.allowsModifications ? 'lettura e scrittura' : 'sola lettura'}` : undefined} right={c.allowsModifications ? 'lettura e scrittura' : 'solo lettura'} on={c.visible} onChange={(v) => calendar.setCalendarVisible(c.id, v)} />
-                ))}
-              </div>
-            ))
-          ) : (
-            <p className="mu" style={st('font-size:14px;margin:22px 0 0')}>I calendari di Apple compaiono qui dopo aver attivato l’accesso.</p>
-          )}
-          {cal.enabled && (
-            <div className="mu" style={st('font-size:13px;margin-top:14px;display:flex;align-items:center;gap:8px')}>
-              <span style={{ width: 8, height: 8, borderRadius: 4, background: cal.error ? '#C2410C' : cal.syncing ? '#B7791F' : '#3F7D3A' }} />
-              {cal.syncing ? 'Sincronizzazione in corso…' : cal.error ? cal.error : cal.lastSyncAt ? `Sincronizzato alle ${new Date(cal.lastSyncAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}` : 'Non ancora sincronizzato'}
-              <Btn size="s" style={st('margin-left:auto')} disabled={cal.syncing || cal.auth !== 'fullAccess'} onClick={() => void ui.run(async () => { const r = await calendar.syncNow('manual'); ui.toast(`Sincronizzato: ${r.created} creati, ${r.updated + r.pulled} aggiornati${r.conflicts ? `, ${r.conflicts} da risolvere` : ''}`); })}>Sincronizza ora</Btn>
-            </div>
-          )}
-        </section>
-
-        <section className="scroll" style={st('padding:24px 32px;display:flex;flex-direction:column;gap:22px')}>
+      <main className="main scroll">
+        <div style={st('padding:24px 32px 40px;max-width:820px;display:flex;flex-direction:column;gap:30px')}>
           <div>
-            <h2 style={st('margin:0 0 10px;font-size:17px;font-weight:650')}>Accesso a Calendario di Apple</h2>
-            <div style={st('display:flex;align-items:center;gap:12px;padding:14px 0;border-top:2px solid #000;border-bottom:1px solid #EBEBE6;flex-wrap:wrap')}>
-              <span style={{ width: 10, height: 10, borderRadius: 5, background: cal.auth === 'fullAccess' && cal.enabled ? '#3F7D3A' : cal.auth === 'denied' || cal.auth === 'restricted' ? '#C2410C' : '#9A9A93' }} />
-              <span style={st('flex:1;min-width:200px')}>{authInfo.title}{cal.auth === 'fullAccess' && !cal.enabled ? ' (integrazione disattivata)' : ''}</span>
-              {cal.available && cal.auth === 'notDetermined' && <Btn variant="p" onClick={() => void ui.run(async () => { const a = await calendar.enable(); if (a !== 'fullAccess') ui.toast('Accesso non concesso. Puoi cambiarlo in Impostazioni iPad.'); })}>Continua</Btn>}
-              {cal.available && cal.auth === 'fullAccess' && !cal.enabled && <Btn variant="p" onClick={() => void ui.run(() => calendar.enable())}>Attiva</Btn>}
-              {cal.available && cal.auth === 'fullAccess' && cal.enabled && <Btn onClick={() => calendar.disable()}>Disattiva</Btn>}
-              {cal.available && ['denied', 'restricted', 'writeOnly'].includes(cal.auth) && <Btn onClick={() => void calendar.openSystemSettings()}>Apri Impostazioni iPad</Btn>}
-            </div>
-            <p className="mu" style={st('font-size:13px;margin:8px 0 0')}>{authInfo.body}</p>
-            {cal.available && cal.auth === 'notDetermined' && (
-              <ul className="mu" style={st('font-size:13px;margin:8px 0 0;padding-left:18px')}>
-                <li>PRCD legge solo i calendari che scegli tu.</li><li>Scrive solo gli eventi creati da PRCD, nel calendario «{settings.appleManagedCalendarName}» o in quello che indichi.</li><li>Non modifica né elimina mai eventi di altre app.</li>
-              </ul>
-            )}
+            <A to="/calendario" style={st('font-size:15px;color:#1F35C7;text-decoration:none')}>Calendario</A>
+            <h1 className="pt s" style={st('margin:4px 0 0')}>Calendari</h1>
           </div>
 
-          {cal.enabled && cal.auth === 'fullAccess' && (
-            <div>
-              <h2 style={st('margin:0 0 10px;font-size:17px;font-weight:650')}>Nuovi eventi</h2>
-              <div style={st('display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid #EBEBE6;gap:12px')}>
-                <span>Calendario predefinito</span>
-                <select className="in" aria-label="Calendario predefinito" value={settings.appleDefaultCalendarId ?? ''} onChange={(e) => calendar.setDefaultCalendar(e.target.value || null)}>
-                  <option value="">Solo su questo dispositivo</option>
-                  <option value="managed">{settings.appleManagedCalendarName}</option>
-                  {writable.map((c) => <option key={c.id} value={c.id}>{c.sourceTitle}, {c.title}</option>)}
-                </select>
+          {/* 1. one master switch: is PRCD connected to Apple Calendar at all? */}
+          <section>
+            <h2 style={H2}>Calendario di Apple</h2>
+            <div style={st('display:flex;align-items:center;gap:14px;padding:16px 0;border-top:2px solid #000;border-bottom:1px solid #EBEBE6')}>
+              <span style={{ width: 12, height: 12, borderRadius: 6, flex: 'none', background: connected ? '#3F7D3A' : cal.auth === 'denied' || cal.auth === 'restricted' ? '#C2410C' : '#9A9A93' }} />
+              <span style={st('flex:1')}>
+                <b style={st('font-size:18px;font-weight:650')}>{connected ? 'Collegato' : 'Non collegato'}</b>
+                <span className="mu" style={st('display:block;font-size:15px')}>{connected ? 'PRCD legge i calendari che accendi qui sotto e scrive in Apple solo ciò che scegli nella sezione “Cosa PRCD scrive”.' : cal.available ? 'Accendi per vedere in PRCD i tuoi impegni di Apple e, se vuoi, pubblicare le lezioni in Apple.' : AUTH_TEXT.unavailable.body}</span>
+              </span>
+              {cal.available && <Toggle on={connected} onChange={toggleConnection} label="Collega a Calendario di Apple" />}
+            </div>
+            {cal.available && !connected && ['denied', 'restricted', 'writeOnly'].includes(cal.auth) && <p style={st('font-size:15px;color:#B23A0A;margin:8px 0 0')}>{AUTH_TEXT[cal.auth].body}</p>}
+            {connected && (
+              <div className="mu" style={st('display:flex;align-items:center;gap:10px;font-size:15px;margin-top:10px;flex-wrap:wrap')}>
+                <span style={{ width: 8, height: 8, borderRadius: 4, background: cal.error ? '#C2410C' : cal.syncing ? '#B7791F' : '#3F7D3A' }} />
+                <span style={st('flex:1;min-width:240px')}>{syncLabel}. Si sincronizza da solo: all’apertura, quando cambi qualcosa qui o in Apple, e ogni 5 minuti.</span>
+                <Btn size="s" disabled={cal.syncing} onClick={() => void ui.run(async () => { const r = await calendar.syncNow('manual'); ui.toast(`Sincronizzato: ${r.created} creati, ${r.updated + r.pulled} aggiornati${r.conflicts ? `, ${r.conflicts} da risolvere` : ''}`); })}>Sincronizza ora</Btn>
               </div>
-              <div style={st('display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid #EBEBE6;gap:12px')}>
-                <span>Pubblica le lezioni in Apple Calendario<br /><span className="mu" style={st('font-size:13px')}>Ogni lezione diventa un evento nel calendario «{settings.appleManagedCalendarName}». Spostare una lezione qui o lì aggiorna l’altra, senza toccare le presenze.</span></span>
+            )}
+          </section>
+
+          {/* 2. reading: which Apple calendars appear in PRCD */}
+          {connected && (
+            <section>
+              <h2 style={H2}>Cosa PRCD legge da Apple</h2>
+              <div style={st('display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid #000;padding-bottom:8px')}>
+                <span className="mu" style={st('font-size:15px')}>Gli eventi dei calendari accesi compaiono nel calendario di PRCD. PRCD non li modifica.</span>
+                <button className="lnk" style={st('font-size:15px;white-space:nowrap')} onClick={() => cal.calendars.forEach((c) => c.visible === allVisible && calendar.setCalendarVisible(c.id, !allVisible))}>{allVisible ? 'Spegni tutti' : 'Accendi tutti'}</button>
+              </div>
+              {[...groups].map(([source, cs]) => (
+                <div key={source}>
+                  <Group title={source} />
+                  {cs.map((c) => <Row key={c.id} swatch={<Swatch color={c.color} size={14} hollow />} name={c.title} sub={c.isManaged ? 'creato da PRCD per le lezioni' : !c.allowsModifications ? 'sola lettura' : undefined} on={c.visible} onChange={(v) => calendar.setCalendarVisible(c.id, v)} />)}
+                </div>
+              ))}
+            </section>
+          )}
+
+          {/* 3. writing: what goes from PRCD into Apple */}
+          {connected && (
+            <section>
+              <h2 style={H2}>Cosa PRCD scrive in Apple</h2>
+              <div style={st('display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:2px solid #000;gap:16px')}>
+                <span>Pubblica le lezioni<br /><span className="mu" style={st('font-size:15px')}>Ogni lezione diventa un evento nel calendario «{settings.appleManagedCalendarName}». Spostare una lezione qui o lì aggiorna l’altra; le presenze restano in PRCD.</span></span>
                 <Toggle on={settings.appleSyncLessons} label="Pubblica lezioni" onChange={(v) => {
                   if (v) calendar.setPublishLessons(true);
                   else ui.modal((close) => <ConfirmDialog title="Smettere di pubblicare le lezioni?" body="Gli eventi già creati restano in Apple Calendario finché non li rimuovi." confirmLabel="Smetti e rimuovi gli eventi" extra={<Btn size="lg" onClick={() => { calendar.setPublishLessons(false); close(); }}>Smetti, lascia gli eventi</Btn>} onConfirm={() => void ui.run(async () => { calendar.setPublishLessons(false); const n = await calendar.removeLessonEventsFromApple(); ui.toast(`${n} eventi rimossi da Apple Calendario`); })} onClose={close} />);
                 }} />
               </div>
-            </div>
+              <div style={st('display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid #EBEBE6;gap:16px;flex-wrap:wrap')}>
+                <span>Dove salvare i nuovi eventi<br /><span className="mu" style={st('font-size:15px')}>Si può cambiare per ogni evento quando lo crei.</span></span>
+                <select className="in" aria-label="Calendario predefinito" value={settings.appleDefaultCalendarId ?? ''} onChange={(e) => calendar.setDefaultCalendar(e.target.value || null)}>
+                  <option value="">Solo in PRCD (non in Apple)</option>
+                  <option value="managed">{settings.appleManagedCalendarName}</option>
+                  {writable.map((c) => <option key={c.id} value={c.id}>{c.sourceTitle}, {c.title}</option>)}
+                </select>
+              </div>
+            </section>
           )}
+
+          {/* 4. PRCD's own items */}
+          <section>
+            <h2 style={H2}>Cosa mostra il calendario di PRCD</h2>
+            <div style={st('border-top:2px solid #000')}>
+              <Row swatch={<Swatch color="#000" size={14} />} name="Lezioni" sub={`generate dall'orario, ${lessonsCount} ${lessonsCount === 1 ? 'corso' : 'corsi'}`} on={settings.showLessons} onChange={(v) => repo.updateSettings({ showLessons: v })} />
+              <Row swatch={<Swatch color="#1F35C7" size={14} hollow />} name="Sessioni di studio" on={settings.visibleCategories.includes('study')} onChange={() => toggleCat('study')} />
+              <Row swatch={<Swatch color="#C2410C" size={14} hollow />} name="Scadenze ed esami" on={settings.visibleCategories.includes('deadline')} onChange={() => toggleCat('deadline')} />
+            </div>
+          </section>
 
           {cal.conflicts.length > 0 && (
             <div>
@@ -153,12 +168,13 @@ export function CalendariApple() {
               ))}
             </div>
           )}
-          <p className="mu" style={st('font-size:12px;margin-top:auto')}>{now.today}</p>
-        </section>
+        </div>
       </main>
     </div>
   );
 }
+
+const H2: React.CSSProperties = { margin: '0 0 10px', fontSize: 20, fontWeight: 750 };
 
 function Group({ title, right }: { title: string; right?: string }) {
   return <div style={st('font-size:13px;color:#5F5F59;font-weight:500;margin:22px 0 4px;display:flex;justify-content:space-between')}><span>{title}</span><span>{right}</span></div>;
@@ -166,10 +182,10 @@ function Group({ title, right }: { title: string; right?: string }) {
 
 function Row({ swatch, name, sub, right, on, onChange }: { swatch: React.ReactNode; name: string; sub?: string; right?: string; on: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div style={st('display:grid;grid-template-columns:16px 1fr auto auto;gap:12px;align-items:center;min-height:52px;border-top:1px solid #EBEBE6')}>
+    <div style={st('display:grid;grid-template-columns:16px 1fr auto auto;gap:12px;align-items:center;min-height:56px;border-top:1px solid #EBEBE6')}>
       {swatch}
       <span>{name}{sub && <><br /><span className="mu" style={st('font-size:13px')}>{sub}</span></>}</span>
-      <span className="mu" style={st('font-size:12px')}>{right}</span>
+      <span className="mu" style={st('font-size:14px')}>{right}</span>
       <Toggle on={on} onChange={onChange} label={`Mostra ${name}`} />
     </div>
   );

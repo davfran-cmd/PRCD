@@ -34,6 +34,10 @@ a { color: inherit; }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .app { display: flex; height: 100%; width: 100%; background: var(--paper); overflow: hidden; position: relative; }
+/* Native app: the web view runs under the iPad status bar (time, wifi, battery): keep content below it. */
+:root { --safe-top: env(safe-area-inset-top, 0px); }
+.app { padding-top: var(--safe-top); }
+.sb { padding-top: calc(18px + var(--safe-top)) !important; margin-top: calc(-1 * var(--safe-top)); height: calc(100% + var(--safe-top)) !important; }
 .main { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 .scroll { overflow: auto; -webkit-overflow-scrolling: touch; min-height: 0; }
 .mu { color: var(--muted); }
@@ -181,7 +185,7 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
 .tabs .on { color: #000; font-weight: 650; border-bottom-color: #000; }
 
 /* ---------- modal */
-.scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.32); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 24px; }
+.scrim { position: fixed; inset: 0; padding-top: calc(24px + var(--safe-top)) !important; background: rgba(0, 0, 0, 0.32); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 24px; }
 .sheet { background: #fff; border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; max-height: 100%; width: 100%; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); }
 .sheet > header { display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 28px; border-bottom: 1px solid var(--rule); flex: none; }
 .sheet > header h2 { margin: 0; font-size: 17px; font-weight: 700; }
@@ -233,17 +237,17 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
 .sb-toggle, .sb-scrim { display: none; }
 .sb .mono { display: none; }
 /* Slide-over sidebar: on narrow windows, and in the reader at any width (body.sb-overlay). */
-body.sb-overlay .sb { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; width: 240px; transform: translateX(-102%); transition: transform 0.18s ease; }
+body.sb-overlay .sb { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; margin-top: 0; height: auto !important; width: 240px; transform: translateX(-102%); transition: transform 0.18s ease; }
 body.sb-overlay.sb-open .sb { transform: none; box-shadow: 0 0 48px rgba(0, 0, 0, 0.28); }
 body.sb-overlay .sb-scrim { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, 0.28); }
 body.sb-overlay.sb-open .sb-scrim { display: block; }
-body.sb-overlay .sb-toggle { display: flex; position: fixed; top: 6px; left: 8px; z-index: 30; width: 44px; height: 44px; align-items: center; justify-content: center; border: 1px solid var(--rule); border-radius: 8px; background: #fff; }
+body.sb-overlay .sb-toggle { display: flex; position: fixed; top: calc(6px + var(--safe-top)); left: 8px; z-index: 30; width: 44px; height: 44px; align-items: center; justify-content: center; border: 1px solid var(--rule); border-radius: 8px; background: #fff; }
 @media (max-width: 1100px) {
-  .sb { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; width: 240px; transform: translateX(-102%); transition: transform 0.18s ease; }
+  .sb { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; margin-top: 0; height: auto !important; width: 240px; transform: translateX(-102%); transition: transform 0.18s ease; }
   body.sb-open .sb { transform: none; box-shadow: 0 0 48px rgba(0, 0, 0, 0.28); }
   .sb-scrim { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, 0.28); }
   body.sb-open .sb-scrim { display: block; }
-  .sb-toggle { display: flex; position: fixed; top: 6px; left: 8px; z-index: 30; width: 44px; height: 44px; align-items: center; justify-content: center; border: 1px solid var(--rule); border-radius: 8px; background: #fff; }
+  .sb-toggle { display: flex; position: fixed; top: calc(6px + var(--safe-top)); left: 8px; z-index: 30; width: 44px; height: 44px; align-items: center; justify-content: center; border: 1px solid var(--rule); border-radius: 8px; background: #fff; }
   .main { padding-top: 52px !important; }
   /* flex-wrap (not grid): every row takes the height of its tallest tile, whatever the content */
   .bento { display: flex !important; flex-wrap: wrap; align-content: flex-start; gap: 10px; overflow: auto; }

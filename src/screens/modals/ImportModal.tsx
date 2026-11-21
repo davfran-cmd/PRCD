@@ -3,7 +3,7 @@ import { useQuery, useServices, useUi } from '../../app/AppContext';
 import { Btn, Modal, Toggle } from '../../ui/components';
 import { st } from '../../ui/style';
 import { entriesFromDrop, entriesFromFileList, pickFolderNative, canPickFolderNatively } from '../../documents/importSources';
-import { isIgnoredPath, isImportable, type ImportEntry, type ImportReport } from '../../documents/docsRepo';
+import { isIgnoredPath, isImportable, kindOf, type ImportEntry, type ImportReport } from '../../documents/docsRepo';
 import { navigate } from '../../app/router';
 
 export const canPickFolderNative = canPickFolderNatively;
@@ -46,7 +46,8 @@ export function ImportModal({ folderId, courseId, dropped, onClose }: { folderId
 
   const stats = useMemo(() => {
     if (!pending) return null;
-    const s = { pdfs: 0, ignored: 0, collisions: 0 };
+    const s = { pdfs: 0, notes: 0, images: 0, ignored: 0, collisions: 0 };
+    const withNotes = pending.entries.some((e) => kindOf(e.path) === 'markdown' && !isIgnoredPath(e.path));
     const prefix = [...docs.folderPath(folderId).map((f) => f.name)].join('/');
     const existing = new Set(docs.pathIndex().map((e) => e.path.toLowerCase()));
     for (const e of pending.entries) {
@@ -54,16 +55,19 @@ export function ImportModal({ folderId, courseId, dropped, onClose }: { folderId
         s.ignored += 1;
         continue;
       }
-      const ok = isImportable(e.path);
-      if (ok) s.pdfs += 1;
-      else s.ignored += 1;
+      const ok = isImportable(e.path, withNotes);
+      const k = kindOf(e.path);
+      if (!ok) s.ignored += 1;
+      else if (k === 'pdf') s.pdfs += 1;
+      else if (k === 'markdown') s.notes += 1;
+      else s.images += 1;
       const rel = keepStructure ? e.path : e.path.split('/').pop()!;
       if (ok && existing.has((prefix ? `${prefix}/${rel}` : rel).toLowerCase())) s.collisions += 1;
     }
     return s;
   }, [pending, docs, folderId, keepStructure]);
 
-  const importable = stats ? stats.pdfs : 0;
+  const importable = stats ? stats.pdfs + stats.notes + stats.images : 0;
 
   const run = async () => {
     if (!pending) return;
@@ -104,12 +108,12 @@ export function ImportModal({ folderId, courseId, dropped, onClose }: { folderId
       <div style={st('padding:18px 28px 26px')}>
         {stage === 1 && (
           <>
-            <p style={st('margin:0 0 14px;font-size:14px;color:#3A3A36')}>PRCD importa i <b>PDF</b>. I file vengono <b>copiati</b> nella memoria dell’app: gli originali in File non vengono mai modificati.</p>
+            <p style={st('margin:0 0 14px;font-size:14px;color:#3A3A36')}>PRCD importa <b>PDF</b> e <b>note Markdown</b> (anche da Obsidian, con le loro immagini). I file vengono <b>copiati</b> nella memoria dell’app: gli originali in File non vengono mai modificati.</p>
             <div style={st('display:flex;flex-direction:column;gap:8px')}>
-              <Btn size="lg" variant="p" onClick={() => filesInput.current?.click()}>Scegli PDF</Btn>
-              <Btn size="lg" onClick={() => void pickFolder()}>Scegli una cartella (solo i PDF)</Btn>
+              <Btn size="lg" variant="p" onClick={() => filesInput.current?.click()}>Scegli PDF o note</Btn>
+              <Btn size="lg" onClick={() => void pickFolder()}>Scegli una cartella</Btn>
             </div>
-            <p className="mu" style={st('font-size:12px;margin:14px 0 0')}>Si possono anche trascinare PDF e cartelle sulla finestra Documenti. Tutto ciò che non è un PDF viene saltato.</p>
+            <p className="mu" style={st('font-size:12px;margin:14px 0 0')}>Si possono anche trascinare file e cartelle sulla finestra Documenti. Vengono saltati file nascosti (.obsidian, .git) e tutto ciò che non è PDF, nota o immagine di una nota.</p>
             {error && <p style={st('color:#B23A0A;font-size:13px')}>{error}</p>}
           </>
         )}
@@ -117,8 +121,8 @@ export function ImportModal({ folderId, courseId, dropped, onClose }: { folderId
         {stage === 2 && pending && stats && !busy && (
           <>
             <div style={st('font-weight:650')}>{pending.label}</div>
-            <div style={st('display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px;border-top:2px solid #000')}>
-              <Count n={stats.pdfs} l="PDF" /><Count n={stats.ignored} l="saltati (non PDF o nascosti)" dim />
+            <div style={st('display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:12px;border-top:2px solid #000')}>
+              <Count n={stats.pdfs} l="PDF" /><Count n={stats.notes} l="note" /><Count n={stats.images} l="immagini delle note" /><Count n={stats.ignored} l="saltati" dim />
             </div>
             {stats.collisions > 0 && (
               <div className="sr"><span style={st('width:8px;height:8px;border-radius:4px;background:#C2410C;flex:none')} /><span className="t">{stats.collisions} {stats.collisions === 1 ? 'file esiste già' : 'file esistono già'} con lo stesso nome<small>Niente viene sovrascritto: i nuovi arrivano come copia, “nome (2)”.</small></span></div>
@@ -130,7 +134,7 @@ export function ImportModal({ folderId, courseId, dropped, onClose }: { folderId
                 <option value="">Nessun corso</option>{courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
-            <p className="mu" style={st('font-size:13px;margin:10px 0 0')}>Copia indipendente, salvata solo su questo dispositivo. Il collegamento “live” a una cartella di File non è previsto: per aggiornare un PDF, reimportalo.</p>
+            <p className="mu" style={st('font-size:13px;margin:10px 0 0')}>Copia indipendente, salvata solo su questo dispositivo. Il collegamento “live” a una cartella di File non è previsto: per aggiornare un file, reimportalo.</p>
             {error && <p style={st('color:#B23A0A;font-size:13px')}>{error}</p>}
           </>
         )}
@@ -159,7 +163,7 @@ export function ImportModal({ folderId, courseId, dropped, onClose }: { folderId
           </div>
         )}
 
-        <input ref={filesInput} type="file" multiple hidden accept=".pdf,application/pdf" onChange={(e) => e.target.files && choose(entriesFromFileList(e.target.files), `${e.target.files.length} file`)} />
+        <input ref={filesInput} type="file" multiple hidden accept=".pdf,.md,.markdown,application/pdf,text/markdown" onChange={(e) => e.target.files && choose(entriesFromFileList(e.target.files), `${e.target.files.length} file`)} />
         <input ref={dirInput} type="file" hidden {...({ webkitdirectory: '', directory: '' } as Record<string, string>)} onChange={(e) => { const f = e.target.files; if (f && f.length) choose(entriesFromFileList(f), (f[0] as File & { webkitRelativePath?: string }).webkitRelativePath?.split('/')[0] || 'Cartella'); }} />
       </div>
     </Modal>

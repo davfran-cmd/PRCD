@@ -270,7 +270,7 @@ function MaterialsColumn({ courseId, materials, flat }: { courseId: string; mate
   const addPdfs = (files: FileList) => void ui.run(async () => {
     const folder = docs.ensureCourseFolder(courseId);
     const r = await docs.importTree(entriesFromFileList(files).map((e) => ({ ...e, path: e.path.split('/').pop() as string })), { parentFolderId: folder.id, courseId });
-    ui.toast(r.added ? `${r.added} PDF ${r.added === 1 ? 'aggiunto' : 'aggiunti'} alla cartella del corso` : 'Nessun PDF aggiunto', r.added ? undefined : { error: true });
+    ui.toast(r.added ? `${r.added} ${r.added === 1 ? 'documento aggiunto' : 'documenti aggiunti'} alla cartella del corso` : 'Nessun documento aggiunto', r.added ? undefined : { error: true });
   });
   const row = (d: (typeof materials)[number]) => (
     <A key={d.id} to={`/documento/${d.id}`} className="dr" style={st('display:flex;align-items:center;gap:10px;min-height:44px;border-top:1px solid #EBEBE6;font-size:14px;color:#000;text-decoration:none')}>
@@ -292,9 +292,9 @@ function MaterialsColumn({ courseId, materials, flat }: { courseId: string; mate
       {pdfs.map(row)}
       {others.length > 0 && <div className="mu" style={st('font-size:13px;margin:14px 0 4px')}>Immagini</div>}
       {others.map(row)}
-      <Btn variant="p" style={st('margin-top:14px;width:100%')} onClick={() => fileInput.current?.click()}>Aggiungi PDF</Btn>
-      <Btn style={st('margin-top:8px;width:100%;border-style:dashed')} onClick={() => ui.modal((close) => <LinkDocumentModal courseId={courseId} onClose={close} />)}>Collega un PDF già nella libreria</Btn>
-      <input ref={fileInput} type="file" multiple hidden accept=".pdf,application/pdf" onChange={(e) => { if (e.target.files?.length) addPdfs(e.target.files); e.target.value = ''; }} />
+      <Btn variant="p" style={st('margin-top:14px;width:100%')} onClick={() => fileInput.current?.click()}>Aggiungi PDF o note</Btn>
+      <Btn style={st('margin-top:8px;width:100%;border-style:dashed')} onClick={() => ui.modal((close) => <LinkDocumentModal courseId={courseId} onClose={close} />)}>Collega un documento già nella libreria</Btn>
+      <input ref={fileInput} type="file" multiple hidden accept=".pdf,.md,.markdown,application/pdf,text/markdown" onChange={(e) => { if (e.target.files?.length) addPdfs(e.target.files); e.target.value = ''; }} />
     </section>
   );
 }

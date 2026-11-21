@@ -32,12 +32,13 @@ describe('document library', () => {
     expect(docs.folderPath(pdf.folderId).map((f) => f.name)).toEqual(['Fisica 2', 'Appunti']);
   });
 
-  it('imports only PDFs: notes, images, hidden/system files and other types are skipped with a reason', async () => {
+  it('imports PDFs and Markdown notes (images only with notes); hidden/system files and other types are skipped', async () => {
     const { docs } = await setup();
     const r = await docs.importTree([entry('vault/.obsidian/app.json'), entry('vault/.DS_Store'), entry('vault/nota.md'), entry('vault/foto.png'), entry('vault/dispensa.pdf'), entry('vault/archivio.zip'), entry('__MACOSX/x.pdf')], { parentFolderId: null });
-    expect(r.added).toBe(1);
-    expect(r.skipped.map((s) => s.path).sort()).toEqual(['__MACOSX/x.pdf', 'vault/.DS_Store', 'vault/.obsidian/app.json', 'vault/archivio.zip', 'vault/foto.png', 'vault/nota.md']);
-    expect(r.skipped.find((s) => s.path === 'vault/nota.md')!.reason).toMatch(/PDF/);
+    expect(r.added).toBe(3);
+    expect(r.skipped.map((s) => s.path).sort()).toEqual(['__MACOSX/x.pdf', 'vault/.DS_Store', 'vault/.obsidian/app.json', 'vault/archivio.zip']);
+    const alone = await docs.importTree([entry('foto2.png')], { parentFolderId: null });
+    expect(alone.added).toBe(0); // an image on its own is not imported
     expect(isIgnoredPath('a/.git/config')).toBe(true);
     expect(isIgnoredPath('a/b.md')).toBe(false);
     expect(kindOf('x.PDF')).toBe('pdf');

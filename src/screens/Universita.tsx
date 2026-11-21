@@ -79,7 +79,7 @@ export function Universita() {
                       <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{s.course.name}</span>
                     </span>
                     <span>{s.course.cfu}</span>
-                    <GlyphStrip glyphs={s.strip} label={`Lezioni di ${s.course.name}`} className="uni-strip" />
+                    <GlyphStrip glyphs={s.strip.filter((g) => g !== 'f')} label={`Lezioni di ${s.course.name}`} className="uni-strip" />
                     <span style={{ textAlign: 'right', fontWeight: 650, fontSize: 19, color: lo ? '#B23A0A' : '#000' }}>{p === null ? '–' : `${formatNumberIT(p, 0)}%`}</span>
                     <span>{s.stats.absent === 0 ? '–' : `${s.stats.absent} ${s.stats.absent === 1 ? 'lezione' : 'lezioni'}`}</span>
                     <span>{examLabel(s)}</span>
@@ -87,8 +87,8 @@ export function Universita() {
                 );
               })}
               <div style={st('margin-top:10px;border-top:1px solid #EBEBE6;padding-top:12px')}>
-                <GlyphLegend future />
-                <div className="mu" style={st('font-size:15px;margin-top:8px')}>Ogni quadrato è una lezione, in ordine di data. Scorri la riga verso sinistra per vedere le precedenti.</div>
+                <GlyphLegend />
+                <div className="mu" style={st('font-size:15px;margin-top:8px')}>Ogni quadrato è una lezione già svolta, in ordine di data. Scorri la riga verso sinistra per vedere le precedenti.</div>
               </div>
             </div>
           </div>

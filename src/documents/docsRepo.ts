@@ -35,9 +35,13 @@ export function mimeOf(name: string): string {
   return MIME[extOf(name)] ?? 'application/octet-stream';
 }
 
-/** Only PDFs can be imported (user decision: "solo PDF"). Notes and images already in the library stay readable. */
-export function isImportable(path: string): boolean {
-  return kindOf(path) === 'pdf';
+/**
+ * What can be imported: PDFs and Markdown notes, read like any other document. Images only come along with
+ * notes (their attachments, so the notes can show them), never on their own.
+ */
+export function isImportable(path: string, withNotes = false): boolean {
+  const k = kindOf(path);
+  return k === 'pdf' || k === 'markdown' || (withNotes && k === 'image');
 }
 
 /** How two folder names are compared: trimmed, "/" made safe, Unicode NFC (iPadOS gives NFD), case-insensitive. */
@@ -458,13 +462,14 @@ export class DocsRepo {
   async importTree(entries: ImportEntry[], opts: { parentFolderId: string | null; rootName?: string | null; courseId?: string | null; onProgress?: (done: number, total: number) => void } = { parentFolderId: null }): Promise<ImportReport> {
     const report: ImportReport = { added: 0, folders: 0, skipped: [], renamed: [], errors: [], rootFolderId: null, documentIds: [] };
     const before = this.folders().length;
+    const withNotes = entries.some((e) => kindOf(e.path) === 'markdown' && !isIgnoredPath(e.path));
     const usable = entries.filter((e) => {
       if (isIgnoredPath(e.path)) {
         report.skipped.push({ path: e.path, reason: 'file di sistema o nascosto' });
         return false;
       }
-      if (!isImportable(e.path)) {
-        report.skipped.push({ path: e.path, reason: 'non è un PDF' });
+      if (!isImportable(e.path, withNotes)) {
+        report.skipped.push({ path: e.path, reason: kindOf(e.path) === 'image' ? 'immagine senza note che la usino' : 'non è un PDF né una nota Markdown' });
         return false;
       }
       return true;

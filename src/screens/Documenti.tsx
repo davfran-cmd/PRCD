@@ -96,7 +96,7 @@ export function Documenti() {
             <>
               <Btn onClick={() => setSelecting(true)}>Seleziona</Btn>
               <Btn onClick={newFolder}>Nuova cartella</Btn>
-              <Btn variant="p" onClick={() => openImport()}>Importa PDF</Btn>
+              <Btn variant="p" onClick={() => openImport()}>Importa</Btn>
             </>
           )}
         </header>
@@ -114,7 +114,7 @@ export function Documenti() {
 
         {total === 0 && columns[0].folders.length === 0 ? (
           <div style={st('padding:24px')}>
-            <Empty glyphs={3} title="La libreria è vuota" body="Importa i tuoi PDF da File: vengono copiati nell’app e gli originali non vengono toccati. Ogni corso ha già la sua cartella. Puoi anche trascinare qui i file." actions={<Btn size="lg" variant="p" onClick={() => openImport()}>Importa PDF</Btn>} />
+            <Empty glyphs={3} title="La libreria è vuota" body="Importa PDF e note Markdown da File: vengono copiati nell’app e gli originali non vengono toccati. Ogni corso ha già la sua cartella. Puoi anche trascinare qui i file." actions={<Btn size="lg" variant="p" onClick={() => openImport()}>Importa PDF o note</Btn>} />
           </div>
         ) : (
           <div className="stack-narrow" style={st('display:flex;flex:1;min-height:0;border-top:1px solid #DCDCD6')}>

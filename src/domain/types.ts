@@ -235,4 +235,6 @@ export interface Settings {
   endOfLessonReminder: boolean;
   lastBackupAt: string | null;
   currentSemesterId: Id | null;
+  /** The first-launch guide was shown (or skipped). */
+  guideSeen: boolean;
 }

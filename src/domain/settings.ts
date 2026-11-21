@@ -27,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   endOfLessonReminder: true,
   lastBackupAt: null,
   currentSemesterId: null,
+  guideSeen: false,
 };
 
 /** Course palette from the design system: every colour carries white text at >= 4.5:1. */

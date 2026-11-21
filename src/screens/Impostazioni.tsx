@@ -14,6 +14,7 @@ import { requestNotificationPermission } from '../app/notifications';
 import { applyProcedoImport, planProcedoImport, type ProcedoPlan, type ProcedoTimes } from '../db/importProcedo';
 import { WEEKDAYS_IT, hmToMin, isHM } from '../domain/dates';
 import { Modal } from '../ui/components';
+import { GuideSheet } from '../app/Guide';
 
 const CATS = [
   ['generale', 'Generale'],
@@ -81,6 +82,7 @@ function SRow({ t, small, children }: { t: string; small?: string; children?: Re
 
 function General() {
   const { repo } = useServices();
+  const ui = useUi();
   const sem = useQuery((r) => r.currentSemester());
   const settings = useQuery((r) => r.getSettings());
   return (
@@ -88,6 +90,7 @@ function General() {
       <H t="Generale" sub={`${APP_NAME} funziona interamente su questo dispositivo. Nessun account, nessun server, nessuna analisi.`} />
       <SRow t="Semestre in corso" small={sem ? `${formatDateMedium(sem.startDate)} – ${formatDateMedium(sem.endDate)}` : 'Nessun semestre'}><b>{sem?.name ?? '–'}</b></SRow>
       <SRow t="Obiettivo di CFU" small="Per la barra di avanzamento del percorso"><span className="stp"><button aria-label="Diminuisci" onClick={() => repo.updateSettings({ degreeCfuTarget: Math.max(30, settings.degreeCfuTarget - 30) })}>−</button><span style={st('width:52px')}>{settings.degreeCfuTarget}</span><button aria-label="Aumenta" onClick={() => repo.updateSettings({ degreeCfuTarget: Math.min(360, settings.degreeCfuTarget + 30) })}>+</button></span></SRow>
+      <SRow t="Guida rapida" small="I quadrati delle presenze e come collegare il Calendario di Apple"><Btn onClick={() => ui.modal((close) => <GuideSheet onClose={close} />)}>Rivedi</Btn></SRow>
       <SRow t="Versione" small="Dati salvati in locale, funzionamento offline"><span className="mu">0.1.0</span></SRow>
     </>
   );

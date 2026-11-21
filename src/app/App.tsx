@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { FirstLaunchGuide } from './Guide';
 import { useRoute } from './router';
 import { ServicesProvider, UiProvider, useServices, useQuery, type Services } from './AppContext';
 import { Oggi } from '../screens/Oggi';
@@ -70,6 +71,7 @@ export function App({ services }: { services: Services }) {
         <Routes />
         <Reminders />
         <Shortcuts />
+        <FirstLaunchGuide />
       </UiProvider>
     </ServicesProvider>
   );
