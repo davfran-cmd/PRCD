@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Sidebar } from '../app/Sidebar';
 import { A, navigate, useRoute } from '../app/router';
 import { useNow, useQuery, useServices, useUi } from '../app/AppContext';
@@ -13,6 +13,7 @@ import { LessonEditModal } from './modals/LessonEditModal';
 import { AttemptModal } from './modals/AttemptModal';
 import { DeleteCourseDialog } from './Universita';
 import { LinkDocumentModal } from './modals/LinkDocumentModal';
+import { entriesFromFileList } from '../documents/importSources';
 
 type Tab = 'panoramica' | 'lezioni' | 'esame' | 'materiali';
 const TABS: Array<[Tab, string]> = [['panoramica', 'Panoramica'], ['lezioni', 'Lezioni'], ['esame', 'Esame'], ['materiali', 'Materiali']];
@@ -240,6 +241,14 @@ function MaterialsColumn({ courseId, materials, flat }: { courseId: string; mate
   const pdfs = materials.filter((d) => d.kind === 'pdf');
   const others = materials.filter((d) => d.kind === 'image');
   const { docs } = useServices();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const openFolder = () => void ui.run(() => navigate(`/documenti?f=${docs.ensureCourseFolder(courseId).id}`));
+  // PDFs added here are copied into the course's own folder, so they are linked to the course.
+  const addPdfs = (files: FileList) => void ui.run(async () => {
+    const folder = docs.ensureCourseFolder(courseId);
+    const r = await docs.importTree(entriesFromFileList(files).map((e) => ({ ...e, path: e.path.split('/').pop() as string })), { parentFolderId: folder.id, courseId });
+    ui.toast(r.added ? `${r.added} PDF ${r.added === 1 ? 'aggiunto' : 'aggiunti'} alla cartella del corso` : 'Nessun PDF aggiunto', r.added ? undefined : { error: true });
+  });
   const row = (d: (typeof materials)[number]) => (
     <A key={d.id} to={`/documento/${d.id}`} className="dr" style={st('display:flex;align-items:center;gap:10px;min-height:44px;border-top:1px solid #EBEBE6;font-size:14px;color:#000;text-decoration:none')}>
       {d.kind === 'pdf' ? Icon.pdf : d.kind === 'image' ? Icon.image : Icon.doc}
@@ -251,7 +260,7 @@ function MaterialsColumn({ courseId, materials, flat }: { courseId: string; mate
     <section className="col" style={{ ...colStyle, borderRight: 0, paddingRight: flat ? 0 : 32 }}>
       <h2 style={{ ...chStyle, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         Materiali
-        <A to={`/documenti?corso=${courseId}`} style={st('font-size:14px;color:#1F35C7;text-decoration:none;font-weight:400')}>Cartella</A>
+        <button className="lnk" onClick={openFolder} style={st('font-size:14px;color:#1F35C7;font-weight:400')}>Apri la cartella</button>
       </h2>
       {materials.length === 0 && <p className="mu" style={st('font-size:14px')}>Nessun documento collegato a questo corso.</p>}
       {notes.length > 0 && <div className="mu" style={st('font-size:13px;margin-bottom:4px')}>Note</div>}
@@ -260,7 +269,9 @@ function MaterialsColumn({ courseId, materials, flat }: { courseId: string; mate
       {pdfs.map(row)}
       {others.length > 0 && <div className="mu" style={st('font-size:13px;margin:14px 0 4px')}>Immagini</div>}
       {others.map(row)}
-      <Btn style={st('margin-top:14px;width:100%;border-style:dashed')} onClick={() => ui.modal((close) => <LinkDocumentModal courseId={courseId} onClose={close} />)}>Collega un documento</Btn>
+      <Btn variant="p" style={st('margin-top:14px;width:100%')} onClick={() => fileInput.current?.click()}>Aggiungi PDF</Btn>
+      <Btn style={st('margin-top:8px;width:100%;border-style:dashed')} onClick={() => ui.modal((close) => <LinkDocumentModal courseId={courseId} onClose={close} />)}>Collega un PDF già nella libreria</Btn>
+      <input ref={fileInput} type="file" multiple hidden accept=".pdf,application/pdf" onChange={(e) => { if (e.target.files?.length) addPdfs(e.target.files); e.target.value = ''; }} />
     </section>
   );
 }

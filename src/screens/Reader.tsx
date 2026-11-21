@@ -182,7 +182,7 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
       const hit = resolveReference(wiki, myPath, index, { markdown: true });
       const anchorText = a.getAttribute('data-prcd-anchor');
       if (hit) navigate(`/documento/${hit.id}${anchorText ? `?a=${encodeURIComponent(anchorText)}` : ''}`);
-      else ui.toast(`Nota non trovata: ${wiki}`, { actionLabel: 'Crea nota', onAction: () => void ui.run(async () => { const n = await docs.createNote(wiki, doc.folderId, doc.courseId); navigate(`/documento/${n.id}`); }) });
+      else ui.toast(`Nota non trovata: ${wiki}`, { error: true });
     } else if (rel) {
       const hit = resolveReference(rel, myPath, index, { markdown: true });
       const [, frag] = rel.split('#');

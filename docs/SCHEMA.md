@@ -1,6 +1,6 @@
 # Schema del database
 
-Fonte di verità: [`src/db/migrations.ts`](../src/db/migrations.ts) (versione corrente: **2**, in `PRAGMA user_version`; la v2 aggiunge `lessons.time_unknown` e `import_map`). SQLite (sql.js) con `PRAGMA foreign_keys = ON`. Date e orari sono stringhe *floating* (`YYYY-MM-DD`, `HH:MM`, `YYYY-MM-DDTHH:MM`); gli istanti (`created_at`…) sono ISO 8601 UTC. I booleani sono `INTEGER 0/1`. Gli id sono UUID v4 (`TEXT`).
+Fonte di verità: [`src/db/migrations.ts`](../src/db/migrations.ts) (versione corrente: **3**, in `PRAGMA user_version`; la v2 aggiunge `lessons.time_unknown` e `import_map`, la v3 `timetable_rules.time_unknown`). SQLite (sql.js) con `PRAGMA foreign_keys = ON`. Date e orari sono stringhe *floating* (`YYYY-MM-DD`, `HH:MM`, `YYYY-MM-DDTHH:MM`); gli istanti (`created_at`…) sono ISO 8601 UTC. I booleani sono `INTEGER 0/1`. Gli id sono UUID v4 (`TEXT`).
 
 > `start` e `end` sono parole riservate di SQL: le colonne si chiamano `starts_at` / `ends_at` (il codice le espone come `start` / `end`).
 

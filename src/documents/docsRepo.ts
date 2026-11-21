@@ -35,6 +35,16 @@ export function mimeOf(name: string): string {
   return MIME[extOf(name)] ?? 'application/octet-stream';
 }
 
+/** Only PDFs can be imported (user decision: "solo PDF"). Notes and images already in the library stay readable. */
+export function isImportable(path: string): boolean {
+  return kindOf(path) === 'pdf';
+}
+
+/** How two folder names are compared: trimmed, "/" made safe, Unicode NFC (iPadOS gives NFD), case-insensitive. */
+export function folderKey(name: string): string {
+  return name.trim().replace(/[/\\]/g, '-').normalize('NFC').toLowerCase();
+}
+
 export function displayName(fileName: string): string {
   const k = kindOf(fileName);
   if (k === 'markdown' || k === 'pdf') return fileName.replace(/\.[^.]+$/, '');
@@ -103,13 +113,13 @@ export class DocsRepo {
   }
 
   private uniqueFolderName(parentId: string | null, name: string, ignoreId?: string): string {
-    const siblings = new Set(this.folders(parentId).filter((f) => f.id !== ignoreId).map((f) => f.name.toLowerCase()));
-    if (!siblings.has(name.toLowerCase())) return name;
-    for (let i = 2; ; i++) if (!siblings.has(`${name} (${i})`.toLowerCase())) return `${name} (${i})`;
+    const siblings = new Set(this.folders(parentId).filter((f) => f.id !== ignoreId).map((f) => folderKey(f.name)));
+    if (!siblings.has(folderKey(name))) return name;
+    for (let i = 2; ; i++) if (!siblings.has(folderKey(`${name} (${i})`))) return `${name} (${i})`;
   }
 
   createFolder(name: string, parentId: string | null, courseId: string | null = null): Folder {
-    const n = name.trim().replace(/[/\\]/g, '-');
+    const n = name.trim().replace(/[/\\]/g, '-').normalize('NFC');
     if (!n) throw new ValidationError('Dai un nome alla cartella');
     if (parentId && !this.folder(parentId)) throw new ValidationError('Cartella di destinazione non trovata');
     const now = new Date().toISOString();
@@ -122,7 +132,8 @@ export class DocsRepo {
   ensureFolderPath(segments: string[], parentId: string | null): string | null {
     let cur = parentId;
     for (const seg of segments) {
-      const existing = this.folders(cur).find((f) => f.name === seg);
+      // Same comparison as uniqueFolderName: a near-identical name must reuse the folder, never create "X (2)".
+      const existing = this.folders(cur).find((f) => folderKey(f.name) === folderKey(seg));
       cur = existing ? existing.id : this.createFolder(seg, cur).id;
     }
     return cur;
@@ -141,11 +152,33 @@ export class DocsRepo {
     if (newParentId && this.folderPath(newParentId).some((f) => f.id === id)) throw new ValidationError('Non puoi spostare una cartella dentro una sua sottocartella');
     const f = this.folder(id);
     if (!f) throw new ValidationError('Cartella non trovata');
+    const before = this.subtreeCourses(id);
     updateRow(this.db, 'folders', 'id', id, { parentId: newParentId, name: this.uniqueFolderName(newParentId, f.name, id), updatedAt: new Date().toISOString() });
+    this.relinkSubtree(id, before);
+  }
+
+  /** Nearest course folder of every document in a subtree (before a change of the hierarchy). */
+  private subtreeCourses(folderId: string): Map<string, string | null> {
+    const ids = this.descendantFolderIds(folderId);
+    const out = new Map<string, string | null>();
+    for (const d of this.db.all<{ id: string; folder_id: string }>(`SELECT id, folder_id FROM documents WHERE folder_id IN (${ids.map(() => '?').join(',')})`, ids)) out.set(d.id, this.courseOfFolder(d.folder_id));
+    return out;
+  }
+
+  /** After a folder moved or got (un)linked: documents follow the course folder they are now in. */
+  private relinkSubtree(folderId: string, before: Map<string, string | null>): void {
+    const after = this.subtreeCourses(folderId);
+    for (const [docId, now] of after) {
+      const was = before.get(docId) ?? null;
+      if (now === was) continue;
+      updateRow(this.db, 'documents', 'id', docId, { courseId: now }, DOC);
+    }
   }
 
   setFolderCourse(id: string, courseId: string | null): void {
+    const before = this.subtreeCourses(id);
     updateRow(this.db, 'folders', 'id', id, { courseId, updatedAt: new Date().toISOString() });
+    this.relinkSubtree(id, before);
   }
 
   descendantFolderIds(id: string): string[] {
@@ -247,7 +280,7 @@ export class DocsRepo {
     const now = new Date().toISOString();
     const doc: DocumentRecord = {
       id: newId(), folderId: input.folderId, name: displayName(fileName), fileName, kind, mime, size: blob.size, storageKey,
-      courseId: input.courseId ?? this.folder(input.folderId ?? '')?.courseId ?? null, favorite: false, tags: input.tags ?? [], pageCount: null, editable: input.editable ?? false, addedAt: now, lastOpenedAt: null, updatedAt: now,
+      courseId: input.courseId ?? this.courseOfFolder(input.folderId), favorite: false, tags: input.tags ?? [], pageCount: null, editable: input.editable ?? false, addedAt: now, lastOpenedAt: null, updatedAt: now,
     };
     try {
       this.db.transaction(() => {
@@ -310,7 +343,69 @@ export class DocsRepo {
     const d = this.document(id);
     if (!d) throw new ValidationError('Documento non trovato');
     if (folderId && !this.folder(folderId)) throw new ValidationError('Cartella di destinazione non trovata');
-    updateRow(this.db, 'documents', 'id', id, { folderId, fileName: this.uniqueFileName(folderId, d.fileName), updatedAt: new Date().toISOString() }, DOC);
+    updateRow(this.db, 'documents', 'id', id, { folderId, fileName: this.uniqueFileName(folderId, d.fileName), courseId: this.courseAfterMove(d, folderId), updatedAt: new Date().toISOString() }, DOC);
+  }
+
+  /** Course of the nearest course folder containing `folderId` (a course's folder and everything inside it). */
+  courseOfFolder(folderId: string | null): string | null {
+    const path = this.folderPath(folderId);
+    for (let i = path.length - 1; i >= 0; i--) if (path[i].courseId) return path[i].courseId;
+    return null;
+  }
+
+  /** Entering a course folder links the document to that course; leaving one unlinks it; elsewhere it keeps its link. */
+  private courseAfterMove(d: DocumentRecord, dest: string | null): string | null {
+    const target = this.courseOfFolder(dest);
+    if (target) return target;
+    return this.courseOfFolder(d.folderId) ? null : d.courseId;
+  }
+
+  /**
+   * The course's own top-level folder ("super cartella"), created on first use. Found by course id, never by
+   * name, so it can never be duplicated; an unlinked top-level folder with exactly the course's name is adopted.
+   */
+  ensureCourseFolder(courseId: string): Folder {
+    const linked = selectOne<Folder>(this.db, 'SELECT * FROM folders WHERE course_id = ? ORDER BY (parent_id IS NOT NULL), created_at LIMIT 1', [courseId]);
+    if (linked) return linked;
+    const course = this.repo.course(courseId);
+    if (!course) throw new ValidationError('Corso non trovato');
+    const same = this.folders(null).find((f) => !f.courseId && folderKey(f.name) === folderKey(course.name));
+    if (same) {
+      this.setFolderCourse(same.id, courseId);
+      return { ...same, courseId };
+    }
+    return this.createFolder(course.name, null, courseId);
+  }
+
+  /** Course folders for every course of a semester that is not archived (idempotent). */
+  ensureCourseFolders(): void {
+    for (const c of this.repo.courses()) if (!this.repo.semester(c.semesterId)?.archived) this.ensureCourseFolder(c.id);
+  }
+
+  /** What deleting a selection would remove (folders count their whole subtree). */
+  selectionImpact(folderIds: string[], docIds: string[]): { folders: number; documents: number } {
+    const folders = new Set(folderIds.flatMap((id) => this.descendantFolderIds(id)));
+    const docs = new Set(docIds);
+    if (folders.size) {
+      const ids = [...folders];
+      for (const r of this.db.all<{ id: string }>(`SELECT id FROM documents WHERE folder_id IN (${ids.map(() => '?').join(',')})`, ids)) docs.add(r.id);
+    }
+    return { folders: folders.size, documents: docs.size };
+  }
+
+  /** Deletes several folders (with their content) and documents in one transaction, after a snapshot. */
+  async deleteMany(folderIds: string[], docIds: string[]): Promise<{ folders: number; documents: number }> {
+    const folders = [...new Set(folderIds.flatMap((id) => this.descendantFolderIds(id)))];
+    const q = (n: number) => Array.from({ length: n }, () => '?').join(',');
+    const inFolders = folders.length ? this.db.all<{ id: string }>(`SELECT id FROM documents WHERE folder_id IN (${q(folders.length)})`, folders).map((r) => r.id) : [];
+    const ids = [...new Set([...docIds, ...inFolders])];
+    const keys = ids.length ? this.db.all<{ storage_key: string }>(`SELECT storage_key FROM documents WHERE id IN (${q(ids.length)})`, ids).map((r) => r.storage_key) : [];
+    this.db.transaction(() => {
+      if (ids.length) this.db.run(`DELETE FROM documents WHERE id IN (${q(ids.length)})`, ids);
+      if (folders.length) this.db.run(`DELETE FROM folders WHERE id IN (${q(folders.length)})`, folders);
+    });
+    for (const k of keys) await this.files.delete(k);
+    return { folders: folders.length, documents: ids.length };
   }
 
   setCourse(id: string, courseId: string | null): void {
@@ -368,8 +463,8 @@ export class DocsRepo {
         report.skipped.push({ path: e.path, reason: 'file di sistema o nascosto' });
         return false;
       }
-      if (kindOf(e.path) === 'other') {
-        report.skipped.push({ path: e.path, reason: 'tipo di file non supportato' });
+      if (!isImportable(e.path)) {
+        report.skipped.push({ path: e.path, reason: 'non è un PDF' });
         return false;
       }
       return true;

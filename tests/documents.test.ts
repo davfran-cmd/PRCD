@@ -14,34 +14,44 @@ async function setup() {
 }
 
 describe('document library', () => {
-  it('imports a folder tree preserving the hierarchy, and never modifies the source bytes', async () => {
+  it('imports a folder tree of PDFs preserving the hierarchy, and never modifies the source bytes', async () => {
     const { docs, files } = await setup();
-    const src = '# Ampère\n\n$B$';
+    const src = '%PDF-1.4 ampere';
     const report = await docs.importTree(
-      [entry('Appunti/14 Legge di Ampère.md', src), entry('Appunti/img/ampere-filo.png', 'PNGDATA'), entry('Slide/magnetostatica.pdf', '%PDF-1.4 x'), entry('Formulario.md', '# F')],
+      [entry('Appunti/14 Legge di Ampère.pdf', src), entry('Slide/magnetostatica.pdf', '%PDF-1.4 x'), entry('Formulario.pdf', '%PDF-1.4 f')],
       { parentFolderId: null, rootName: 'Fisica 2' },
     );
-    expect(report.added).toBe(4);
+    expect(report.added).toBe(3);
     expect(report.errors).toEqual([]);
     const index = docs.pathIndex().map((e) => e.path).sort();
-    expect(index).toEqual(['Fisica 2/Appunti/14 Legge di Ampère.md', 'Fisica 2/Appunti/img/ampere-filo.png', 'Fisica 2/Formulario.md', 'Fisica 2/Slide/magnetostatica.pdf']);
-    const note = docs.documents().find((d) => d.fileName.startsWith('14'))!;
-    expect(await docs.getText(note.id)).toBe(src); // byte for byte
-    expect(note.kind).toBe('markdown');
-    expect(docs.document(note.id)!.storageKey).toMatch(/^f\//);
-    expect(await files.has(note.storageKey)).toBe(true);
-    expect(docs.folderPath(note.folderId).map((f) => f.name)).toEqual(['Fisica 2', 'Appunti']);
+    expect(index).toEqual(['Fisica 2/Appunti/14 Legge di Ampère.pdf', 'Fisica 2/Formulario.pdf', 'Fisica 2/Slide/magnetostatica.pdf']);
+    const pdf = docs.documents().find((d) => d.fileName.startsWith('14'))!;
+    expect(new TextDecoder().decode(await (await docs.getBlob(pdf.id)).arrayBuffer())).toBe(src); // byte for byte
+    expect(pdf.kind).toBe('pdf');
+    expect(await files.has(pdf.storageKey)).toBe(true);
+    expect(docs.folderPath(pdf.folderId).map((f) => f.name)).toEqual(['Fisica 2', 'Appunti']);
   });
 
-  it('skips hidden/system files and unsupported types, reporting why', async () => {
+  it('imports only PDFs: notes, images, hidden/system files and other types are skipped with a reason', async () => {
     const { docs } = await setup();
-    const r = await docs.importTree([entry('vault/.obsidian/app.json'), entry('vault/.DS_Store'), entry('vault/nota.md'), entry('vault/archivio.zip'), entry('__MACOSX/x.md')], { parentFolderId: null });
+    const r = await docs.importTree([entry('vault/.obsidian/app.json'), entry('vault/.DS_Store'), entry('vault/nota.md'), entry('vault/foto.png'), entry('vault/dispensa.pdf'), entry('vault/archivio.zip'), entry('__MACOSX/x.pdf')], { parentFolderId: null });
     expect(r.added).toBe(1);
-    expect(r.skipped.map((s) => s.path).sort()).toEqual(['__MACOSX/x.md', 'vault/.DS_Store', 'vault/.obsidian/app.json', 'vault/archivio.zip']);
+    expect(r.skipped.map((s) => s.path).sort()).toEqual(['__MACOSX/x.pdf', 'vault/.DS_Store', 'vault/.obsidian/app.json', 'vault/archivio.zip', 'vault/foto.png', 'vault/nota.md']);
+    expect(r.skipped.find((s) => s.path === 'vault/nota.md')!.reason).toMatch(/PDF/);
     expect(isIgnoredPath('a/.git/config')).toBe(true);
     expect(isIgnoredPath('a/b.md')).toBe(false);
     expect(kindOf('x.PDF')).toBe('pdf');
     expect(kindOf('x.JPG')).toBe('image');
+  });
+
+  it('reuses a folder whose name differs only by case, spaces or Unicode form: no "Università (2)"', async () => {
+    const { docs } = await setup();
+    docs.createFolder('Università', null);
+    const nfd = 'Universita\u0300';
+    await docs.importTree([entry(`${nfd}/Fisica/a.pdf`), entry('università /Fisica/b.pdf'), entry('UNIVERSITÀ/fisica/c.pdf')], { parentFolderId: null });
+    expect(docs.folders(null).map((f) => f.name)).toEqual(['Università']);
+    expect(docs.folders(docs.folders(null)[0].id).map((f) => f.name)).toEqual(['Fisica']);
+    expect(docs.documents()).toHaveLength(3);
   });
 
   it('never overwrites: a name collision gets a suffix and both files survive', async () => {
@@ -51,8 +61,48 @@ describe('document library', () => {
     expect(b.fileName).toBe('Nota (2).md');
     expect(await docs.getText(a.id)).toBe('uno');
     expect(await docs.getText(b.id)).toBe('due');
-    const again = await docs.importTree([entry('Nota.md', 'tre')], { parentFolderId: null });
-    expect(again.renamed).toEqual([{ from: 'Nota.md', to: 'Nota (3).md' }]);
+    await docs.addDocument({ data: bytes('%PDF uno'), fileName: 'Dispensa.pdf', folderId: null });
+    const again = await docs.importTree([entry('Dispensa.pdf', '%PDF due')], { parentFolderId: null });
+    expect(again.renamed).toEqual([{ from: 'Dispensa.pdf', to: 'Dispensa (2).pdf' }]);
+  });
+
+  it('gives every course one folder (never duplicated) and links what is inside it to the course', async () => {
+    const { docs, repo, fisica } = await setup();
+    const plain = docs.createFolder(fisica.name, null); // an existing folder with the course name is adopted
+    docs.ensureCourseFolders();
+    docs.ensureCourseFolders();
+    const mine = docs.folders(null).filter((f) => f.courseId === fisica.id);
+    expect(mine.map((f) => f.id)).toEqual([plain.id]);
+    expect(docs.folders(null).filter((f) => f.courseId).length).toBe(repo.courses().length);
+    // a PDF added inside a subfolder of the course folder belongs to the course
+    const sub = docs.createFolder('Esercizi', plain.id);
+    const d = await docs.addDocument({ data: bytes('%PDF'), fileName: 'es1.pdf', folderId: sub.id });
+    expect(d.courseId).toBe(fisica.id);
+    // moved out of the course folder: unlinked; moved back in: linked again
+    docs.move(d.id, null);
+    expect(docs.document(d.id)!.courseId).toBeNull();
+    const other = docs.createFolder('Varie', null);
+    docs.move(d.id, other.id);
+    docs.moveFolder(other.id, plain.id);
+    expect(docs.document(d.id)!.courseId).toBe(fisica.id);
+  });
+
+  it('deletes a selection of folders (with their content) and documents in one go', async () => {
+    const { docs, files } = await setup();
+    const keep = await docs.addDocument({ data: bytes('%PDF k'), fileName: 'tieni.pdf', folderId: null });
+    const ids: string[] = [];
+    for (let i = 2; i <= 5; i++) {
+      const f = docs.createFolder(`Università (${i})`, null);
+      ids.push(f.id);
+      await docs.addDocument({ data: bytes('# n'), fileName: 'n.md', folderId: docs.createFolder('Fisica', f.id).id });
+    }
+    const loose = await docs.addDocument({ data: bytes('%PDF x'), fileName: 'via.pdf', folderId: null });
+    expect(docs.selectionImpact(ids, [loose.id])).toEqual({ folders: 8, documents: 5 });
+    const r = await docs.deleteMany(ids, [loose.id]);
+    expect(r).toEqual({ folders: 8, documents: 5 });
+    expect(docs.folders().filter((f) => f.name.startsWith('Università'))).toHaveLength(0);
+    expect(docs.documents().map((d) => d.id)).toContain(keep.id);
+    expect(await files.has(loose.storageKey)).toBe(false);
   });
 
   it('renames (keeping the extension), moves, favourites, tags and links a document to a course', async () => {

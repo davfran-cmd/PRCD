@@ -264,6 +264,10 @@ body.sb-overlay .sb-toggle { display: flex; position: fixed; top: 6px; left: 8px
   .grid-md-1 { grid-template-columns: minmax(0, 1fr) !important; }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
+@media (max-width: 800px) {
+  .stack-narrow { flex-direction: column !important; overflow: auto !important; }
+  .stack-narrow > aside { border-top: 1px solid var(--rule); }
+}
 @media (max-width: 600px) {
   :root { --sidebar-w: 72px; }
   .sb { position: static; transform: none !important; width: var(--sidebar-w); padding: 14px 8px; align-items: stretch; box-shadow: none !important; }

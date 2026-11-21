@@ -24,6 +24,16 @@ export function Documenti() {
   const [q, setQ] = useState('');
   const [selId, setSelId] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  // Selection mode: several folders and documents, deleted in one go.
+  const [selecting, setSelecting] = useState(false);
+  const [selFolders, setSelFolders] = useState<Set<string>>(new Set());
+  const [selDocs, setSelDocs] = useState<Set<string>>(new Set());
+  const toggleIn = (set: Set<string>, id: string) => { const n = new Set(set); if (n.has(id)) n.delete(id); else n.add(id); return n; };
+  const setMany = (set: Set<string>, ids: string[], on: boolean) => { const n = new Set(set); ids.forEach((id) => (on ? n.add(id) : n.delete(id))); return n; };
+  const stopSelecting = () => { setSelecting(false); setSelFolders(new Set()); setSelDocs(new Set()); };
+
+  // Every course has its own top-level folder (created once, found by course id).
+  useEffect(() => { try { docs.ensureCourseFolders(); } catch { /* retried on the next visit */ } }, [docs]);
 
   const path = useQuery(() => docs.folderPath(folderId), [folderId]);
   const tags = useQuery(() => docs.allTags(), []);
@@ -48,7 +58,20 @@ export function Documenti() {
 
   const openImport = (preset?: DataTransfer) => ui.modal((close) => <ImportModal folderId={folderId} courseId={course?.id ?? null} dropped={preset} onClose={close} />);
   const newFolder = () => ui.modal((close) => <NameModal title="Nuova cartella" label="Nome della cartella" action="Crea" onClose={close} onSubmit={(n) => void ui.run(() => docs.createFolder(n, folderId))} />);
-  const newNote = () => ui.run(async () => { const n = await docs.createNote('Nuova nota', folderId, course?.id ?? null); navigate(`/documento/${n.id}`); });
+  const askDelete = () => {
+    const impact = docs.selectionImpact([...selFolders], [...selDocs]);
+    const n = selFolders.size + selDocs.size;
+    ui.modal((close) => (
+      <ConfirmDialog
+        title={`Eliminare ${n} ${n === 1 ? 'elemento' : 'elementi'}?`}
+        body={`Verranno eliminate ${impact.folders} ${impact.folders === 1 ? 'cartella' : 'cartelle'} e ${impact.documents} ${impact.documents === 1 ? 'documento' : 'documenti'} importati nell’app. I file originali in File non vengono toccati. L’operazione non si può annullare.`}
+        confirmLabel="Elimina"
+        danger
+        onConfirm={() => void ui.run(async () => { const r = await docs.deleteMany([...selFolders], [...selDocs]); stopSelecting(); if (folderId && !docs.folder(folderId)) navigate('/documenti'); ui.toast(`Eliminati ${r.folders} cartelle e ${r.documents} documenti`); })}
+        onClose={close}
+      />
+    ));
+  };
 
   const total = useQuery(() => docs.documents().length, []);
 
@@ -63,9 +86,19 @@ export function Documenti() {
             {Icon.search}
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={path.length ? `Filtra in ${path.at(-1)!.name}` : 'Cerca nei nomi e nel testo'} aria-label="Cerca documenti" style={st('border:0;outline:none;flex:1;font:inherit;font-size:14px;min-width:0;background:transparent')} />
           </label>
-          <Btn onClick={newFolder}>Nuova cartella</Btn>
-          <Btn onClick={() => openImport()}>Importa</Btn>
-          <Btn variant="p" onClick={() => void newNote()}>Nuova nota</Btn>
+          {selecting ? (
+            <>
+              <span style={st('font-size:14px')}>{selFolders.size + selDocs.size} selezionati</span>
+              <Btn variant="d" disabled={selFolders.size + selDocs.size === 0} onClick={askDelete}>Elimina…</Btn>
+              <Btn variant="p" onClick={stopSelecting}>Fine</Btn>
+            </>
+          ) : (
+            <>
+              <Btn onClick={() => setSelecting(true)}>Seleziona</Btn>
+              <Btn onClick={newFolder}>Nuova cartella</Btn>
+              <Btn variant="p" onClick={() => openImport()}>Importa PDF</Btn>
+            </>
+          )}
         </header>
         <div style={st('display:flex;align-items:center;gap:6px;padding:0 24px 12px;font-size:13px;flex-wrap:wrap;flex:none')}>
           {(['tutto', 'recenti', 'preferiti', ...tags.slice(0, 6)] as Filter[]).map((f) => (
@@ -81,17 +114,19 @@ export function Documenti() {
 
         {total === 0 && columns[0].folders.length === 0 ? (
           <div style={st('padding:24px')}>
-            <Empty glyphs={3} title="La libreria è vuota" body="Importa PDF, note Markdown o un’intera cartella (anche un vault Obsidian) da File: la gerarchia delle cartelle viene mantenuta e gli originali non vengono toccati. Puoi anche trascinare qui i file." actions={<><Btn size="lg" variant="p" onClick={() => openImport()}>Importa file o cartella</Btn><Btn size="lg" onClick={() => void newNote()}>Scrivi la prima nota</Btn></>} />
+            <Empty glyphs={3} title="La libreria è vuota" body="Importa i tuoi PDF da File: vengono copiati nell’app e gli originali non vengono toccati. Ogni corso ha già la sua cartella. Puoi anche trascinare qui i file." actions={<Btn size="lg" variant="p" onClick={() => openImport()}>Importa PDF</Btn>} />
           </div>
         ) : (
-          <div className="stack-md" style={st('display:flex;flex:1;min-height:0;border-top:1px solid #DCDCD6')}>
+          <div className="stack-narrow" style={st('display:flex;flex:1;min-height:0;border-top:1px solid #DCDCD6')}>
             {!flat && columns.map((col, i) => (
-              <FolderColumn key={col.parent ?? 'root'} folders={col.folders} active={path[i]?.id ?? null} last={i === columns.length - 1} onOpen={(f) => navigate(`/documenti?f=${f.id}`)} />
+              <FolderColumn key={col.parent ?? 'root'} folders={col.folders} active={path[i]?.id ?? null} last={i === columns.length - 1} onOpen={(f) => navigate(`/documenti?f=${f.id}`)} courses={courses} selecting={selecting} selected={selFolders} onToggle={(id) => setSelFolders((x) => toggleIn(x, id))} onToggleAll={(ids, on) => setSelFolders((x) => setMany(x, ids, on))} />
             ))}
             <div className="colm scroll" style={st('width:260px;flex:none;border-right:1px solid #DCDCD6;padding:6px')}>
+              {selecting && listing.length > 0 && <SelectAll ids={listing.map((d) => d.id)} selected={selDocs} onToggleAll={(ids, on) => setSelDocs((x) => setMany(x, ids, on))} />}
               {listing.length === 0 && <p className="mu" style={st('padding:10px;font-size:14px')}>{q ? 'Nessun risultato.' : flat ? 'Nessun documento qui.' : 'Nessun documento in questa cartella.'}</p>}
               {listing.map((d) => (
-                <button key={d.id} className={`fi ${selected?.id === d.id ? 'sel' : ''}`} onClick={() => setSelId(d.id)} onDoubleClick={() => navigate(`/documento/${d.id}`)} style={fiStyle(selected?.id === d.id)}>
+                <button key={d.id} className={`fi ${selected?.id === d.id ? 'sel' : ''}`} onClick={() => (selecting ? setSelDocs((x) => toggleIn(x, d.id)) : setSelId(d.id))} onDoubleClick={() => !selecting && navigate(`/documento/${d.id}`)} style={fiStyle(!selecting && selected?.id === d.id)} aria-pressed={selecting ? selDocs.has(d.id) : undefined}>
+                  {selecting && <Tick on={selDocs.has(d.id)} />}
                   {d.kind === 'pdf' ? Icon.pdf : d.kind === 'image' ? Icon.image : Icon.doc}
                   <span style={st('flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left')}>{d.name}</span>
                   <span style={st('font-size:12px')}>{d.favorite ? '★' : ''}</span>
@@ -108,21 +143,36 @@ export function Documenti() {
 
 const fiStyle = (sel: boolean): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: 10, width: '100%', minHeight: 44, padding: '0 12px', border: 0, borderRadius: 6, background: sel ? '#000' : 'transparent', color: sel ? '#fff' : '#000', fontSize: 14 });
 
-function FolderColumn({ folders, active, last, onOpen }: { folders: Folder[]; active: string | null; last: boolean; onOpen: (f: Folder) => void }) {
-  const { docs } = useServices();
+function Tick({ on }: { on: boolean }) {
+  return <span aria-hidden="true" style={{ width: 22, height: 22, flex: 'none', borderRadius: 5, border: on ? 0 : '1.5px solid #9A9A93', background: on ? '#1F35C7' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{on && Icon.check}</span>;
+}
+
+function SelectAll({ ids, selected, onToggleAll }: { ids: string[]; selected: Set<string>; onToggleAll: (ids: string[], on: boolean) => void }) {
+  const all = ids.length > 0 && ids.every((id) => selected.has(id));
+  return <button className="lnk" style={st('display:block;padding:6px 12px 8px;font-size:14px;color:#1F35C7')} onClick={() => onToggleAll(ids, !all)}>{all ? 'Deseleziona tutto' : 'Seleziona tutto'}</button>;
+}
+
+function FolderColumn({ folders, active, last, onOpen, courses, selecting, selected, onToggle, onToggleAll }: { folders: Folder[]; active: string | null; last: boolean; onOpen: (f: Folder) => void; courses: Map<string, { name: string; color: string }>; selecting: boolean; selected: Set<string>; onToggle: (id: string) => void; onToggleAll: (ids: string[], on: boolean) => void }) {
   const ui = useUi();
+  // Course folders first (with their colour), then the others in alphabetical order.
+  const isCourse = (f: Folder) => Boolean(f.courseId && courses.has(f.courseId));
+  const sorted = [...folders].sort((a, b) => Number(isCourse(b)) - Number(isCourse(a)));
   return (
-    <div className="colm scroll" style={st('width:210px;flex:none;border-right:1px solid #DCDCD6;padding:6px')}>
+    <div className="colm scroll" style={st('width:230px;flex:none;border-right:1px solid #DCDCD6;padding:6px')}>
+      {selecting && folders.length > 0 && <SelectAll ids={folders.map((f) => f.id)} selected={selected} onToggleAll={onToggleAll} />}
       {folders.length === 0 && last && <p className="mu" style={st('padding:10px;font-size:13px')}>Nessuna sottocartella.</p>}
-      {folders.map((f) => (
-        <div key={f.id} style={st('display:flex;align-items:center')}>
-          <button onClick={() => onOpen(f)} style={{ ...fiStyle(false), background: active === f.id ? '#E6E6E1' : 'transparent', fontWeight: active === f.id ? 650 : 400 }}>
-            {Icon.dir}<span style={st('flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{f.name}</span><span className="mu">›</span>
-          </button>
-          <button aria-label={`Azioni per ${f.name}`} className="btn ghost" style={st('width:32px;padding:0;height:32px;flex:none;color:#5F5F59')} onClick={() => ui.modal((close) => <FolderActions folder={f} onClose={close} />)}>•••</button>
-        </div>
-      ))}
-      <span style={{ display: 'none' }}>{String(docs)}</span>
+      {sorted.map((f) => {
+        const c = f.courseId ? courses.get(f.courseId) : undefined;
+        return (
+          <div key={f.id} style={st('display:flex;align-items:center;gap:4px')}>
+            {selecting && <button type="button" aria-label={`Seleziona ${f.name}`} aria-pressed={selected.has(f.id)} onClick={() => onToggle(f.id)} style={st('border:0;background:transparent;padding:0 2px 0 6px;height:44px;display:flex;align-items:center')}><Tick on={selected.has(f.id)} /></button>}
+            <button onClick={() => onOpen(f)} title={c ? `Cartella del corso ${c.name}` : f.name} style={{ ...fiStyle(false), flex: 1, minWidth: 0, width: 'auto', background: active === f.id ? '#E6E6E1' : 'transparent', fontWeight: active === f.id || c ? 650 : 400 }}>
+              {c ? <Swatch color={c.color} size={12} /> : Icon.dir}<span style={st('flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{f.name}</span><span className="mu">›</span>
+            </button>
+            {!selecting && <button aria-label={`Azioni per ${f.name}`} className="btn ghost" style={st('width:32px;padding:0;height:32px;flex:none;color:#5F5F59')} onClick={() => ui.modal((close) => <FolderActions folder={f} onClose={close} />)}>•••</button>}
+          </div>
+        );
+      })}
     </div>
   );
 }
