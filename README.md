@@ -45,6 +45,10 @@ In sviluppo, dalla console del browser:
 | `design/` | Export del design originale (sola lettura) |
 | `docs/` | Documentazione |
 
+## Installare l'app vera su iPad senza Mac
+
+GitHub compila l'app nativa su un Mac in cloud a ogni push e pubblica `PRCD.ipa` (release `ipad-latest`); Sideloadly la firma con un Apple ID gratuito e la installa dal PC Windows. Istruzioni: [docs/IPAD_APP_SIDELOADLY.md](docs/IPAD_APP_SIDELOADLY.md).
+
 ## Provarla su iPad come web app
 
 Push su GitHub → test, build e pubblicazione automatici su GitHub Pages → su iPad: Safari → *Aggiungi alla schermata Home*. Istruzioni passo passo: [docs/WEB_APP_IPAD.md](docs/WEB_APP_IPAD.md).

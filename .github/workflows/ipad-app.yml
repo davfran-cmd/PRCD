@@ -45,9 +45,14 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build 2>&1 | tee xcodebuild.log | grep -E "error:|warning: .*PRCD|BUILD (SUCCEEDED|FAILED)" || true
-          # Compiler errors become annotations, readable on the run page.
-          grep -E "^/.*: error:" xcodebuild.log | sort -u | head -40 | while IFS= read -r line; do echo "::error::$line"; done
-          grep -q "BUILD SUCCEEDED" xcodebuild.log
+          if ! grep -q "BUILD SUCCEEDED" xcodebuild.log; then
+            # Errors become annotations, readable on the run page (GitHub shows at most 10 per step):
+            # every error line, then the end of the log, in chunks.
+            { grep -nE "error|Error|fatal" xcodebuild.log | grep -v "^.*warning" | head -60; echo "----- fine del log -----"; tail -40 xcodebuild.log; } > summary.txt
+            split -l 12 summary.txt part_
+            for f in part_*; do echo "::error::$(sed -e 's/%/%25/g' "$f" | awk '{printf "%s%%0A", $0}')"; done
+            exit 1
+          fi
 
       - name: Package .ipa
         run: |
