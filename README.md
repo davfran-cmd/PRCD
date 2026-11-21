@@ -2,7 +2,7 @@
 
 App personale per università e vita quotidiana, **local-first**: lezioni, presenze, esami e medie, calendario (con Apple Calendar), note Markdown e PDF. Nessun account, nessun server, nessuna analisi: tutto resta sul dispositivo e funziona in modalità aereo.
 
-> **Stato onesto.** Il prototipo **web** è completo e testato (131+ test automatici, verifica nel browser). Il codice **nativo iPad** (plugin Swift per EventKit e per il selettore di cartelle, progetto Capacitor) è **scritto ma mai compilato né eseguito**: lo sviluppo è avvenuto su Windows, senza Xcode. Non va considerato testato su iPad finché non è stato costruito e provato su simulatore o dispositivo — vedi [docs/IOS_BUILD.md](docs/IOS_BUILD.md).
+> **Stato onesto.** Il prototipo **web** è completo e testato (131+ test automatici, verifica nel browser). Il codice **nativo iPad** (plugin Swift per EventKit e per il selettore di cartelle, progetto Capacitor) **compila** su GitHub Actions (macOS, Xcode) e produce `PRCD.ipa`, ma non è ancora stato provato su un iPad: non va considerato testato finché non è stato installato e verificato — vedi [docs/IOS_BUILD.md](docs/IOS_BUILD.md).
 
 ## Da dove viene
 
