@@ -146,4 +146,15 @@ describe('document library', () => {
     expect(await d2.getText(n.id)).toBe('# Nota');
     expect(d2.pdfState(n.id)!.lastPage).toBe(5);
   });
+
+  it('finds the notes that cite a note with a wiki-link (alias and heading forms included), not look-alikes', async () => {
+    const { docs } = await setup();
+    const target = await docs.addDocument({ data: bytes('# Formulario'), fileName: 'Formulario.md', folderId: null });
+    const a = await docs.addDocument({ data: bytes('vedi [[Formulario]] e [[formulario|il mio formulario]]'), fileName: 'A.md', folderId: null });
+    const b = await docs.addDocument({ data: bytes('vedi [[Formulario#Magnetismo]]'), fileName: 'B.md', folderId: null });
+    await docs.addDocument({ data: bytes('vedi [[Formulario esteso]]'), fileName: 'C.md', folderId: null }); // different note
+    await docs.addDocument({ data: bytes('niente link, solo la parola Formulario'), fileName: 'D.md', folderId: null });
+    expect(docs.backlinks(target).map((d) => d.id).sort()).toEqual([a.id, b.id].sort());
+    expect(docs.backlinks(a)).toEqual([]);
+  });
 });

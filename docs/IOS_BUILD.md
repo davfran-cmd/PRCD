@@ -55,7 +55,7 @@ Testo mostrato: *«PRCD legge i calendari che scegli tu per mostrarli accanto al
 | Non ancora chiesto | Schermata esplicativa + «Continua» |
 | Negato / limitato | Spiegazione + «Apri Impostazioni iPad»; il resto dell'app funziona normalmente |
 | Solo scrittura (iOS 17 "aggiungi eventi") | Trattato come insufficiente: si chiede di concedere l'accesso completo |
-| Revocato mentre l'app è in uso | La sincronizzazione si ferma, **le mappature restano**, compare l'avviso; alla riconcessione riparte |
+| Revocato (con l'app chiusa o in uso) | La sincronizzazione si ferma, **le mappature restano**, compare l'avviso; alla riconcessione riparte. Nota: iOS tende a terminare l'app quando un permesso privacy cambia, quindi il caso reale è la **riapertura** dopo la revoca (da verificare su dispositivo) |
 
 Per revocare: *Impostazioni iPad → Privacy e sicurezza → Calendari → PRCD.*
 
@@ -82,7 +82,7 @@ Apple Calendar
 - [ ] Modificare lo stesso evento su entrambi i lati → compare un conflitto e nulla viene sovrascritto.
 - [ ] Eliminare un evento in Calendario → "Eliminato da Apple Calendario" con le tre scelte; non viene ricreato da solo.
 - [ ] Evento di un'altra app (es. "Dentista"): visibile in sola lettura, mai modificato; verificare che `update`/`delete` falliscano con `NOT_PRCD_EVENT`.
-- [ ] Revocare il permesso da Impostazioni mentre l'app è aperta: avviso, nessun crash; riconcederlo → riprende senza duplicati.
+- [ ] Revocare il permesso da Impostazioni: **iOS di solito termina l'app** quando si cambia un permesso privacy. Verificare invece che alla **riapertura** l'app parta senza crash, mostri "Accesso ai calendari revocato", mantenga tutti i dati locali e le mappature, e che riconcedendo il permesso la sincronizzazione riprenda senza duplicati. (Il caso "revocato mentre l'app è in primo piano" è coperto da test solo contro il mock.)
 - [ ] Modificare un evento da un altro dispositivo iCloud: la modifica arriva (notifica `EKEventStoreChanged`) e rientrando in primo piano l'app si aggiorna.
 - [ ] Verificare eventi *all-day* (fine inclusiva `T23:59`), fusi orari diversi, eventi ricorrenti di terzi (ogni occorrenza deve comparire una volta).
 - [ ] Cambio di ora legale: gli orari delle lezioni restano gli stessi sul muro.

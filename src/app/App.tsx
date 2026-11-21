@@ -12,6 +12,7 @@ import { Documenti } from '../screens/Documenti';
 import { Reader } from '../screens/Reader';
 import { Impostazioni } from '../screens/Impostazioni';
 import { CalendariApple } from '../screens/CalendariApple';
+import { Shortcuts } from './Shortcuts';
 import { listenForAttendanceActions, scheduleLessonReminders } from './notifications';
 
 function Routes() {
@@ -68,6 +69,7 @@ export function App({ services }: { services: Services }) {
       <UiProvider>
         <Routes />
         <Reminders />
+        <Shortcuts />
       </UiProvider>
     </ServicesProvider>
   );

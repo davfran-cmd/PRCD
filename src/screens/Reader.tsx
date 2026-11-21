@@ -10,6 +10,16 @@ import { st } from '../ui/style';
 import type { DocumentRecord } from '../domain/types';
 import { formatDateMedium } from '../domain/dates';
 
+const SIZES = [16, 18.5, 21];
+function loadSize(): number {
+  try {
+    const v = Number(localStorage.getItem('prcd.reader.size'));
+    return SIZES.includes(v) ? v : 18.5;
+  } catch {
+    return 18.5; // storage unavailable: the reader still works
+  }
+}
+
 export function Reader({ id }: { id: string }) {
   const { docs } = useServices();
   const doc = useQuery(() => docs.document(id), [id]);
@@ -68,6 +78,11 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const body = useRef<HTMLDivElement>(null);
+  const scroller = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState(loadSize);
+  const [pct, setPct] = useState(0);
+  const course = useQuery((r) => (doc.courseId ? r.course(doc.courseId) : undefined), [doc.courseId]);
+  const backlinks = useQuery(() => docs.backlinks(doc), [doc.id, text]);
   const version = useQuery(() => `${doc.id}:${docs.document(doc.id)?.updatedAt}`, [doc.id]);
 
   useEffect(() => {
@@ -172,6 +187,21 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
   if (error) return <div style={st('padding:32px')}><div className="banner" role="alert"><b>Impossibile aprire la nota</b><div style={st('font-size:13.5px;margin-top:4px')}>{error}</div></div></div>;
   if (!rendered) return <p className="mu" style={st('padding:32px')}>Apro la nota…</p>;
 
+  const words = (text ?? '').split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  const onScroll = () => {
+    const el = scroller.current;
+    if (el) setPct(el.scrollHeight - el.clientHeight > 0 ? el.scrollTop / (el.scrollHeight - el.clientHeight) : 1);
+  };
+  const cycleSize = () => {
+    const next = SIZES[(SIZES.indexOf(size) + 1) % SIZES.length];
+    setSize(next);
+    try {
+      localStorage.setItem('prcd.reader.size', String(next));
+    } catch {
+      /* not persisted: fine */
+    }
+  };
   const fm = rendered.frontmatter;
   const tags = Array.isArray(fm.tags) ? fm.tags.map(String) : typeof fm.tags === 'string' ? fm.tags.split(/[ ,]+/) : [];
   const props = Object.entries(fm).filter(([k]) => k !== 'tags' && k !== 'title');
@@ -182,14 +212,18 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
         <nav aria-label="Indice" className="scroll" style={st('width:220px;border-right:1px solid #DCDCD6;padding:18px 14px;flex:none;background:#FAFAF8')}>
           <div className="mu" style={st('font-size:13px;margin-bottom:8px')}>Indice</div>
           {rendered.headings.map((h) => <button key={h.id} onClick={() => document.getElementById(h.id)?.scrollIntoView()} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 0, padding: `4px 0 4px ${(h.level - 1) * 12}px`, fontSize: 13.5, color: '#3A3A36' }}>{h.text}</button>)}
+          <div className="mu" style={st('font-size:12px;margin-top:26px')}>Lettura</div>
+          <div style={st('height:3px;background:#EBEBE6;margin-top:6px')}><div style={{ width: `${Math.round(pct * 100)}%`, height: 3, background: '#000' }} /></div>
+          <div className="mu" style={st('font-size:12px;margin-top:6px')}>circa {minutes} {minutes === 1 ? 'minuto' : 'minuti'}</div>
         </nav>
       )}
-      <div className="scroll" style={st('flex:1;min-width:0;padding:28px 32px 60px')}>
+      <div ref={scroller} onScroll={onScroll} className="scroll" style={st('flex:1;min-width:0;padding:28px 32px 60px')}>
         <div style={st('max-width:720px;margin:0 auto')}>
           <div style={st('display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap')}>
             {tags.map((t) => <span key={t} className="tag">{t.startsWith('#') ? t : `#${t}`}</span>)}
             <span style={st('flex:1')} />
             <span className="mu" style={st('font-size:12px')}>{formatDateMedium(doc.updatedAt.slice(0, 10))} · {doc.size < 1024 ? `${doc.size} B` : `${Math.round(doc.size / 1024)} KB`}</span>
+            <Btn size="s" aria-label="Dimensione del testo" title="Dimensione del testo" onClick={cycleSize}><span style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>Aa</span></Btn>
             {doc.editable && !editing && <Btn size="s" onClick={() => { setDraft(text ?? ''); setEditing(true); }}>Modifica</Btn>}
             {!doc.editable && <span className="mu" style={st('font-size:12px')} title="Le note importate restano di sola lettura: l’originale non viene mai modificato">sola lettura</span>}
           </div>
@@ -201,16 +235,27 @@ function MarkdownView({ doc, anchor }: { doc: DocumentRecord; anchor: string | n
           ) : (
             <>
               {props.length > 0 && (
-                <dl style={st('display:grid;grid-template-columns:120px 1fr;gap:4px 12px;font-size:13px;margin:0 0 18px;padding:10px 14px;background:#F2F2EF;border-radius:6px')}>
+                <dl className="reader-inline-props" style={st('display:grid;grid-template-columns:120px 1fr;gap:4px 12px;font-size:13px;margin:0 0 18px;padding:10px 14px;background:#F2F2EF;border-radius:6px')}>
                   {props.map(([k, v]) => <div key={k} style={st('display:contents')}><dt className="mu">{k}</dt><dd style={st('margin:0')}>{String(typeof v === 'object' ? JSON.stringify(v) : v)}</dd></div>)}
                 </dl>
               )}
               {/* HTML below is produced by renderMarkdown(): raw HTML dropped, allow-list sanitised. */}
-              <div ref={body} className="reading" onClick={onClick} dangerouslySetInnerHTML={{ __html: rendered.html }} />
+              <div ref={body} className="reading" style={{ fontSize: size }} onClick={onClick} dangerouslySetInnerHTML={{ __html: rendered.html }} />
             </>
           )}
         </div>
       </div>
+      <aside className="reader-aside scroll" aria-label="Proprietà" style={st('width:230px;border-left:1px solid #DCDCD6;padding:28px 18px 0;flex:none;font-size:13.5px')}>
+        <div style={st('font-weight:650;margin-bottom:6px')}>Proprietà</div>
+        <div style={st('display:grid;grid-template-columns:70px 1fr;row-gap:6px;padding-bottom:14px;border-bottom:1px solid #DCDCD6')}>
+          <span className="mu">corso</span><span style={st('display:flex;align-items:center;gap:6px')}>{course ? <><span className="sw" style={{ width: 9, height: 9, background: course.color }} />{course.name}</> : '—'}</span>
+          {props.map(([k, v]) => <div key={k} style={st('display:contents')}><span className="mu">{k}</span><span>{String(typeof v === 'object' ? JSON.stringify(v) : v)}</span></div>)}
+          <span className="mu">tag</span><span>{tags.length ? tags.join(', ') : '—'}</span>
+        </div>
+        <div style={st('font-weight:650;margin:14px 0 6px')}>Note che citano questa</div>
+        {backlinks.length === 0 && <div className="mu" style={st('font-size:13px')}>Nessuna.</div>}
+        {backlinks.map((b) => <A key={b.id} to={`/documento/${b.id}`} className="lnk" style={st('display:block;padding:4px 0')}>{b.name}</A>)}
+      </aside>
     </div>
   );
 }

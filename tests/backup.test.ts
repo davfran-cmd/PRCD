@@ -6,6 +6,7 @@ import { MemoryFileStore } from '../src/storage/fileStore';
 import { insertRow } from '../src/db/rows';
 import { clockAt, makeRepo, seedDesign } from './helpers';
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
+import { IndexedDbPersistence } from '../src/storage/fileStore';
 
 const bytesOf = async (b: Blob) => new Uint8Array(await b.arrayBuffer());
 
@@ -110,5 +111,26 @@ describe('backup and restore', () => {
     expect(name).toBe('pre-erase-2026-11-21T08-00-00-000Z');
     const snap = await Database.fromBytes((await src.persistence.loadSnapshot(name))!);
     expect(new Repo(snap).courses()).toHaveLength(3);
+  });
+});
+
+describe('IndexedDB persistence', () => {
+  it('keeps the previous good image as db_prev on every write and falls back to it', async () => {
+    const p = new IndexedDbPersistence(`test-${Math.random()}`);
+    expect(await p.load()).toBeNull();
+    await p.save(new Uint8Array([1, 2, 3]));
+    await p.save(new Uint8Array([4, 5, 6]));
+    expect(Array.from((await p.load())!)).toEqual([4, 5, 6]);
+    await p.save(new Uint8Array(0)); // a broken/empty write must not hide the last good data
+    expect(Array.from((await p.load())!)).toEqual([4, 5, 6]);
+  });
+
+  it('stores, lists and deletes named snapshots', async () => {
+    const p = new IndexedDbPersistence(`test-${Math.random()}`);
+    await p.snapshot('pre-restore-x', new Uint8Array([9, 9]));
+    expect(await p.listSnapshots()).toEqual([{ name: 'pre-restore-x', size: 2 }]);
+    expect(Array.from((await p.loadSnapshot('pre-restore-x'))!)).toEqual([9, 9]);
+    await p.deleteSnapshot('pre-restore-x');
+    expect(await p.listSnapshots()).toEqual([]);
   });
 });

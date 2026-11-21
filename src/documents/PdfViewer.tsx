@@ -6,6 +6,7 @@ import { useServices, useUi } from '../app/AppContext';
 import { clampPage, matchRects, pageItems, searchPdf, type PdfSearchHit, type TextItem } from './pdf';
 import { Btn, Icon } from '../ui/components';
 import { st } from '../ui/style';
+import { WEEKDAYS_IT, todayISO, weekdayISO } from '../domain/dates';
 import type { DocumentRecord } from '../domain/types';
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl; // bundled locally: works offline
@@ -89,7 +90,12 @@ export function PdfViewer({ doc, immersive, onImmersive }: Props) {
     if (!pdf || !scroller.current || !initialScroll.current) return;
     initialScroll.current = false;
     scroller.current.scrollTop = (clampPage(saved?.lastPage ?? 1, pdf.numPages) - 1) * (pageH + 12);
-  }, [pdf, pageH, saved?.lastPage]);
+    if (saved && saved.lastPage > 1) {
+      const day = saved.updatedAt.slice(0, 10);
+      const when = day === todayISO() ? 'oggi' : WEEKDAYS_IT[weekdayISO(day) - 1];
+      ui.toast(`Ripreso da p. ${clampPage(saved.lastPage, pdf.numPages)}, dove avevi lasciato ${when}.`);
+    }
+  }, [pdf, pageH, saved, ui]);
 
   const goTo = useCallback((n: number) => {
     const el = scroller.current;
@@ -165,6 +171,7 @@ export function PdfViewer({ doc, immersive, onImmersive }: Props) {
         <button className="btn s icon-btn" style={st('height:34px;width:34px')} aria-label="Pagina precedente" onClick={() => goTo(page - 1)} disabled={page <= 1}>{Icon.left}</button>
         <input className="in" type="number" min={1} max={total || 1} value={page} onChange={(e) => goTo(Number(e.target.value))} aria-label="Pagina" style={st('width:64px;height:34px;text-align:center;padding:0 4px')} />
         <span className="mu" style={st('font-size:14px')}>di {total || '–'}</span>
+        <input type="range" min={1} max={Math.max(1, total)} value={page} onChange={(e) => goTo(Number(e.target.value))} aria-label="Scorri le pagine" style={{ width: 140, accentColor: '#000' }} />
         <button className="btn s icon-btn" style={st('height:34px;width:34px')} aria-label="Pagina successiva" onClick={() => goTo(page + 1)} disabled={page >= total}>{Icon.right}</button>
         <span style={st('width:8px')} />
         <button className="btn s" style={st('width:34px;padding:0')} aria-label="Riduci" onClick={() => setZoom(Math.max(0.4, +(scale - 0.2).toFixed(2)))}>−</button>
@@ -210,7 +217,6 @@ export function PdfViewer({ doc, immersive, onImmersive }: Props) {
           </aside>
         )}
       </div>
-      {!pdf && !loading && !error && ui && null}
     </div>
   );
 }

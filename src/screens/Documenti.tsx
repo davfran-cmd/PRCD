@@ -46,13 +46,6 @@ export function Documenti() {
   const selected = listing.find((d) => d.id === selId) ?? listing[0] ?? null;
   const flat = q.trim() || course || filter !== 'tutto';
 
-  useEffect(() => {
-    if (route.query.get('nuova')) {
-      void ui.run(async () => { const n = await docs.createNote('Nuova nota', folderId); navigate(`/documento/${n.id}`, { replace: true }); });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.query.get('nuova')]);
-
   const openImport = (preset?: DataTransfer) => ui.modal((close) => <ImportModal folderId={folderId} courseId={course?.id ?? null} dropped={preset} onClose={close} />);
   const newFolder = () => ui.modal((close) => <NameModal title="Nuova cartella" label="Nome della cartella" action="Crea" onClose={close} onSubmit={(n) => void ui.run(() => docs.createFolder(n, folderId))} />);
   const newNote = () => ui.run(async () => { const n = await docs.createNote('Nuova nota', folderId, course?.id ?? null); navigate(`/documento/${n.id}`); });

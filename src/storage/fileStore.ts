@@ -116,15 +116,24 @@ export class IndexedDbPersistence implements DbPersistence {
   }
   async load() {
     const db = await this.dbp;
-    const v = await req(db.transaction('main').objectStore('main').get('db'));
-    return v ? new Uint8Array(v as ArrayBuffer) : null;
+    const store = db.transaction('main').objectStore('main');
+    const v = (await req(store.get('db'))) as ArrayBuffer | undefined;
+    if (v && v.byteLength) return new Uint8Array(v);
+    // The current image is missing or empty: fall back to the previous good one.
+    const prev = (await req(db.transaction('main').objectStore('main').get('db_prev'))) as ArrayBuffer | undefined;
+    return prev && prev.byteLength ? new Uint8Array(prev) : null;
   }
   async save(bytes: Uint8Array) {
     const db = await this.dbp;
+    // One atomic transaction: the last good image becomes `db_prev`, then the new image replaces `db`.
+    // If anything fails the transaction aborts and both keys keep their old values.
     const tx = db.transaction('main', 'readwrite');
     const store = tx.objectStore('main');
-    // Single atomic transaction: the single `put` replaces the whole image or fails entirely.
-    store.put(bytes.slice().buffer, 'db');
+    const cur = store.get('db');
+    cur.onsuccess = () => {
+      if (cur.result) store.put(cur.result, 'db_prev');
+      store.put(bytes.slice().buffer, 'db');
+    };
     await txDone(tx);
   }
   async snapshot(name: string, bytes: Uint8Array) {

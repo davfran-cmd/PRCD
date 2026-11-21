@@ -211,15 +211,37 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
 .reading .katex-display { overflow-x: auto; overflow-y: hidden; }
 
 /* ---------- responsive: iPad portrait / narrow windows (design: Adattamenti) */
-@media (max-width: 900px) {
-  :root { --sidebar-w: 72px; }
-  .sb { padding: 14px 8px; align-items: stretch; }
-  .sb .label, .sb .cs .nm, .sb .cs .pc, .sb .sb-title, .sb .sb-section, .sb .sb-progress, .sb-search span { display: none !important; }
-  .sb .nv { justify-content: center; padding: 0; }
-  .sb .cs { grid-template-columns: 1fr; justify-items: center; padding: 0; }
-  .sb-search { justify-content: center; padding: 0; }
-  .bento { display: flex !important; flex-direction: column; gap: 10px; overflow: auto; }
-  .bento > .tile { flex: none !important; grid-column: auto !important; grid-row: auto !important; min-height: min-content; overflow: visible; }
+/* The properties panel sits beside the note on wide windows and inline above it on narrow ones. */
+.reader-inline-props { display: none !important; }
+@media (max-width: 1100px) {
+  .reader-aside { display: none; }
+  .reader-inline-props { display: grid !important; }
+}
+
+/* ---------- responsive (design: Adattamenti) ----------
+   > 1000pt  fixed sidebar, 12-column dashboard (iPad landscape)
+   600-1000  collapsible sidebar panel, 6-column dashboard (iPad portrait, Split View)
+   < 600pt   sidebar reduced to icons + course monograms, one column                          */
+.sb-toggle, .sb-scrim { display: none; }
+.sb .mono { display: none; }
+@media (max-width: 1000px) {
+  .sb { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; width: 240px; transform: translateX(-102%); transition: transform 0.18s ease; }
+  body.sb-open .sb { transform: none; box-shadow: 0 0 48px rgba(0, 0, 0, 0.28); }
+  .sb-scrim { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, 0.28); }
+  body.sb-open .sb-scrim { display: block; }
+  .sb-toggle { display: flex; position: fixed; top: 6px; left: 8px; z-index: 30; width: 44px; height: 44px; align-items: center; justify-content: center; border: 1px solid var(--rule); border-radius: 8px; background: #fff; }
+  .main { padding-top: 52px !important; }
+  /* flex-wrap (not grid): every row takes the height of its tallest tile, whatever the content */
+  .bento { display: flex !important; flex-wrap: wrap; align-content: flex-start; gap: 10px; overflow: auto; }
+  .bento > .tile { flex: 0 0 100% !important; max-width: 100%; grid-column: auto !important; grid-row: auto !important; min-height: min-content; overflow: visible; }
+  /* order by importance: today, deadlines, exam + average, attendance, recoveries + recents */
+  .bento > .tile:nth-child(1) { order: 1; }
+  .bento > .tile:nth-child(4) { order: 2; }
+  .bento > .tile:nth-child(2) { order: 3; flex: 0 0 calc(50% - 5px) !important; }
+  .bento > .tile:nth-child(3) { order: 4; flex: 0 0 calc(50% - 5px) !important; }
+  .bento > .tile:nth-child(5) { order: 5; }
+  .bento > .tile:nth-child(6) { order: 6; flex: 0 0 calc(50% - 5px) !important; }
+  .bento > .tile:nth-child(7) { order: 7; flex: 0 0 calc(50% - 5px) !important; }
   /* flex:1 children have a 0 flex-basis, which collapses the tile's intrinsic height: size them by content here */
   .bento > .tile > * { flex: none !important; min-height: auto !important; }
   .bento .tile [style*='overflow:auto'] { max-height: 340px; }
@@ -231,6 +253,18 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 @media (max-width: 600px) {
+  :root { --sidebar-w: 72px; }
+  .sb { position: static; transform: none !important; width: var(--sidebar-w); padding: 14px 8px; align-items: stretch; box-shadow: none !important; }
+  .sb-toggle, .sb-scrim { display: none !important; }
+  .main { padding-top: 0 !important; }
+  .sb .label, .sb .cs .nm, .sb .cs .pc, .sb .sb-title, .sb .sb-section, .sb .sb-progress, .sb-search span { display: none !important; }
+  .sb .nv { justify-content: center; padding: 0; }
+  .sb .cs { grid-template-columns: 1fr; justify-items: center; padding: 0; height: 36px; }
+  .sb .cs .sw { display: none; }
+  .sb .cs .mono { display: flex; width: 36px; height: 30px; border-radius: 2px; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; align-items: center; justify-content: center; }
+  .sb-search { justify-content: center; padding: 0; }
+  .bento > .tile, .bento > .tile:nth-child(n) { flex: 0 0 100% !important; }
+  .main h1.pt { white-space: normal !important; font-size: 34px; }
   .sheet { border-radius: 14px 14px 0 0; align-self: flex-end; }
   .scrim { padding: 0; }
 }

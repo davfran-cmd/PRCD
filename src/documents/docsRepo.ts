@@ -448,6 +448,27 @@ export class DocsRepo {
     this.db.run('DELETE FROM pdf_bookmarks WHERE id = ?', [id]);
   }
 
+  // ------------------------------------------------------------------ backlinks
+
+  /** Notes that cite `doc` with an Obsidian wiki-link ([[Name]], [[Name|alias]], [[Name#Heading]]). */
+  backlinks(doc: DocumentRecord): DocumentRecord[] {
+    const likeEscape = (x: string) => x.replace(/[\\%_]/g, (c) => `\\${c}`);
+    const reEscape = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const stem = doc.fileName.replace(/\.[^.]+$/, '');
+    const rows = this.db.all<{ document_id: string; content: string }>(
+      "SELECT document_id, content FROM document_text WHERE document_id <> ? AND content LIKE ? ESCAPE '\\'",
+      [doc.id, `%[[%${likeEscape(stem)}%`],
+    );
+    const re = new RegExp(`\\[\\[\\s*${reEscape(stem)}\\s*(#[^\\]|]*)?(\\|[^\\]]*)?\\]\\]`, 'i');
+    const out: DocumentRecord[] = [];
+    for (const r of rows) {
+      if (!re.test(r.content)) continue;
+      const d = this.document(r.document_id);
+      if (d) out.push(d);
+    }
+    return out.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   // ------------------------------------------------------------------ search
 
   /** Name and (for notes) full-text search with a short snippet. */

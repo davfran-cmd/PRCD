@@ -9,6 +9,8 @@ import { Btn, Check, Empty, Glyph, Icon, Swatch } from '../ui/components';
 import { st } from '../ui/style';
 import { EventModal } from './modals/EventModal';
 import { LessonPopover } from './modals/LessonPopover';
+import { CourseModal } from './modals/CourseModal';
+import { SemesterModal } from './Universita';
 
 export function Oggi() {
   const now = useNow();
@@ -69,7 +71,7 @@ export function Oggi() {
             <Btn size="lg" onClick={() => ui.modal((close) => <EventModal date={now.today} onClose={close} />)}>
               {Icon.plus}Evento
             </Btn>
-            <Btn size="lg" onClick={() => navigate('/documenti?nuova=1')}>Nota</Btn>
+            <Btn size="lg" onClick={() => void ui.run(async () => { const n = await docs.createNote('Nuova nota', null); navigate(`/documento/${n.id}`); })}>Nota</Btn>
             <A to="/presenze" className="btn lg p">Registra presenze</A>
           </div>
         </header>
@@ -81,7 +83,7 @@ export function Oggi() {
               body={dash.semester ? 'Aggiungi un corso con giorni e orari: PRCD crea da solo tutte le lezioni fino alla fine del semestre.' : 'Tutto resta su questo dispositivo, senza account. Inizia creando il semestre in corso, poi aggiungi i corsi con i loro orari.'}
               actions={
                 <>
-                  <Btn size="lg" variant="p" onClick={() => navigate('/universita?nuovo=1')}>
+                  <Btn size="lg" variant="p" onClick={() => ui.modal((close) => (dash.semester ? <CourseModal semesterId={dash.semester.id} onClose={close} /> : <SemesterModal onClose={close} />))}>
                     {dash.semester ? 'Aggiungi il primo corso' : 'Crea il primo semestre'}
                   </Btn>
                   <Btn size="lg" onClick={() => navigate('/impostazioni/dati')}>Ripristina da un archivio</Btn>

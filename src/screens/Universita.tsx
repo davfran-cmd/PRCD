@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Sidebar } from '../app/Sidebar';
-import { A, useRoute, navigate } from '../app/router';
+import { A } from '../app/router';
 import { useNow, useQuery, useServices, useUi } from '../app/AppContext';
 import { librettoAverages, semesterSummaries } from '../app/queries';
 import { formatNumberIT, formatDateMedium, WEEKDAY_LETTERS_IT, formatDayShort } from '../domain/dates';
@@ -13,7 +13,6 @@ export function Universita() {
   const { repo } = useServices();
   const ui = useUi();
   const now = useNow();
-  const route = useRoute();
   const semesters = useQuery((r) => r.semesters(), []);
   const current = useQuery((r) => r.currentSemester());
   const [selected, setSelected] = useState<string | null>(null);
@@ -24,13 +23,6 @@ export function Universita() {
   const avg = useQuery((r) => librettoAverages(r));
   const allLessons = useQuery((r) => (semId ? r.lessonsForSemester(semId) : []), [semId]);
   const semStats = useMemo(() => computeAttendance(allLessons, now.local, settings), [allLessons, now.local, settings]);
-
-  useEffect(() => {
-    if (route.query.get('nuovo') && sem) ui.modal((close) => <CourseModal semesterId={sem.id} onClose={close} />);
-    else if (route.query.get('nuovo')) ui.modal((close) => <SemesterModal onClose={close} />);
-    if (route.query.get('nuovo')) navigate('/universita', { replace: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.query.get('nuovo')]);
 
   const toRecover = summaries.reduce((a, s) => a + s.stats.absent, 0);
   const examLabel = (s: (typeof summaries)[number]) => (s.nextExam ? `${s.nextExam.isMidterm ? 'prova ' : ''}${formatDayShort(s.nextExam.date as string)}` : repo.attempts(s.course.id).some((a) => a.outcome === 'passed' && !a.isMidterm) ? 'superato' : 'da fissare');

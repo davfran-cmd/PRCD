@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { A } from './router';
 import { useNow, useQuery, useUi } from './AppContext';
 import { dashboard } from './queries';
@@ -7,6 +7,16 @@ import { st } from '../ui/style';
 import { APP_NAME } from '../domain/settings';
 import { GlobalSearch } from './GlobalSearch';
 import { formatNumberIT } from '../domain/dates';
+
+/** Two-letter monogram so a course never depends on colour alone ("Analisi 2" → "A2", "Meccanica razionale" → "MR"). */
+export function monogram(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return '?';
+  const last = words[words.length - 1];
+  if (words.length > 1 && /^\d+$/.test(last)) return (words[0][0] + last.slice(-1)).toUpperCase();
+  if (words.length === 1) return words[0].slice(0, 2).replace(/^./, (c) => c.toUpperCase());
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
 
 export type Section = 'oggi' | 'cal' | 'uni' | 'doc' | 'sta' | 'imp';
 
@@ -24,8 +34,22 @@ export function Sidebar({ active }: { active: Section }) {
   const threshold = useQuery((r) => r.getSettings().attendanceThreshold);
   const ui = useUi();
   const sem = dash.semester;
+  const [open, setOpen] = useState(false);
+  // On narrow windows the sidebar is a slide-over panel (design: Adattamenti). ⌘\ toggles it too.
+  useEffect(() => {
+    document.body.classList.toggle('sb-open', open);
+    return () => document.body.classList.remove('sb-open');
+  }, [open]);
+  useEffect(() => {
+    const onToggle = () => setOpen((o) => !o);
+    window.addEventListener('prcd:toggle-sidebar', onToggle);
+    return () => window.removeEventListener('prcd:toggle-sidebar', onToggle);
+  }, []);
   return (
-    <nav className="sb" aria-label="Sezioni">
+    <>
+    <button type="button" className="sb-toggle" aria-label="Mostra o nascondi la barra laterale" aria-expanded={open} onClick={() => setOpen((o) => !o)}>{Icon.sidebar}</button>
+    <div className="sb-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
+    <nav className="sb" aria-label="Sezioni" onClick={(e) => (e.target as HTMLElement).closest('a') && setOpen(false)}>
       <div style={st('display:flex;align-items:center;justify-content:space-between;padding:0 4px 0 12px;height:44px')}>
         <span className="sb-title" style={st('font-size:22px;font-weight:800;letter-spacing:-0.03em')}>{APP_NAME}</span>
       </div>
@@ -52,6 +76,7 @@ export function Sidebar({ active }: { active: Section }) {
           return (
             <A key={s.course.id} to={`/corso/${s.course.id}`} className="cs" title={s.course.name}>
               <span className="sw" style={{ width: 10, height: 10, background: s.course.color }} />
+              <span className="mono" style={{ background: s.course.color }} aria-hidden="true">{monogram(s.course.name)}</span>
               <span className="nm">{s.course.name}</span>
               <span className={`pc ${low ? 'lo' : ''}`} title={low ? `Sotto la soglia del ${threshold}%` : undefined}>
                 {pct === null ? '–' : `${formatNumberIT(pct, 0)}%`}
@@ -83,5 +108,6 @@ export function Sidebar({ active }: { active: Section }) {
         <span className="label">Impostazioni</span>
       </A>
     </nav>
+    </>
   );
 }
