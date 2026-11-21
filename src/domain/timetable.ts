@@ -119,6 +119,7 @@ export function planGeneration(rule: TimetableRule, ctx: GenerationContext): Les
   for (const date of ruleDates(rule)) {
     if (have.has(date) || ctx.skipDates?.has(date)) continue;
     const lesson = newLesson({ courseId: rule.courseId, ruleId: rule.id, originalDate: date, date, startTime: rule.startTime, endTime: rule.endTime }, ctx.nowIso, ctx.makeId);
+    if (rule.timeUnknown) lesson.timeUnknown = true;
     if (closureFor(date, ctx.closures, ctx.semesterId)) {
       lesson.cancelled = true;
       lesson.cancelReason = 'holiday';
@@ -319,6 +320,7 @@ export function planLessonEdit(input: PlanEditInput): TimetableChangeSet {
     weekday: newWeekday,
     startTime: edit.startTime,
     endTime: edit.endTime,
+    timeUnknown: false,
     // May precede `pivot` by < 7 days when the new weekday falls earlier in the same week.
     validFrom: sortedConverted[0] ?? shiftToWeekday(pivot, newWeekday),
     validTo: lastConverted > lineageEnd ? lastConverted : lineageEnd,

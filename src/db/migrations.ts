@@ -264,6 +264,11 @@ export const MIGRATIONS: Migration[] = [
       )`,
     ],
   },
+  {
+    version: 3,
+    name: 'day-only timetable slots (Procedo courses continue without a time)',
+    up: [`ALTER TABLE timetable_rules ADD COLUMN time_unknown INTEGER NOT NULL DEFAULT 0`],
+  },
 ];
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

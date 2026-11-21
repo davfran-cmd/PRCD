@@ -23,7 +23,7 @@ export function CourseModal({ courseId, semesterId, onClose }: { courseId?: stri
   const existing = useQuery((r) => (courseId ? r.course(courseId) : undefined), [courseId]);
   const today = new Date().toISOString().slice(0, 10);
   const existingSlots = useQuery((r) => (courseId ? currentSlots(r.rules(courseId), today) : []), [courseId]);
-  const others = useQuery((r) => r.courses({ semesterId }).filter((c) => c.id !== courseId).map((c) => ({ c, slots: currentSlots(r.rules(c.id), today) })), [semesterId, courseId]);
+  const others = useQuery((r) => r.courses({ semesterId }).filter((c) => c.id !== courseId).map((c) => ({ c, slots: currentSlots(r.rules(c.id), today).filter((s) => !s.timeUnknown) })), [semesterId, courseId]);
   const usedColors = useQuery((r) => r.courses({ semesterId }).map((c) => c.color), [semesterId]);
 
   const [name, setName] = useState(existing?.name ?? '');
@@ -77,7 +77,7 @@ export function CourseModal({ courseId, semesterId, onClose }: { courseId?: stri
           {existingSlots.map((s, i) => (
             <div key={i} className="mu" style={st('display:flex;gap:8px;padding:6px 0;font-size:14px')}>
               <b style={st('color:#000;width:100px')}>{WEEKDAYS_IT[s.weekday - 1]}</b>
-              {s.startTime}–{s.endTime}
+              {s.timeUnknown ? 'orario n.d.' : `${s.startTime}–${s.endTime}`}
               <span style={st('margin-left:auto;font-size:13px')}>per modificarlo apri una lezione dal calendario</span>
             </div>
           ))}

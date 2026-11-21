@@ -21,7 +21,7 @@ Sono accettate entrambe le forme del file: `{ app: "procedo", state: {…} }` e 
 | — | fine | Procedo non la registra: ultima lezione/`autoUntil`, ma almeno 16 settimane |
 | `semester.status` | `archived` → archiviato; il primo `current` → semestre in corso | |
 | `course.name`, `tint`, `cfu` | nome, colore, CFU | colore non valido → colore della palette; `cfu: ""` → 0 |
-| `course.days` | solo nel report | Procedo non registra gli **orari**: nessun orario settimanale viene inventato |
+| `course.days` + `autoUntil` | il corso **continua** nei suoi giorni | come l'`auto` di Procedo: dal giorno dopo l'ultima lezione registrata a fine semestre, lezioni "di giornata" senza orario (regole con `time_unknown`, schema v3). Anche reimportando lo stesso file, per i corsi importati prima che non hanno ancora un orario |
 | `course.prof`, `code` | **non importati** | PRCD non ha docenti/aule; la sigla è calcolata dal nome |
 | `lesson.date`, `topic` | lezione con data e argomento | senza orario: compare come lezione "di giornata" finché non le dai un orario (qualsiasi modifica di data/ora la rende normale) |
 | `lesson.p` | `S` → presente · `M` → assente (da recuperare) · `R` → recuperata | `chk: true` → da confermare |

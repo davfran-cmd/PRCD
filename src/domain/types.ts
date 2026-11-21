@@ -39,6 +39,8 @@ export interface TimetableRule {
   endTime: HM;
   validFrom: ISODate;
   validTo: ISODate;
+  /** Day-only slot (continuation of a Procedo course): its lessons are all-day items with no known time. */
+  timeUnknown?: boolean;
   createdAt: string;
   updatedAt: string;
 }

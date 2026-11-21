@@ -293,14 +293,14 @@ function ProcedoImportModal({ plan, fileName, onClose }: { plan: ProcedoPlan; fi
   const ui = useUi();
   const [working, setWorking] = useState(false);
   const c = plan.counts;
-  const nothing = c.semesters + c.courses + c.lessons + c.exams === 0;
+  const nothing = c.semesters + c.courses + c.lessons + c.exams + c.continued === 0;
   const go = () =>
     void ui.run(async () => {
       setWorking(true);
       try {
         const r = await applyProcedoImport(plan, repo);
         onClose();
-        ui.toast(`Importati ${r.courses} corsi, ${r.lessons} lezioni e ${r.attempts} esiti d’esame da Procedo`);
+        ui.toast(`Importati ${r.courses} corsi, ${r.lessons} lezioni e ${r.attempts} esiti d’esame da Procedo${r.slots ? `; ${r.slots} giorni di lezione continuano fino a fine semestre` : ''}`);
         navigate('/universita');
       } finally {
         setWorking(false);
@@ -318,7 +318,7 @@ function ProcedoImportModal({ plan, fileName, onClose }: { plan: ProcedoPlan; fi
         </div>
         {c.alreadyImported > 0 && <p className="mu" style={st('font-size:13px;margin:6px 0 0')}>{c.alreadyImported} elementi erano già stati importati: restano come sono.</p>}
         {nothing && <p style={st('font-size:14px')}>Non c’è niente di nuovo da importare.</p>}
-        <p style={st('font-size:14px;margin:14px 0 0')}>Le lezioni di Procedo non hanno un orario: arrivano come lezioni “di giornata” con la loro presenza. Puoi aggiungere l’orario settimanale dalla pagina del corso.</p>
+        <p style={st('font-size:14px;margin:14px 0 0')}>Le lezioni di Procedo non hanno un orario: arrivano come lezioni “di giornata” con la loro presenza. Come in Procedo, ogni corso continua nei suoi giorni fino a fine semestre{c.continued ? ` (${c.continued} ${c.continued === 1 ? 'corso' : 'corsi'})` : ''}.</p>
         {plan.warnings.length > 0 && (
           <details style={st('margin-top:12px;font-size:13px')} open={plan.warnings.length <= 4}><summary>{plan.warnings.length} avvisi</summary>
             <ul style={st('padding-left:18px;max-height:140px;overflow:auto;margin:6px 0 0')}>{plan.warnings.map((w, i) => <li key={i}>{w}</li>)}</ul>

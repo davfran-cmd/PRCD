@@ -66,7 +66,7 @@ export function Corso({ id }: { id: string }) {
             </div>
             <span style={st('flex:1')} />
             <div style={st('font-size:14px;line-height:1.5;text-align:right;padding-bottom:4px')}>
-              {summary.slots.length ? summary.slots.map((s, i) => <div key={i}><b>{slotLabel(s).split(' ')[0]}</b> {s.startTime}–{s.endTime}</div>) : <span className="mu">Nessun orario</span>}
+              {summary.slots.length ? summary.slots.map((s, i) => <div key={i}><b>{slotLabel(s).split(' ')[0]}</b> {s.timeUnknown ? 'orario n.d.' : `${s.startTime}–${s.endTime}`}</div>) : <span className="mu">Nessun orario</span>}
             </div>
             <div style={st('display:flex;gap:8px;margin-bottom:4px')}>
               <Btn onClick={() => ui.modal((close) => <CourseModal courseId={id} semesterId={course.semesterId} onClose={close} />)}>Modifica</Btn>

@@ -42,6 +42,7 @@ export class ValidationError extends Error {}
 const SEM: RowSpec = { bool: ['archived'] };
 const COURSE: RowSpec = { bool: ['archived', 'hidden'] };
 const LESSON: RowSpec = { bool: ['cancelled', 'isException', 'timeUnknown'] };
+const RULE: RowSpec = { bool: ['timeUnknown'] };
 const ATTEMPT: RowSpec = { bool: ['isMidterm', 'lode', 'eligible', 'booked'] };
 const EVENT: RowSpec = { bool: ['allDay', 'completed'], json: ['recurrence'] };
 const EXCEPTION: RowSpec = { bool: ['cancelled'] };
@@ -208,16 +209,16 @@ export class Repo {
   // ================================================================== timetable rules
 
   rules(courseId?: string): TimetableRule[] {
-    return selectAll<TimetableRule>(this.db, `SELECT * FROM timetable_rules ${courseId ? 'WHERE course_id = ?' : ''} ORDER BY weekday, start_time, valid_from`, courseId ? [courseId] : []);
+    return selectAll<TimetableRule>(this.db, `SELECT * FROM timetable_rules ${courseId ? 'WHERE course_id = ?' : ''} ORDER BY weekday, start_time, valid_from`, courseId ? [courseId] : [], RULE);
   }
 
   rule(id: string): TimetableRule | undefined {
-    return selectOne<TimetableRule>(this.db, 'SELECT * FROM timetable_rules WHERE id = ?', [id]);
+    return selectOne<TimetableRule>(this.db, 'SELECT * FROM timetable_rules WHERE id = ?', [id], RULE);
   }
 
   /** Every rule created from the same original slot (splits keep the `slotId`). */
   lineage(slotId: string): TimetableRule[] {
-    return selectAll<TimetableRule>(this.db, 'SELECT * FROM timetable_rules WHERE slot_id = ? ORDER BY valid_from', [slotId]);
+    return selectAll<TimetableRule>(this.db, 'SELECT * FROM timetable_rules WHERE slot_id = ? ORDER BY valid_from', [slotId], RULE);
   }
 
   /** Rules currently producing slots: non-empty validity that has not ended before `date`. */
@@ -256,7 +257,28 @@ export class Repo {
       updatedAt: now,
     };
     this.db.transaction(() => {
-      insertRow(this.db, 'timetable_rules', rule);
+      insertRow(this.db, 'timetable_rules', rule, RULE);
+      this.generateForRule(rule, sem.id);
+    });
+    return rule;
+  }
+
+  /**
+   * Day-only weekly slot from `fromDate` to the end of the semester: lessons are all-day items without a
+   * time (used to continue courses imported from Procedo, which never recorded times).
+   */
+  addDayOnlySlot(courseId: string, weekday: number, fromDate: ISODate): TimetableRule | null {
+    const course = this.course(courseId);
+    if (!course) throw new ValidationError('Corso non trovato');
+    const sem = this.semester(course.semesterId);
+    if (!sem) throw new ValidationError('Semestre non trovato');
+    const validFrom = fromDate > sem.startDate ? fromDate : sem.startDate;
+    if (validFrom > sem.endDate || !Number.isInteger(weekday) || weekday < 1 || weekday > 7) return null;
+    const now = this.nowIso();
+    const id = newId();
+    const rule: TimetableRule = { id, slotId: id, courseId, weekday, startTime: '00:00', endTime: '23:59', validFrom, validTo: sem.endDate, timeUnknown: true, createdAt: now, updatedAt: now };
+    this.db.transaction(() => {
+      insertRow(this.db, 'timetable_rules', rule, RULE);
       this.generateForRule(rule, sem.id);
     });
     return rule;
@@ -400,7 +422,7 @@ export class Repo {
     }
     this.db.transaction(() => {
       for (const p of cs.rulesToUpdate) updateRow(this.db, 'timetable_rules', 'id', p.id, { ...p.set, updatedAt: this.nowIso() });
-      for (const r of cs.rulesToInsert) insertRow(this.db, 'timetable_rules', r);
+      for (const r of cs.rulesToInsert) insertRow(this.db, 'timetable_rules', r, RULE);
       // Any explicit date/time edit gives the lesson a real time.
       for (const p of cs.lessonsToUpdate) this.patchLesson(p.id, { ...p.set, timeUnknown: false });
       for (const l of cs.lessonsToInsert) insertRow(this.db, 'lessons', l, LESSON);

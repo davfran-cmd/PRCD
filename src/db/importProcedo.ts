@@ -72,7 +72,7 @@ const isHex = (s: string) => /^#[0-9a-fA-F]{6}$/.test(s);
 
 export interface PlannedSemester { sourceId: string; name: string; startDate: string; endDate: string; archived: boolean; current: boolean; existingId: string | null }
 export interface PlannedLesson { sourceId: string; date: string; topic: string; attendance: AttendanceStatus }
-export interface PlannedCourse { sourceId: string; semesterSource: string; name: string; color: string; cfu: number; examKind: 'graded' | 'eligibility'; days: number[]; lessons: PlannedLesson[]; existingId: string | null }
+export interface PlannedCourse { sourceId: string; semesterSource: string; name: string; color: string; cfu: number; examKind: 'graded' | 'eligibility'; days: number[]; autoUntil: string | null; lessons: PlannedLesson[]; existingId: string | null }
 export interface PlannedExam {
   sourceId: string;
   courseSource: string; // a Procedo course id, or a synthetic "exam:<id>" course
@@ -90,7 +90,7 @@ export interface ProcedoPlan {
   courses: PlannedCourse[];
   exams: PlannedExam[];
   degreeCfu: number | null;
-  counts: { semesters: number; courses: number; lessons: number; exams: number; alreadyImported: number };
+  counts: { semesters: number; courses: number; lessons: number; exams: number; alreadyImported: number; continued: number };
   warnings: string[];
   notImported: string[];
 }
@@ -184,7 +184,7 @@ export function planProcedoImport(raw: unknown, repo: Repo): ProcedoPlan {
     const existingId = already('course', id);
     if (existingId) alreadyImported += 1;
     lessonCount += lessons.filter((l) => !already('lesson', l.sourceId)).length;
-    courses.push({ sourceId: id, semesterSource, name, color, cfu, examKind: 'graded', days: parseDays(c.days), lessons, existingId });
+    courses.push({ sourceId: id, semesterSource, name, color, cfu, examKind: 'graded', days: parseDays(c.days), autoUntil: isISODate(autoUntil) ? autoUntil : null, lessons, existingId });
   }
 
   // ---- exams
@@ -205,7 +205,7 @@ export function planProcedoImport(raw: unknown, repo: Repo): ProcedoPlan {
       // No (existing) course: the exam gets its own course so it can live in the libretto.
       courseSource = `exam:${id}`;
       const tint = str(e.tint);
-      course = { sourceId: courseSource, semesterSource: EXAMS_SEMESTER, name, color: isHex(tint) ? tint.toUpperCase() : COURSE_COLORS[usedColor++ % COURSE_COLORS.length].hex, cfu, examKind: kind, days: [], lessons: [], existingId: already('course', courseSource) };
+      course = { sourceId: courseSource, semesterSource: EXAMS_SEMESTER, name, color: isHex(tint) ? tint.toUpperCase() : COURSE_COLORS[usedColor++ % COURSE_COLORS.length].hex, cfu, examKind: kind, days: [], autoUntil: null, lessons: [], existingId: already('course', courseSource) };
       courses.push(course);
     } else {
       // The libretto uses the exam's CFU and kind: Procedo stored them on the exam.
@@ -291,6 +291,13 @@ export function planProcedoImport(raw: unknown, repo: Repo): ProcedoPlan {
       lessons: lessonCount,
       exams: exams.filter((e) => !e.existingId).length,
       alreadyImported,
+      // courses that will continue on their Procedo days (new ones, or imported ones still without a timetable)
+      continued: courses.filter((c) => {
+        if (!c.days.length || !c.lessons.length) return false;
+        if (!c.existingId) return !semesters.find((x) => x.sourceId === c.semesterSource)?.archived;
+        const sem = repo.semester(repo.course(c.existingId)?.semesterId ?? '');
+        return Boolean(sem && !sem.archived && repo.rules(c.existingId).length === 0);
+      }).length,
     },
     warnings,
     notImported: [...notImported],
@@ -308,6 +315,8 @@ export interface ProcedoImportReport {
   courses: number;
   lessons: number;
   attempts: number;
+  /** Day-only weekly slots added to continue the courses. */
+  slots: number;
   skipped: number;
   snapshotName: string;
 }
@@ -319,7 +328,7 @@ export async function applyProcedoImport(plan: ProcedoPlan, repo: Repo, opts: { 
   const snapshotName = `pre-import-procedo-${stamp.replace(/[:.]/g, '-')}`;
   await db.flush();
   await db.snapshot(snapshotName);
-  const report: ProcedoImportReport = { semesters: 0, courses: 0, lessons: 0, attempts: 0, skipped: 0, snapshotName };
+  const report: ProcedoImportReport = { semesters: 0, courses: 0, lessons: 0, attempts: 0, slots: 0, skipped: 0, snapshotName };
   const remember = (kind: string, sourceId: string, localId: string) =>
     db.run('INSERT INTO import_map(source, source_kind, source_id, local_id, imported_at) VALUES(?,?,?,?,?)', [SOURCE, kind, sourceId, localId, stamp]);
   const known = (kind: string, sourceId: string) => db.get<{ local_id: string }>('SELECT local_id FROM import_map WHERE source = ? AND source_kind = ? AND source_id = ?', [SOURCE, kind, sourceId])?.local_id ?? null;
@@ -367,6 +376,15 @@ export async function applyProcedoImport(plan: ProcedoPlan, repo: Repo, opts: { 
         insertRow(db, 'lessons', lesson, { bool: ['cancelled', 'isException', 'timeUnknown'] });
         remember('lesson', l.sourceId, lesson.id);
         report.lessons += 1;
+      }
+      // Procedo created each lesson on the course's days as the days came ("auto"). PRCD continues the
+      // course the same way: day-only weekly slots from the day after the last recorded lesson to the end
+      // of the semester. Also on a re-import, for courses that still have no timetable of their own.
+      const sem = repo.semester(repo.course(courseId)?.semesterId ?? '');
+      if (c.days.length && sem && !sem.archived && repo.rules(courseId).length === 0) {
+        const last = [...c.lessons.map((l) => l.date), ...(c.autoUntil ? [c.autoUntil] : []), ...repo.lessonsForCourse(courseId).map((l) => l.date)].sort().at(-1);
+        const from = last ? addDays(last, 1) : sem.startDate;
+        for (const d of c.days) if (repo.addDayOnlySlot(courseId, d, from)) report.slots += 1;
       }
     }
 

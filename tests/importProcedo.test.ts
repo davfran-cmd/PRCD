@@ -34,16 +34,17 @@ describe('Procedo backup import', () => {
 
     const am = repo.courses({ includeArchived: true }).find((c) => c.name === 'Analisi Matematica II')!;
     expect(am).toMatchObject({ color: '#6155F5', cfu: 9, semesterId: current.id });
-    const lessons = repo.lessonsForCourse(am.id);
+    const lessons = repo.lessonsForCourse(am.id).filter((l) => l.ruleId === null);
     expect(lessons.map((l) => [l.date, l.attendance])).toEqual([
       ['2026-09-23', 'attended'], ['2026-09-25', 'attended'], ['2026-09-27', 'attended'], ['2026-09-30', 'absent'], ['2026-10-02', 'to_confirm'],
     ]);
     expect(lessons.every((l) => l.timeUnknown && l.ruleId === null)).toBe(true);
     expect(lessons[0].topic).toBe('Serie numeriche: definizione e criteri');
-    expect(repo.rules(am.id)).toHaveLength(0); // Procedo had no lesson times: no invented timetable
+    // Procedo had no lesson times: the course continues on its days without an invented time
+    expect(repo.rules(am.id).map((x) => [x.weekday, x.timeUnknown, x.validFrom])).toEqual([[1, true, '2026-11-21'], [3, true, '2026-11-21'], [5, true, '2026-11-21']]);
 
     const fi = repo.courses().find((c) => c.name === 'Fisica Generale')!;
-    expect(repo.lessonsForCourse(fi.id).map((l) => l.attendance)).toEqual(['attended', 'recovered']);
+    expect(repo.lessonsForCourse(fi.id).filter((l) => l.ruleId === null).map((l) => l.attendance)).toEqual(['attended', 'recovered']);
     const stats = computeAttendance(repo.lessonsForCourse(am.id), repo.nowLocal(), repo.getSettings());
     expect(stats).toMatchObject({ held: 4, attended: 3, absent: 1, toConfirm: 1 });
 
@@ -95,9 +96,41 @@ describe('Procedo backup import', () => {
     const next = example();
     next.state.courses[1].lessons.push({ id: 'les_fi03', date: '2026-10-01', topic: 'Acustica', p: 'S', a: false, t: 1 });
     await applyProcedoImport(planProcedoImport(next, repo), repo, { now: now() });
-    const ls = repo.lessonsForCourse(fi.id);
+    const ls = repo.lessonsForCourse(fi.id).filter((l) => l.ruleId === null);
     expect(ls).toHaveLength(3);
     expect(repo.lesson(first.id)!.attendance).toBe('absent'); // not overwritten
+  });
+
+  it('continues each course on its Procedo days until the end of the semester, as all-day lessons', async () => {
+    const { repo } = await makeRepo(now);
+    const r = await applyProcedoImport(planProcedoImport(example(), repo), repo, { now: now() });
+    expect(r.slots).toBe(5); // Analisi Mon/Wed/Fri + Fisica Tue/Thu; Programmazione's semester is archived
+    const am = repo.courses().find((c) => c.name === 'Analisi Matematica II')!;
+    const sem = repo.semester(am.semesterId)!;
+    const future = repo.lessonsForCourse(am.id).filter((l) => l.ruleId !== null);
+    expect(future[0]).toMatchObject({ date: '2026-11-23', timeUnknown: true, attendance: 'to_confirm' });
+    expect(future.at(-1)!.date <= sem.endDate).toBe(true);
+    expect(future.every((l) => l.date > '2026-11-20')).toBe(true); // never doubles the imported days
+    const items = buildTimeline(repo, '2026-11-23', '2026-11-29').filter((i) => i.kind === 'lesson');
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every((i) => i.allDay && !i.conflict)).toBe(true);
+    // a second import adds nothing more
+    const again = planProcedoImport(example(), repo);
+    expect(again.counts.continued).toBe(0);
+    const r2 = await applyProcedoImport(again, repo, { now: now() });
+    expect(r2.slots).toBe(0);
+  });
+
+  it('a re-import continues courses imported before this feature (no timetable yet)', async () => {
+    const { repo, db } = await makeRepo(now);
+    await applyProcedoImport(planProcedoImport(example(), repo), repo, { now: now() });
+    // simulate data imported by the previous version: no rules, no generated lessons
+    db.run('DELETE FROM lessons WHERE rule_id IS NOT NULL');
+    db.run('DELETE FROM timetable_rules');
+    const plan = planProcedoImport(example(), repo);
+    expect(plan.counts).toMatchObject({ lessons: 0, continued: 2 });
+    const r = await applyProcedoImport(plan, repo, { now: now() });
+    expect(r).toMatchObject({ lessons: 0, slots: 5 });
   });
 
   it('keeps a snapshot of the data before importing', async () => {

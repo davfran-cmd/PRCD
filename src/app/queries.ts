@@ -12,7 +12,7 @@ export interface CourseSummary {
   course: Course;
   stats: AttendanceStats;
   strip: StripGlyph[];
-  slots: Array<{ weekday: number; startTime: string; endTime: string }>;
+  slots: Array<{ weekday: number; startTime: string; endTime: string; timeUnknown: boolean }>;
   weekdays: number[]; // ISO weekdays with a lesson
   nextExam: ExamAttempt | null;
   toRecover: Lesson[];
@@ -20,7 +20,7 @@ export interface CourseSummary {
 }
 
 /** Slots currently producing lessons, collapsed to the latest pattern per slot lineage. */
-export function currentSlots(rules: TimetableRule[], today: ISODate): Array<{ weekday: number; startTime: string; endTime: string }> {
+export function currentSlots(rules: TimetableRule[], today: ISODate): Array<{ weekday: number; startTime: string; endTime: string; timeUnknown: boolean }> {
   const byLineage = new Map<string, TimetableRule>();
   for (const r of rules) {
     if (r.validTo < r.validFrom || r.validTo < today) continue;
@@ -28,7 +28,7 @@ export function currentSlots(rules: TimetableRule[], today: ISODate): Array<{ we
     if (!cur || r.validFrom > cur.validFrom) byLineage.set(r.slotId, r);
   }
   return [...byLineage.values()]
-    .map((r) => ({ weekday: r.weekday, startTime: r.startTime, endTime: r.endTime }))
+    .map((r) => ({ weekday: r.weekday, startTime: r.startTime, endTime: r.endTime, timeUnknown: Boolean(r.timeUnknown) }))
     .sort((a, b) => a.weekday - b.weekday || hmToMin(a.startTime) - hmToMin(b.startTime));
 }
 
