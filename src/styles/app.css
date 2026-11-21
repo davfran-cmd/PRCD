@@ -266,7 +266,7 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
   .bento > .tile, .bento > .tile:nth-child(n) { flex: 0 0 100% !important; }
   .main h1.pt { white-space: normal !important; font-size: 34px; }
   .main header { flex-wrap: wrap; }
-  .main header > div { flex-wrap: wrap; }
+  .main header > div { flex-wrap: wrap; flex: 1 1 auto !important; min-width: 0; }
   .empty .btn, .dlg .btn { white-space: normal; height: auto; min-height: 44px; padding-top: 8px; padding-bottom: 8px; text-align: center; }
   .sheet { border-radius: 14px 14px 0 0; align-self: flex-end; }
   .scrim { padding: 0; }
