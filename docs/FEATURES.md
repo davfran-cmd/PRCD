@@ -32,7 +32,8 @@ Legenda — **T** = coperto da test automatici (Vitest, nessun browser) · **B**
 - Cartelle annidate, import file/cartelle con gerarchia preservata, copia privata, rinomina/sposta/elimina con conferma, preferiti, tag, recenti, collegamento a corso, ricerca (nomi + testo note), drag & drop · **T**
 - **Importazione guidata** (Scegli → Controlla → Fatto) con conteggi, collisioni, "mantieni la struttura", corso collegato: provata con una cartella simulata (gerarchia mantenuta, file nascosti e tipi non supportati saltati) · **B**
 - Selettore cartelle nativo (`PRCDFiles`) · **N**
-- Lettore Markdown: GFM, frontmatter, KaTeX, highlighting, wiki-link e embed Obsidian, immagini relative, sanitizzazione, indice con avanzamento e tempo di lettura, pannello Proprietà e "Note che citano questa", dimensione testo · **T B**
+- **Documenti: solo PDF** (decisione dell'utente, 21 nov 2026): si importano solo PDF e non si creano più note; le note e immagini già presenti restano leggibili ed eliminabili (selezione multipla). Ogni corso ha la sua cartella; ciò che c'è dentro è collegato al corso.
+- Lettore Markdown (per le note già importate): GFM, frontmatter, KaTeX, highlighting, wiki-link e embed Obsidian, immagini relative, sanitizzazione, indice con avanzamento e tempo di lettura, pannello Proprietà e "Note che citano questa", dimensione testo · **T B**
 - Lettore PDF: rendering virtualizzato, zoom/adatta larghezza, cursore pagine, miniature, ricerca con evidenziazione, segnalibri, ultima posizione con avviso "Ripreso da p. N", modalità immersiva · **T** (logica) **B** (rendering di un PDF reale)
 - Note create in-app con editor semplice; le note importate sono di sola lettura (anche il repository le rifiuta) · **T**; l'editor non è stato ispezionato visivamente
 
