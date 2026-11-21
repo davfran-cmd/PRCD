@@ -67,7 +67,8 @@ export function CourseModal({ courseId, semesterId, onClose }: { courseId?: stri
           </select>
         </Field>
         <Field label="Colore" hint="identifica il corso ovunque">
-          {COURSE_COLORS.map((c) => (
+          {/* the course's current colour stays selectable even if it is not in the palette (e.g. imported from Procedo) */}
+          {[...(existing && !COURSE_COLORS.some((c) => c.hex.toLowerCase() === existing.color.toLowerCase()) ? [{ name: 'Colore attuale', hex: existing.color }] : []), ...COURSE_COLORS].map((c) => (
             <button key={c.hex} type="button" title={c.name} aria-label={c.name} aria-pressed={color === c.hex} onClick={() => setColor(c.hex)} style={{ width: 30, height: 30, borderRadius: 4, border: 0, background: c.hex, boxShadow: color === c.hex ? '0 0 0 2px #fff,0 0 0 4px #000' : 'none' }} />
           ))}
         </Field>

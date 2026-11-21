@@ -37,6 +37,16 @@ export const COURSE_COLORS: Array<{ name: string; hex: string }> = [
   { name: 'Ocra', hex: '#B7791F' },
   { name: 'Prugna', hex: '#93306E' },
   { name: 'Grafite', hex: '#4A4A44' },
+  { name: 'Rosso', hex: '#B42318' },
+  { name: 'Arancio', hex: '#B45309' },
+  { name: 'Rosa', hex: '#BE185D' },
+  { name: 'Bordeaux', hex: '#7F1D1D' },
+  { name: 'Marrone', hex: '#8B4513' },
+  { name: 'Oliva', hex: '#5B6B1F' },
+  { name: 'Verde', hex: '#15803D' },
+  { name: 'Blu', hex: '#1D4ED8' },
+  { name: 'Indaco', hex: '#4338CA' },
+  { name: 'Ardesia', hex: '#334155' },
 ];
 
 export const CATEGORY_LABELS = {
