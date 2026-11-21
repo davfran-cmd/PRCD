@@ -50,6 +50,16 @@ export function GlyphStrip({ glyphs, label, style }: { glyphs: Array<StripGlyph 
   );
 }
 
+/** What each square means (attendance strips). */
+export function GlyphLegend({ future, style }: { future?: boolean; style?: CSSProperties }) {
+  const items: Array<['a' | 'x' | 'r' | 't' | 'f', string]> = [['a', 'presente'], ['x', 'assente'], ['r', 'recuperata'], ['t', 'da confermare'], ...(future ? [['f', 'da svolgere'] as ['f', string]] : [])];
+  return (
+    <div className="mu" style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', fontSize: 15, ...style }}>
+      {items.map(([g, l]) => <span key={g} style={{ display: 'flex', gap: 7, alignItems: 'center', whiteSpace: 'nowrap' }}><span className={`g ${g} lg`} style={{ width: 16, height: 16 }} />{l}</span>)}
+    </div>
+  );
+}
+
 const STATUS_GLYPH: Record<AttendanceStatus, 'a' | 'x' | 'r' | 't'> = { attended: 'a', absent: 'x', recovered: 'r', to_confirm: 't' };
 export const glyphOf = (s: AttendanceStatus) => STATUS_GLYPH[s];
 

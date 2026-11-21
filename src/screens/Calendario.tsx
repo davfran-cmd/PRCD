@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Sidebar } from '../app/Sidebar';
 import { A, navigate, useRoute } from '../app/router';
 import { useNow, useQuery, useServices, useUi } from '../app/AppContext';
@@ -41,6 +41,21 @@ export function Calendario({ view }: { view: View }) {
   const items = useQuery((r) => buildTimeline(r, range[0], range[1]), [range[0], range[1], cal.lastSyncAt]);
   const go = (v: View, d: ISODate) => navigate(`/calendario/${v}?d=${d}`);
   const step = (dir: -1 | 1) => go(view, view === 'mese' ? addMonths(date, dir) : addDays(date, dir * (view === 'settimana' ? 7 : 1)));
+  // Horizontal swipe on the calendar changes day / week / month (not from the left edge: that opens the sidebar).
+  const swipe = useRef<{ x: number; y: number } | null>(null);
+  const onSwipeStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipe.current = e.touches.length === 1 && t.clientX > 30 ? { x: t.clientX, y: t.clientY } : null;
+  };
+  const onSwipeEnd = (e: React.TouchEvent) => {
+    const s0 = swipe.current;
+    swipe.current = null;
+    if (!s0 || document.querySelector('.scrim')) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - s0.x;
+    const dy = t.clientY - s0.y;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy)) step(dx < 0 ? 1 : -1);
+  };
   const openNew = (d: ISODate, time?: string) => ui.modal((close) => <EventModal date={d} time={time} onClose={close} />);
 
   const open = (i: TimelineItem) => {
@@ -57,7 +72,7 @@ export function Calendario({ view }: { view: View }) {
   return (
     <div className="app">
       <Sidebar active="cal" />
-      <main className="main">
+      <main className="main" onTouchStart={onSwipeStart} onTouchEnd={onSwipeEnd}>
         <header style={st('min-height:72px;display:flex;align-items:center;gap:10px;padding:8px 20px 8px 24px;flex-wrap:wrap;flex:none')}>
           <h1 className="pt s" style={st('margin:0')}>{cap}</h1>
           {view === 'settimana' && <span className="mu" style={st('margin-left:4px')}>settimana {isoWeekKey(date).split('-W')[1].replace(/^0/, '')}</span>}

@@ -95,7 +95,7 @@ export function Sidebar({ active, overlay }: { active: Section; overlay?: boolea
           </A>
         ))}
       </div>
-      <div className="sb-section" style={st('margin:26px 12px 6px;font-size:13px;color:#5F5F59;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px')}>
+      <div className="sb-section" style={st('margin:26px 12px 6px;font-size:13.2px;white-space:nowrap;color:#5F5F59;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px')}>
         <span>Corsi del semestre</span>
         <span style={st('text-align:right')}>presenze</span>
       </div>

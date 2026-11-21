@@ -4,7 +4,7 @@ import { A, navigate, useRoute } from '../app/router';
 import { useNow, useQuery, useServices, useUi } from '../app/AppContext';
 import { courseSummary, librettoEntries, slotLabel } from '../app/queries';
 import { ATTENDANCE_LABELS, nextAttendanceStatus } from '../domain/attendance';
-import { diffDays, formatDateMedium, formatDayLongLower, formatDayShort, formatNumberIT, formatMonthYear } from '../domain/dates';
+import { addDays, diffDays, formatDateMedium, startOfWeek, formatDayLongLower, formatDayShort, formatNumberIT, formatMonthYear } from '../domain/dates';
 import { formatGrade } from '../domain/grades';
 import { Btn, Empty, Icon, Modal, glyphOf } from '../ui/components';
 import { st } from '../ui/style';
@@ -85,7 +85,7 @@ export function Corso({ id }: { id: string }) {
               <h2 style={chStyle}>Presenze</h2>
               <div style={st('display:flex;align-items:baseline;gap:10px')}>
                 <span style={{ fontSize: 52, fontWeight: 780, letterSpacing: '-0.04em', lineHeight: 1, color: lo ? '#B23A0A' : '#000' }}>{stats.percentage === null ? '–' : `${formatNumberIT(stats.percentage, 0)}%`}</span>
-                <span className="mu" style={st('font-size:14px')}>{stats.attended} su {stats.held} lezioni svolte</span>
+                <span className="mu" style={st('font-size:17px')}>{stats.attended} su {stats.held} lezioni svolte</span>
               </div>
               {total > 0 && (
                 <div style={st('display:flex;height:8px;margin:14px 0 6px;gap:2px')} aria-hidden="true">
@@ -95,24 +95,32 @@ export function Corso({ id }: { id: string }) {
                   <div style={{ flex: upcoming + stats.toConfirm, background: '#EBEBE6' }} />
                 </div>
               )}
-              <div className="mu" style={st('display:flex;justify-content:space-between;font-size:12px')}>
+              <div className="mu" style={st('display:flex;justify-content:space-between;font-size:15px')}>
                 <span>{stats.absent} assenze aperte, {stats.recovered} recuperate</span>
                 <span>{upcoming} da svolgere</span>
               </div>
-              {stats.toConfirm > 0 && <p style={st('font-size:13px;margin:10px 0 0;color:#1F35C7')}>{stats.toConfirm} {stats.toConfirm === 1 ? 'lezione' : 'lezioni'} da confermare. <A to="/presenze" style={st('color:#1F35C7')}>Registra</A></p>}
-              <div style={st('margin-top:16px;font-size:13px;font-weight:600;display:flex;justify-content:space-between')}>
+              {stats.toConfirm > 0 && <p style={st('font-size:16px;margin:10px 0 0;color:#1F35C7')}>{stats.toConfirm} {stats.toConfirm === 1 ? 'lezione' : 'lezioni'} da confermare. <A to="/presenze" style={st('color:#1F35C7')}>Registra</A></p>}
+              <div style={st('margin-top:18px;font-size:16px;font-weight:650;display:flex;justify-content:space-between;align-items:baseline')}>
                 <span>Ultime lezioni</span><span className="mu" style={st('font-weight:400')}>tocca il quadrato per cambiare</span>
               </div>
               <div style={st('margin-top:6px')}>
-                {lastLessons.slice(0, 7).map((l) => (
-                  <div key={l.id} className="lrow" style={lrStyle}>
-                    <span style={st('font-weight:600')}>{formatDayShort(l.date).replace(/ \w+$/, '')}</span>
-                    <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.topic || (l.timeUnknown ? 'orario non indicato' : `${l.startTime}–${l.endTime}`)}</span>
-                    <button style={cycleBtn} onClick={() => void ui.run(() => repo.setAttendance(l.id, nextAttendanceStatus(l.attendance)))} aria-label={`Stato: ${ATTENDANCE_LABELS[l.attendance]}`}>
-                      <span className={`g ${glyphOf(l.attendance)}`} />
-                    </button>
-                  </div>
-                ))}
+                {lastLessons.map((l, i) => {
+                  // a heading at every change of week, so one week is clearly apart from the next
+                  const wk = startOfWeek(l.date);
+                  const newWeek = i === 0 || startOfWeek(lastLessons[i - 1].date) !== wk;
+                  return (
+                    <div key={l.id}>
+                      {newWeek && <div className="mu" style={st('font-size:14px;font-weight:600;padding:16px 0 6px;border-bottom:2px solid #000;color:#000')}>Settimana {formatDayShort(wk).replace(/^\S+ /, '')} – {formatDayShort(addDays(wk, 6)).replace(/^\S+ /, '')}</div>}
+                      <div className="lrow" style={{ ...lrStyle, borderTop: newWeek ? 0 : lrStyle.borderTop }}>
+                        <span style={st('font-weight:650')}>{formatDayShort(l.date).replace(/ \w+$/, '')}</span>
+                        <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.topic || (l.timeUnknown ? 'orario non indicato' : `${l.startTime}–${l.endTime}`)}</span>
+                        <button style={cycleBtn} onClick={() => void ui.run(() => repo.setAttendance(l.id, nextAttendanceStatus(l.attendance)))} aria-label={`Stato: ${ATTENDANCE_LABELS[l.attendance]}`}>
+                          <span className={`g lg ${glyphOf(l.attendance)}`} style={{ width: 26, height: 26 }} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
                 {lastLessons.length === 0 && <p className="mu" style={st('font-size:14px')}>Le lezioni svolte compariranno qui.</p>}
               </div>
             </section>
@@ -160,8 +168,8 @@ export function Corso({ id }: { id: string }) {
 
 const colStyle: React.CSSProperties = { padding: '18px 22px', borderRight: '1px solid #DCDCD6', minWidth: 0 };
 const chStyle: React.CSSProperties = { margin: '0 0 12px', fontSize: 17, fontWeight: 650 };
-const lrStyle: React.CSSProperties = { display: 'grid', gridTemplateColumns: '62px 1fr 44px', alignItems: 'center', minHeight: 44, borderTop: '1px solid #EBEBE6', gap: 8, fontSize: 14 };
-const cycleBtn: React.CSSProperties = { width: 44, height: 44, border: 0, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' };
+const lrStyle: React.CSSProperties = { display: 'grid', gridTemplateColumns: '80px 1fr 52px', alignItems: 'center', minHeight: 56, borderTop: '1px solid #EBEBE6', gap: 10, fontSize: 17 };
+const cycleBtn: React.CSSProperties = { width: 52, height: 52, border: 0, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' };
 
 function ExamBlock({ entry, courseId, attempts, today, full }: { entry: ReturnType<typeof librettoEntries>[number] | undefined; courseId: string; attempts: ReturnType<ReturnType<typeof useServices>['repo']['attempts']>; today: string; full?: boolean }) {
   const ui = useUi();

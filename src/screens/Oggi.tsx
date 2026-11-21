@@ -5,7 +5,7 @@ import { dashboard, whenLabel } from '../app/queries';
 import { buildTimeline, itemsOnDay, type TimelineItem } from '../app/timeline';
 import { addDays, formatDayLong, formatDayLongLower, formatDayShort, formatNumberIT, WEEKDAYS_IT, parseISODate, weekdayISO } from '../domain/dates';
 import { ATTENDANCE_LABELS } from '../domain/attendance';
-import { Btn, Check, Empty, Glyph, GlyphStrip, Icon, Swatch } from '../ui/components';
+import { Btn, Check, Empty, Glyph, GlyphLegend, GlyphStrip, Icon, Swatch } from '../ui/components';
 import { st } from '../ui/style';
 import { EventModal } from './modals/EventModal';
 import { LessonPopover } from './modals/LessonPopover';
@@ -207,12 +207,12 @@ export function Oggi() {
                 <h2>Presenze del semestre</h2>
                 <A to="/universita">Dettaglio</A>
               </div>
-              <div style={st('display:flex;flex-direction:column;gap:12px;overflow:auto;min-height:0;margin-top:2px')}>
+              <div style={st('display:flex;flex-direction:column;gap:8px;overflow:auto;min-height:0;margin-top:2px')}>
                 {dash.summaries.map((s) => {
                   const p = s.stats.percentage;
                   const lo = p !== null && p < settings.attendanceThreshold;
                   return (
-                    <A key={s.course.id} to={`/corso/${s.course.id}`} style={st('display:flex;flex-direction:column;gap:5px;color:#000;text-decoration:none;min-width:0')}>
+                    <A key={s.course.id} to={`/corso/${s.course.id}`} style={st('display:flex;flex-direction:column;gap:3px;color:#000;text-decoration:none;min-width:0')}>
                       <span style={st('display:flex;align-items:center;gap:9px;min-width:0')}>
                         <Swatch color={s.course.color} size={12} />
                         <span style={st('flex:1;font-size:16px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{s.course.name}</span>
@@ -223,9 +223,7 @@ export function Oggi() {
                   );
                 })}
               </div>
-              <div className="mu" style={st('display:flex;gap:10px;font-size:12px;margin-top:auto;padding-top:8px;white-space:nowrap;flex-wrap:wrap')}>
-                <Legend g="a" l="presente" /><Legend g="x" l="assente" /><Legend g="r" l="recuperata" /><Legend g="t" l="da confermare" />
-              </div>
+              <GlyphLegend style={{ marginTop: 'auto', paddingTop: 8, fontSize: 13, gap: 10 }} />
             </section>
 
             <section className="tile" style={st('grid-column:6 / span 4;grid-row:5 / span 2')}>
@@ -261,10 +259,6 @@ export function Oggi() {
       </main>
     </div>
   );
-}
-
-function Legend({ g, l }: { g: 'a' | 'x' | 'r' | 't'; l: string }) {
-  return <span style={st('display:flex;gap:5px;align-items:center')}><Glyph s={g} small />{l}</span>;
 }
 
 function tomorrowSummary(items: TimelineItem[]): string {

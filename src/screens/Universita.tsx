@@ -4,7 +4,7 @@ import { A } from '../app/router';
 import { useNow, useQuery, useServices, useUi } from '../app/AppContext';
 import { librettoAverages, semesterSummaries } from '../app/queries';
 import { formatNumberIT, formatDateMedium, formatDayShort } from '../domain/dates';
-import { Btn, Empty, Glyph, GlyphStrip, Modal, PageHeader, ConfirmDialog, Field } from '../ui/components';
+import { Btn, Empty, Glyph, GlyphLegend, GlyphStrip, Modal, PageHeader, ConfirmDialog, Field } from '../ui/components';
 import { st } from '../ui/style';
 import { CourseModal } from './modals/CourseModal';
 import { computeAttendance } from '../domain/attendance';
@@ -66,27 +66,30 @@ export function Universita() {
         ) : (
           <div style={st('overflow-x:auto')}>
             <div style={st('min-width:700px')}>
-              <div className="tr th" style={st('grid-template-columns:220px 44px minmax(0,1fr) 60px 110px 110px')}>
+              <div className="tr th" style={st('grid-template-columns:240px 50px minmax(0,1fr) 64px 120px 110px')}>
                 <span>Corso</span><span>CFU</span><span>Lezioni del semestre</span><span style={st('text-align:right')}>Pres.</span><span>Da recuperare</span><span>Esame</span>
               </div>
               {summaries.map((s) => {
                 const p = s.stats.percentage;
                 const lo = p !== null && p < settings.attendanceThreshold;
                 return (
-                  <A key={s.course.id} to={`/corso/${s.course.id}`} className="tr" style={st('grid-template-columns:220px 44px minmax(0,1fr) 60px 110px 110px')}>
+                  <A key={s.course.id} to={`/corso/${s.course.id}`} className="tr" style={st('grid-template-columns:240px 50px minmax(0,1fr) 64px 120px 110px')}>
                     <span style={st('display:grid;grid-template-columns:12px minmax(0,1fr);align-items:center;gap:10px;font-weight:600;min-width:0')} title={s.course.name}>
                       <span style={{ width: 12, height: 12, borderRadius: 2, background: s.course.color }} />
                       <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{s.course.name}</span>
                     </span>
                     <span>{s.course.cfu}</span>
                     <GlyphStrip glyphs={s.strip} label={`Lezioni di ${s.course.name}`} />
-                    <span style={{ textAlign: 'right', fontWeight: 650, fontSize: 17, color: lo ? '#B23A0A' : '#000' }}>{p === null ? '–' : `${formatNumberIT(p, 0)}%`}</span>
+                    <span style={{ textAlign: 'right', fontWeight: 650, fontSize: 19, color: lo ? '#B23A0A' : '#000' }}>{p === null ? '–' : `${formatNumberIT(p, 0)}%`}</span>
                     <span>{s.stats.absent === 0 ? '–' : `${s.stats.absent} ${s.stats.absent === 1 ? 'lezione' : 'lezioni'}`}</span>
-                    <span style={st('font-size:14px')}>{examLabel(s)}</span>
+                    <span>{examLabel(s)}</span>
                   </A>
                 );
               })}
-              <div className="mu" style={st('font-size:13px;margin-top:10px;border-top:1px solid #EBEBE6;padding-top:10px')}>Ogni quadrato è una lezione. Le lezioni ancora da svolgere sono in grigio chiaro. Scorri la riga verso sinistra per vedere le precedenti.</div>
+              <div style={st('margin-top:10px;border-top:1px solid #EBEBE6;padding-top:12px')}>
+                <GlyphLegend future />
+                <div className="mu" style={st('font-size:15px;margin-top:8px')}>Ogni quadrato è una lezione, in ordine di data. Scorri la riga verso sinistra per vedere le precedenti.</div>
+              </div>
             </div>
           </div>
         )}

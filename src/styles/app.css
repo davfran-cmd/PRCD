@@ -24,7 +24,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.4;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior: none;
@@ -42,9 +42,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .sr-only { position: absolute; left: -9999px; }
 
 /* ---------- buttons, controls */
-.btn { height: 40px; padding: 0 14px; border: 1px solid var(--field); background: #fff; border-radius: 6px; font: inherit; font-weight: 550; font-size: 14px; color: #000; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; text-decoration: none; }
-.btn.lg { height: 44px; padding: 0 16px; font-size: 15px; }
-.btn.s { height: 34px; padding: 0 12px; font-size: 14px; }
+.btn { height: 44px; padding: 0 16px; border: 1px solid var(--field); background: #fff; border-radius: 6px; font: inherit; font-weight: 550; font-size: 15.5px; color: #000; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; text-decoration: none; }
+.btn.lg { height: 48px; padding: 0 18px; font-size: 16.5px; }
+.btn.s { height: 40px; padding: 0 14px; font-size: 15px; }
 .btn.p { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn.d { background: var(--signal); border-color: var(--signal); color: #fff; }
 .btn.onp { background: #000; color: #fff; border-color: #000; }
@@ -52,10 +52,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .btn.sel { box-shadow: inset 0 0 0 2px #000; border-color: #000; font-weight: 650; }
 .btn.ghost { border: 0; color: var(--accent); background: transparent; }
 .btn:disabled { opacity: 0.45; cursor: default; }
-.icon-btn { width: 40px; padding: 0; }
+.icon-btn { width: 44px; padding: 0; }
 
-.seg { display: inline-flex; border: 1px solid var(--field); border-radius: 6px; overflow: hidden; height: 40px; flex: none; }
-.seg button, .seg a { border: 0; border-right: 1px solid var(--field); background: #fff; font: inherit; font-size: 14px; padding: 0 14px; color: #000; display: flex; align-items: center; text-decoration: none; }
+.seg { display: inline-flex; border: 1px solid var(--field); border-radius: 6px; overflow: hidden; height: 44px; flex: none; }
+.seg button, .seg a { border: 0; border-right: 1px solid var(--field); background: #fff; font: inherit; font-size: 15.5px; padding: 0 16px; color: #000; display: flex; align-items: center; text-decoration: none; }
 .seg > :last-child { border-right: 0; }
 .seg .on { background: #000; color: #fff; font-weight: 600; }
 
@@ -63,17 +63,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .tg.off { background: #d4d4ce; justify-content: flex-start; }
 .tg span { width: 22px; height: 22px; border-radius: 11px; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
 
-.tag { font-size: 13px; height: 28px; padding: 0 10px; border-radius: 14px; background: var(--ground); display: inline-flex; align-items: center; border: 0; }
+.tag { font-size: 14.5px; height: 32px; padding: 0 10px; border-radius: 14px; background: var(--ground); display: inline-flex; align-items: center; border: 0; }
 .tag.on { background: #000; color: #fff; }
-.chip { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; height: 28px; padding: 0 10px; border-radius: 14px; background: var(--ground); border: 0; }
+.chip { display: inline-flex; align-items: center; gap: 7px; font-size: 14.5px; height: 32px; padding: 0 12px; border-radius: 16px; background: var(--ground); border: 0; }
 .chip.off { opacity: 0.45; }
-.pill { height: 36px; padding: 0 12px; border: 1px solid var(--field); border-radius: 18px; background: #fff; font: inherit; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.pill { height: 40px; padding: 0 14px; border: 1px solid var(--field); border-radius: 20px; background: #fff; font: inherit; font-size: 15.5px; display: inline-flex; align-items: center; gap: 6px; }
 .pill.on { background: #000; border-color: #000; color: #fff; }
 
-.in { height: 40px; border: 1px solid var(--field); border-radius: 6px; padding: 0 12px; font: inherit; font-size: 15px; color: #000; background: #fff; display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.in { height: 44px; border: 1px solid var(--field); border-radius: 6px; padding: 0 12px; font: inherit; font-size: 16px; color: #000; background: #fff; display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .in.emph { border: 2px solid var(--accent); font-weight: 650; }
 .in.err { border: 2px solid var(--signal); font-weight: 650; }
-select.in { appearance: none; padding-right: 28px; background-image: linear-gradient(45deg, transparent 50%, #000 50%), linear-gradient(135deg, #000 50%, transparent 50%); background-position: calc(100% - 16px) 17px, calc(100% - 11px) 17px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+select.in { appearance: none; padding-right: 28px; background-image: linear-gradient(45deg, transparent 50%, #000 50%), linear-gradient(135deg, #000 50%, transparent 50%); background-position: calc(100% - 16px) 19px, calc(100% - 11px) 19px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
 textarea.in { height: auto; padding: 10px 12px; line-height: 1.4; resize: vertical; }
 
 .stp { display: flex; align-items: center; border: 1px solid var(--field); border-radius: 6px; height: 36px; }
@@ -90,11 +90,13 @@ textarea.in { height: auto; padding: 10px 12px; line-height: 1.4; resize: vertic
 .g.sm { width: 9px; height: 9px; }
 .g.sm.x, .g.sm.r { border-width: 1.5px; }
 .strip .g { width: 10px; height: 10px; border-width: 1.5px; }
-.g.lg { width: 19px; height: 19px; }
+.g.lg { width: 22px; height: 22px; }
 .g.lg.x, .g.lg.r { border-width: 2.5px; }
+/* future lessons: a light outline, distinct from both the registered states and the dashed 'to confirm' */
+.g.lg.f { background: #F2F2EF; box-shadow: inset 0 0 0 1px #DCDCD6; }
 .g.lg.t { border-width: 2px; }
 /* A row of attendance squares that scrolls sideways; it opens on the latest lessons. */
-.gstrip { display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 2px 0; }
+.gstrip { display: flex; gap: 5px; flex-wrap: nowrap; overflow-x: auto; min-width: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 2px 0; }
 .gstrip::-webkit-scrollbar { display: none; }
 .sw { width: 10px; height: 10px; border-radius: 2px; flex: none; }
 .ck { width: 22px; height: 22px; border: 1.5px solid #000; border-radius: 3px; background: #fff; padding: 0; display: flex; align-items: center; justify-content: center; flex: none; }
@@ -110,13 +112,13 @@ h2.sec { margin: 0; font-size: 20px; font-weight: 700; }
 
 /* ---------- sidebar */
 .sb { width: var(--sidebar-w); flex: none; height: 100%; background: var(--ground); border-right: 1px solid var(--rule); display: flex; flex-direction: column; padding: 18px 12px 14px; overflow-y: auto; }
-.sb .nv { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 6px; color: #000; text-decoration: none; font-size: 16px; font-weight: 450; }
+.sb .nv { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 6px; color: #000; text-decoration: none; font-size: 17px; font-weight: 450; }
 .sb .nv:hover { background: #e6e6e1; }
 .sb .nv.on { background: #fff; font-weight: 650; box-shadow: inset 0 0 0 1px var(--rule); }
-.sb .cs { display: grid; grid-template-columns: 10px minmax(0, 1fr) 36px; align-items: center; column-gap: 10px; height: 34px; padding: 0 12px; font-size: 14px; color: #000; text-decoration: none; border-radius: 6px; }
+.sb .cs { display: grid; grid-template-columns: 10px minmax(0, 1fr) 44px; align-items: center; column-gap: 10px; height: 42px; padding: 0 12px; font-size: 16px; color: #000; text-decoration: none; border-radius: 6px; }
 .sb .cs .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sb .cs:hover { background: #e6e6e1; }
-.sb .pc { text-align: right; font-size: 13px; color: var(--muted); }
+.sb .pc { text-align: right; font-size: 15px; color: var(--muted); }
 .sb .pc.lo { color: var(--signal-text); font-weight: 650; }
 .sb-search { margin: 10px 0 14px; height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 6px; background: #fff; font-size: 15px; color: var(--muted); text-align: left; width: 100%; }
 .sb-toggle { display: none; }
@@ -127,8 +129,8 @@ h2.sec { margin: 0; font-size: 20px; font-weight: 700; }
 .tile.dark { background: #000; color: #fff; }
 .tile.dark .mu { color: #a3a39c; }
 .th { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; flex: none; }
-.th h2 { margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.005em; }
-.th a, .th .lnk { font-size: 14px; color: var(--accent); text-decoration: none; }
+.th h2 { margin: 0; font-size: 17px; font-weight: 650; letter-spacing: -0.005em; }
+.th a, .th .lnk { font-size: 15.5px; color: var(--accent); text-decoration: none; }
 .tile.dark .th a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
 .ev { display: grid; grid-template-columns: 52px 10px minmax(0, 1fr) auto; column-gap: 12px; align-items: center; min-height: 60px; border-top: 1px solid var(--rule-soft); }
 .ev .tm { font-weight: 650; line-height: 1.2; }
@@ -154,15 +156,15 @@ h2.sec { margin: 0; font-size: 20px; font-weight: 700; }
 .dc > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- list rows & tables */
-.tr { display: grid; gap: 14px; align-items: center; min-height: 62px; border-top: 1px solid var(--rule-soft); color: #000; text-decoration: none; }
+.tr { display: grid; gap: 14px; align-items: center; min-height: 68px; font-size: 17px; border-top: 1px solid var(--rule-soft); color: #000; text-decoration: none; }
 .tr > * { min-width: 0; }
-.tr.th { min-height: 36px; font-size: 13px; color: var(--muted); border-top: 0; margin: 0; display: grid; align-items: center; }
+.tr.th { min-height: 40px; font-size: 14.5px; color: var(--muted); border-top: 0; margin: 0; display: grid; align-items: center; }
 a.tr:hover, button.tr:hover { background: var(--panel); }
 .row { display: grid; grid-template-columns: 150px 1fr; align-items: center; min-height: 52px; border-top: 1px solid var(--rule-soft); gap: 12px; }
-.row > label, .row > .lb { font-size: 14px; color: var(--muted); }
+.row > label, .row > .lb { font-size: 15.5px; color: var(--muted); }
 .sr { display: flex; align-items: center; gap: 14px; min-height: 56px; border-top: 1px solid var(--rule-soft); }
 .sr .t { flex: 1; min-width: 0; }
-.sr .t small { display: block; color: var(--muted); font-size: 13px; }
+.sr .t small { display: block; color: var(--muted); font-size: 14.5px; }
 .lr { display: flex; align-items: center; gap: 14px; min-height: 62px; border-top: 1px solid var(--rule-soft); }
 .st { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--field); border-radius: 8px; overflow: hidden; width: 440px; max-width: 100%; flex: none; }
 .st button { height: 48px; border: 0; border-right: 1px solid var(--field); background: #fff; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 7px; }
@@ -288,3 +290,10 @@ body.sb-overlay .sb-toggle { display: flex; position: fixed; top: 6px; left: 8px
   .scrim { padding: 0; }
 }
 body.sb-overlay .main.reader-main { padding-top: 0 !important; }
+
+/* Readability on iPad (11" included): the small inline sizes used across screens are raised one step. */
+[style*="font-size: 11px"]:not(.textLayer *):not(.reading *) { font-size: 12.5px !important; }
+[style*="font-size: 12px"]:not(.textLayer *):not(.reading *) { font-size: 13.5px !important; }
+[style*="font-size: 13px"]:not(.textLayer *):not(.reading *) { font-size: 14.5px !important; }
+[style*="font-size: 13.5px"]:not(.textLayer *):not(.reading *) { font-size: 15px !important; }
+[style*="font-size: 14px"]:not(.textLayer *):not(.reading *) { font-size: 15.5px !important; }
