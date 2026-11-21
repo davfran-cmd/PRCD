@@ -95,7 +95,7 @@ export function Sidebar({ active, overlay }: { active: Section; overlay?: boolea
           </A>
         ))}
       </div>
-      <div className="sb-section" style={st('margin:26px 12px 6px;font-size:13.2px;white-space:nowrap;color:#5F5F59;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px')}>
+      <div className="sb-section" style={st('margin:26px 12px 8px;padding-bottom:8px;border-bottom:1px solid #DCDCD6;font-size:13.2px;white-space:nowrap;color:#5F5F59;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px')}>
         <span>Corsi del semestre</span>
         <span style={st('text-align:right')}>presenze</span>
       </div>
@@ -119,9 +119,9 @@ export function Sidebar({ active, overlay }: { active: Section; overlay?: boolea
       <div className="sb-progress" style={st('margin-top:auto;padding:0 12px 12px')}>
         {sem && dash.weekNumber ? (
           <>
-            <div style={st('display:flex;justify-content:space-between;font-size:13px')}>
-              <span>{sem.name}</span>
-              <span className="mu">
+            <div style={st('display:flex;justify-content:space-between;gap:8px;font-size:13px;white-space:nowrap')}>
+              <span style={st('overflow:hidden;text-overflow:ellipsis;min-width:0')}>{sem.name}</span>
+              <span className="mu" style={st('flex:none')}>
                 {dash.weekNumber.current} / {dash.weekNumber.total}
               </span>
             </div>

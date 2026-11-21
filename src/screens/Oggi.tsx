@@ -229,7 +229,7 @@ export function Oggi() {
             <section className="tile" style={st('grid-column:6 / span 4;grid-row:5 / span 2')}>
               <div className="th">
                 <h2>Da recuperare</h2>
-                <span className="mu" style={st('font-size:14px')}>{dash.recoveryDone} di {dash.recoveryTotal} fatte</span>
+                <span className="mu" style={st('font-size:14px')}>{dash.recoveryDone} di {dash.recoveryTotal} recuperate</span>
               </div>
               {dash.toRecover.length === 0 && <p className="mu" style={st('margin:4px 0')}>Nessuna assenza da recuperare.</p>}
               <div style={st('overflow:auto;min-height:0;flex:1')}>

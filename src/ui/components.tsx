@@ -31,7 +31,7 @@ export function Glyph({ s, small }: { s: StripGlyph | 'a' | 'x' | 'r' | 't' | 'f
  * Attendance squares in one row that scrolls sideways. It opens on the most recent lessons (plus the next two
  * still to come, if any): scroll left to see the older ones.
  */
-export function GlyphStrip({ glyphs, label, style }: { glyphs: Array<StripGlyph | 'a' | 'x' | 'r' | 't' | 'f'>; label?: string; style?: CSSProperties }) {
+export function GlyphStrip({ glyphs, label, style, className = '' }: { glyphs: Array<StripGlyph | 'a' | 'x' | 'r' | 't' | 'f'>; label?: string; style?: CSSProperties; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const key = glyphs.join('');
   useLayoutEffect(() => {
@@ -44,7 +44,7 @@ export function GlyphStrip({ glyphs, label, style }: { glyphs: Array<StripGlyph 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
   return (
-    <span ref={ref} className="gstrip" aria-label={label} style={style}>
+    <span ref={ref} className={`gstrip ${className}`.trim()} aria-label={label} style={style}>
       {glyphs.map((g, i) => <span key={i} className={`g ${g} lg`} />)}
     </span>
   );

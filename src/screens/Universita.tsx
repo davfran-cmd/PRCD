@@ -65,21 +65,21 @@ export function Universita() {
           <Empty title="Nessun corso in questo semestre" body="Aggiungi un corso con giorni e orari: PRCD crea da solo tutte le lezioni fino alla fine del semestre." actions={<Btn size="lg" variant="p" onClick={() => sem && ui.modal((close) => <CourseModal semesterId={sem.id} onClose={close} />)}>Aggiungi il primo corso</Btn>} />
         ) : (
           <div style={st('overflow-x:auto')}>
-            <div style={st('min-width:700px')}>
-              <div className="tr th" style={st('grid-template-columns:240px 50px minmax(0,1fr) 64px 120px 110px')}>
-                <span>Corso</span><span>CFU</span><span>Lezioni del semestre</span><span style={st('text-align:right')}>Pres.</span><span>Da recuperare</span><span>Esame</span>
+            <div style={st('min-width:600px')}>
+              <div className="tr th uni-row" style={st('grid-template-columns:240px 50px minmax(0,1fr) 64px 120px 110px')}>
+                <span>Corso</span><span>CFU</span><span className="uni-strip-h">Lezioni del semestre</span><span style={st('text-align:right')}>Pres.</span><span>Da recuperare</span><span>Esame</span>
               </div>
               {summaries.map((s) => {
                 const p = s.stats.percentage;
                 const lo = p !== null && p < settings.attendanceThreshold;
                 return (
-                  <A key={s.course.id} to={`/corso/${s.course.id}`} className="tr" style={st('grid-template-columns:240px 50px minmax(0,1fr) 64px 120px 110px')}>
+                  <A key={s.course.id} to={`/corso/${s.course.id}`} className="tr uni-row" style={st('grid-template-columns:240px 50px minmax(0,1fr) 64px 120px 110px')}>
                     <span style={st('display:grid;grid-template-columns:12px minmax(0,1fr);align-items:center;gap:10px;font-weight:600;min-width:0')} title={s.course.name}>
                       <span style={{ width: 12, height: 12, borderRadius: 2, background: s.course.color }} />
                       <span style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{s.course.name}</span>
                     </span>
                     <span>{s.course.cfu}</span>
-                    <GlyphStrip glyphs={s.strip} label={`Lezioni di ${s.course.name}`} />
+                    <GlyphStrip glyphs={s.strip} label={`Lezioni di ${s.course.name}`} className="uni-strip" />
                     <span style={{ textAlign: 'right', fontWeight: 650, fontSize: 19, color: lo ? '#B23A0A' : '#000' }}>{p === null ? '–' : `${formatNumberIT(p, 0)}%`}</span>
                     <span>{s.stats.absent === 0 ? '–' : `${s.stats.absent} ${s.stats.absent === 1 ? 'lezione' : 'lezioni'}`}</span>
                     <span>{examLabel(s)}</span>

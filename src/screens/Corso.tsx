@@ -80,15 +80,15 @@ export function Corso({ id }: { id: string }) {
         </header>
 
         {tab === 'panoramica' && (
-          <div className="scroll grid-md-1" style={st('display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);flex:1;padding-left:10px')}>
-            <section className="col" style={colStyle}>
+          <div className="scroll" style={st('flex:1;padding:0 10px 40px')}>
+            <section className="col" style={{ ...colStyle, borderRight: 0, maxWidth: 1100 }}>
               <h2 style={chStyle}>Presenze</h2>
               <div style={st('display:flex;align-items:baseline;gap:10px')}>
                 <span style={{ fontSize: 52, fontWeight: 780, letterSpacing: '-0.04em', lineHeight: 1, color: lo ? '#B23A0A' : '#000' }}>{stats.percentage === null ? '–' : `${formatNumberIT(stats.percentage, 0)}%`}</span>
                 <span className="mu" style={st('font-size:17px')}>{stats.attended} su {stats.held} lezioni svolte</span>
               </div>
               {total > 0 && (
-                <div style={st('display:flex;height:8px;margin:14px 0 6px;gap:2px')} aria-hidden="true">
+                <div style={st('display:flex;height:16px;margin:16px 0 8px;gap:3px')} aria-hidden="true">
                   <div style={{ flex: stats.attended, background: '#000' }} />
                   <div style={{ flex: stats.recovered, background: 'linear-gradient(135deg,#000 50%,#fff 50%)', boxShadow: 'inset 0 0 0 1.5px #000' }} />
                   <div style={{ flex: stats.absent, background: '#fff', boxShadow: 'inset 0 0 0 1.5px #C2410C' }} />
@@ -101,7 +101,7 @@ export function Corso({ id }: { id: string }) {
               </div>
               {stats.toConfirm > 0 && <p style={st('font-size:16px;margin:10px 0 0;color:#1F35C7')}>{stats.toConfirm} {stats.toConfirm === 1 ? 'lezione' : 'lezioni'} da confermare. <A to="/presenze" style={st('color:#1F35C7')}>Registra</A></p>}
               <div style={st('margin-top:18px;font-size:16px;font-weight:650;display:flex;justify-content:space-between;align-items:baseline')}>
-                <span>Ultime lezioni</span><span className="mu" style={st('font-weight:400')}>tocca il quadrato per cambiare</span>
+                <span /><span className="mu" style={st('font-weight:400')}>tocca il quadrato per cambiare</span>
               </div>
               <div style={st('margin-top:6px')}>
                 {lastLessons.map((l, i) => {
@@ -125,7 +125,10 @@ export function Corso({ id }: { id: string }) {
               </div>
             </section>
 
-            <MaterialsColumn courseId={id} materials={materials} />
+            {/* materials come after the attendance, which gets the whole width */}
+            <div style={st('border-top:2px solid #000;margin:28px 22px 0;max-width:640px')}>
+              <MaterialsColumn courseId={id} materials={materials} flat />
+            </div>
           </div>
         )}
 
@@ -215,30 +218,42 @@ function LessonsList({ courseId, nowLocal }: { courseId: string; nowLocal: strin
   const { repo } = useServices();
   const ui = useUi();
   const lessons = useQuery((r) => r.lessonsForCourse(courseId), [courseId]);
-  const byMonth = new Map<string, typeof lessons>();
-  for (const l of lessons) byMonth.set(l.date.slice(0, 7), [...(byMonth.get(l.date.slice(0, 7)) ?? []), l]);
   if (!lessons.length) return <Empty title="Nessuna lezione" body="Aggiungi giorni e orari al corso per generare le lezioni." />;
-  return (
-    <div style={st('max-width:820px')}>
-      {[...byMonth].map(([m, ls]) => (
+  const isPast = (l: (typeof lessons)[number]) => `${l.date}T${l.timeUnknown ? '00:00' : l.startTime}` < nowLocal;
+  // Lessons already held first, from the most recent; then the ones still to come, from the next one.
+  const past = lessons.filter(isPast).sort((x, y) => `${y.date}${y.startTime}`.localeCompare(`${x.date}${x.startTime}`));
+  const next = lessons.filter((l) => !isPast(l));
+  const months = (ls: typeof lessons) => {
+    const m = new Map<string, typeof lessons>();
+    for (const l of ls) m.set(l.date.slice(0, 7), [...(m.get(l.date.slice(0, 7)) ?? []), l]);
+    return [...m];
+  };
+  const row = (l: (typeof lessons)[number]) => (
+    <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '120px 130px 1fr auto auto', gap: 14, alignItems: 'center', minHeight: 60, borderTop: '1px solid #EBEBE6', fontSize: 17, opacity: l.cancelled ? 0.55 : 1 }}>
+      <span style={{ fontWeight: 600, textDecoration: l.cancelled ? 'line-through' : 'none' }}>{formatDayShort(l.date)}</span>
+      <span>{l.timeUnknown ? 'orario n.d.' : `${l.startTime}–${l.endTime}`}</span>
+      <span className="mu" style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.cancelled ? (l.cancelReason === 'holiday' ? 'festività' : 'annullata') : l.kind === 'extra' ? 'extra' : l.isException ? 'spostata' : ''} {l.topic}</span>
+      <button style={cycleBtn} disabled={l.cancelled} onClick={() => void ui.run(() => repo.setAttendance(l.id, nextAttendanceStatus(l.attendance)))} aria-label={`Presenza: ${ATTENDANCE_LABELS[l.attendance]}`} title={ATTENDANCE_LABELS[l.attendance]}>
+        <span className={`g lg ${l.attendance === 'to_confirm' && !isPast(l) ? 'f' : glyphOf(l.attendance)}`} style={{ width: 22, height: 22 }} />
+      </button>
+      <Btn onClick={() => ui.modal((close) => <LessonEditModal lessonId={l.id} onClose={close} />)}>Modifica</Btn>
+    </div>
+  );
+  const group = (title: string, ls: typeof lessons) => ls.length > 0 && (
+    <section style={st('margin-bottom:28px')}>
+      <h2 style={st('margin:8px 0 0;font-size:20px;font-weight:750;padding-bottom:8px;border-bottom:2px solid #000')}>{title}</h2>
+      {months(ls).map(([m, items]) => (
         <div key={m}>
-          <div style={st('font-size:16px;font-weight:700;padding:20px 0 6px')}>{formatMonthYear(`${m}-01`)}</div>
-          {ls.map((l) => {
-            const past = `${l.date}T${l.startTime}` < nowLocal;
-            return (
-              <div key={l.id} style={{ display: 'grid', gridTemplateColumns: '120px 130px 1fr auto auto', gap: 14, alignItems: 'center', minHeight: 60, borderTop: '1px solid #EBEBE6', fontSize: 17, opacity: l.cancelled ? 0.55 : 1 }}>
-                <span style={{ fontWeight: 600, textDecoration: l.cancelled ? 'line-through' : 'none' }}>{formatDayShort(l.date)}</span>
-                <span>{l.timeUnknown ? 'orario n.d.' : `${l.startTime}–${l.endTime}`}</span>
-                <span className="mu" style={st('white-space:nowrap;overflow:hidden;text-overflow:ellipsis')}>{l.cancelled ? (l.cancelReason === 'holiday' ? 'festività' : 'annullata') : l.kind === 'extra' ? 'extra' : l.isException ? 'spostata' : ''} {l.topic}</span>
-                <button style={cycleBtn} disabled={l.cancelled} onClick={() => void ui.run(() => repo.setAttendance(l.id, nextAttendanceStatus(l.attendance)))} aria-label={`Presenza: ${ATTENDANCE_LABELS[l.attendance]}`} title={ATTENDANCE_LABELS[l.attendance]}>
-                  <span className={`g lg ${l.attendance === 'to_confirm' && !past ? 'f' : glyphOf(l.attendance)}`} style={{ width: 22, height: 22 }} />
-                </button>
-                <Btn onClick={() => ui.modal((close) => <LessonEditModal lessonId={l.id} onClose={close} />)}>Modifica</Btn>
-              </div>
-            );
-          })}
+          <div style={st('font-size:16px;font-weight:700;padding:18px 0 6px')}>{formatMonthYear(`${m}-01`)}</div>
+          {items.map(row)}
         </div>
       ))}
+    </section>
+  );
+  return (
+    <div style={st('max-width:820px')}>
+      {group('Lezioni svolte, dalla più recente', past)}
+      {group('Prossime lezioni', next)}
     </div>
   );
 }
@@ -265,7 +280,7 @@ function MaterialsColumn({ courseId, materials, flat }: { courseId: string; mate
     </A>
   );
   return (
-    <section className="col" style={{ ...colStyle, borderRight: 0, paddingRight: flat ? 0 : 32 }}>
+    <section className="col" style={{ ...colStyle, borderRight: 0, paddingRight: flat ? 0 : 32, paddingLeft: flat ? 0 : 22 }}>
       <h2 style={{ ...chStyle, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         Materiali
         <button className="lnk" onClick={openFolder} style={st('font-size:14px;color:#1F35C7;font-weight:400')}>Apri la cartella</button>
