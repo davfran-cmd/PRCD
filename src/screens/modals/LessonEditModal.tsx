@@ -122,9 +122,9 @@ export function LessonEditModal({ lessonId, onClose }: { lessonId: string; onClo
             <div style={st('font-size:14px;font-weight:600;margin-bottom:8px')}>Nuovo orario</div>
             <input className="in" type="date" aria-label="Data" value={date} onChange={(e) => setDate(e.target.value)} style={st('width:100%;margin-bottom:8px;height:44px')} />
             <div style={st('display:flex;gap:8px;align-items:center')}>
-              <input className="in hl" type="time" aria-label="Inizio" value={start} onChange={(e) => setStart(e.target.value)} style={st('flex:1;height:44px')} />
+              <input className="in emph" type="time" aria-label="Inizio" value={start} onChange={(e) => setStart(e.target.value)} style={st('flex:1;height:44px')} />
               <span className="mu">–</span>
-              <input className={`in hl ${valid ? '' : 'err'}`} type="time" aria-label="Fine" value={end} onChange={(e) => setEnd(e.target.value)} style={st('flex:1;height:44px')} />
+              <input className={`in emph ${valid ? '' : 'err'}`} type="time" aria-label="Fine" value={end} onChange={(e) => setEnd(e.target.value)} style={st('flex:1;height:44px')} />
             </div>
             {!valid && <p style={st('color:#B23A0A;font-size:13px;margin:8px 0 0')}>L’ora di fine deve seguire quella di inizio.</p>}
           </div>
@@ -215,9 +215,9 @@ function ExtraLessonModal({ courseId, defaultDate, start, end, onClose }: { cour
       <div style={st('padding:18px 24px 24px;display:grid;gap:10px')}>
         <input className="in" type="date" aria-label="Data" value={date} onChange={(ev) => setDate(ev.target.value)} />
         <div style={st('display:flex;gap:8px;align-items:center')}>
-          <input className="in hl" type="time" aria-label="Inizio" value={s} onChange={(ev) => setS(ev.target.value)} style={st('flex:1')} />
+          <input className="in emph" type="time" aria-label="Inizio" value={s} onChange={(ev) => setS(ev.target.value)} style={st('flex:1')} />
           <span className="mu">–</span>
-          <input className="in hl" type="time" aria-label="Fine" value={e} onChange={(ev) => setE(ev.target.value)} style={st('flex:1')} />
+          <input className="in emph" type="time" aria-label="Fine" value={e} onChange={(ev) => setE(ev.target.value)} style={st('flex:1')} />
         </div>
         <input className="in" placeholder="Argomento (facoltativo)" value={topic} onChange={(ev) => setTopic(ev.target.value)} />
         <p className="mu" style={st('font-size:13px;margin:0')}>Una lezione extra ha la sua presenza e non fa parte dell’orario ricorrente.</p>

@@ -51,7 +51,7 @@ export function Universita() {
           }
         />
 
-        <div className="grid-md-1" style={st('display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:22px;border-top:2px solid #000;border-bottom:1px solid #DCDCD6')}>
+        <div className="kpis" style={st('display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:22px;border-top:2px solid #000;border-bottom:1px solid #DCDCD6')}>
           <Kpi value={<>{avg.totalCfu}<span className="mu" style={st('font-size:20px;font-weight:500;letter-spacing:0')}> / {settings.degreeCfuTarget}</span></>} label="CFU acquisiti" first />
           <Kpi value={avg.weighted === null ? '–' : formatNumberIT(avg.weighted, 2)} label={`media ponderata su ${avg.gradedExams} ${avg.gradedExams === 1 ? 'esame' : 'esami'}`} />
           <Kpi value={semStats.percentage === null ? '–' : `${formatNumberIT(semStats.percentage, 0)}%`} label="presenza media del semestre" />

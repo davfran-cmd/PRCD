@@ -71,7 +71,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .pill.on { background: #000; border-color: #000; color: #fff; }
 
 .in { height: 40px; border: 1px solid var(--field); border-radius: 6px; padding: 0 12px; font: inherit; font-size: 15px; color: #000; background: #fff; display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
-.in.hl { border: 2px solid var(--accent); font-weight: 650; }
+.in.emph { border: 2px solid var(--accent); font-weight: 650; }
 .in.err { border: 2px solid var(--signal); font-weight: 650; }
 select.in { appearance: none; padding-right: 28px; background-image: linear-gradient(45deg, transparent 50%, #000 50%), linear-gradient(135deg, #000 50%, transparent 50%); background-position: calc(100% - 16px) 17px, calc(100% - 11px) 17px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
 textarea.in { height: auto; padding: 10px 12px; line-height: 1.4; resize: vertical; }
@@ -214,15 +214,21 @@ a.tr:hover, button.tr:hover { background: var(--panel); }
 @media (max-width: 900px) {
   :root { --sidebar-w: 72px; }
   .sb { padding: 14px 8px; align-items: stretch; }
-  .sb .label, .sb .cs .nm, .sb .cs .pc, .sb .sb-title, .sb .sb-section, .sb .sb-progress, .sb-search span { display: none; }
+  .sb .label, .sb .cs .nm, .sb .cs .pc, .sb .sb-title, .sb .sb-section, .sb .sb-progress, .sb-search span { display: none !important; }
   .sb .nv { justify-content: center; padding: 0; }
   .sb .cs { grid-template-columns: 1fr; justify-items: center; padding: 0; }
   .sb-search { justify-content: center; padding: 0; }
-  .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: minmax(150px, auto); overflow: auto; }
-  .bento > .tile { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  .bento { display: flex !important; flex-direction: column; gap: 10px; overflow: auto; }
+  .bento > .tile { flex: none !important; grid-column: auto !important; grid-row: auto !important; min-height: min-content; overflow: visible; }
+  /* flex:1 children have a 0 flex-basis, which collapses the tile's intrinsic height: size them by content here */
+  .bento > .tile > * { flex: none !important; min-height: auto !important; }
+  .bento .tile [style*='overflow:auto'] { max-height: 340px; }
   .days { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
-  .stack-md { flex-direction: column !important; }
+  .stack-md { flex-direction: column !important; grid-template-columns: minmax(0, 1fr) !important; overflow: auto !important; }
+  .stack-md > aside { border-left: 0 !important; border-top: 1px solid var(--rule); }
+  .lr { flex-wrap: wrap; padding: 6px 0; }
   .grid-md-1 { grid-template-columns: minmax(0, 1fr) !important; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 @media (max-width: 600px) {
   .sheet { border-radius: 14px 14px 0 0; align-self: flex-end; }

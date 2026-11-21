@@ -157,12 +157,12 @@ export function EventModal({ date, time, eventId, occurrenceDate, onClose }: Pro
             </select>
           </Field>
           <Field label="Data">
-            <input className="in" type="date" aria-label="Data" value={d} onChange={(e) => setD(e.target.value)} />
+            <input className="in" type="date" aria-label="Data" value={d} onChange={(e) => setD(e.target.value)} style={st('width:142px;padding:0 8px')} />
             {!isDeadline && !allDay && (
               <>
-                <input className="in" type="time" aria-label="Inizio" value={start} onChange={(e) => { setStart(e.target.value); }} style={st('width:110px')} />
+                <input className="in" type="time" aria-label="Inizio" value={start} onChange={(e) => { setStart(e.target.value); }} style={st('width:98px;padding:0 8px')} />
                 <span className="mu">–</span>
-                <input className="in hl" type="time" aria-label="Fine" value={endTime} onChange={(e) => setEndCustom(e.target.value)} style={st('width:110px')} />
+                <input className="in emph" type="time" aria-label="Fine" value={endTime} onChange={(e) => setEndCustom(e.target.value)} style={st('width:98px;padding:0 8px')} />
               </>
             )}
             {isDeadline && <><span className="mu">entro le</span><input className="in" type="time" aria-label="Ora di scadenza" value={start} onChange={(e) => setStart(e.target.value)} style={st('width:110px')} /></>}
