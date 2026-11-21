@@ -1,0 +1,78 @@
+# Builds the native iPad app (Capacitor) on a macOS runner, without a Mac of our own.
+# The result is an UNSIGNED .ipa, published on the release "ipad-latest" of this repository:
+# Sideloadly (Windows) signs it with the user's free Apple ID and installs it on the iPad.
+# See docs/IPAD_APP_SIDELOADLY.md.
+name: App iPad (ipa da installare con Sideloadly)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ipad-app
+  cancel-in-progress: true
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync ios
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Build (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee xcodebuild.log | grep -E "error:|warning: .*PRCD|BUILD (SUCCEEDED|FAILED)" || true
+          # Compiler errors become annotations, readable on the run page.
+          grep -E "^/.*: error:" xcodebuild.log | sort -u | head -40 | while IFS= read -r line; do echo "::error::$line"; done
+          grep -q "BUILD SUCCEEDED" xcodebuild.log
+
+      - name: Package .ipa
+        run: |
+          APP=build/Build/Products/Release-iphoneos/App.app
+          test -d "$APP"
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry PRCD.ipa Payload
+          ls -la PRCD.ipa
+
+      - name: Publish on the release "ipad-latest"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="App iPad non firmata, costruita da ${GITHUB_SHA::7} il $(date -u +%Y-%m-%d). Installala con Sideloadly: vedi docs/IPAD_APP_SIDELOADLY.md."
+          if gh release view ipad-latest >/dev/null 2>&1; then
+            gh release upload ipad-latest PRCD.ipa --clobber
+            gh release edit ipad-latest --notes "$NOTES" --target "$GITHUB_SHA"
+          else
+            gh release create ipad-latest PRCD.ipa --title "App iPad (ultima versione)" --notes "$NOTES" --target "$GITHUB_SHA" --prerelease
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
+          if-no-files-found: ignore
