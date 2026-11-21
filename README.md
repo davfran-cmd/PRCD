@@ -45,6 +45,10 @@ In sviluppo, dalla console del browser:
 | `design/` | Export del design originale (sola lettura) |
 | `docs/` | Documentazione |
 
+## Provarla su iPad come web app
+
+Push su GitHub → test, build e pubblicazione automatici su GitHub Pages → su iPad: Safari → *Aggiungi alla schermata Home*. Istruzioni passo passo: [docs/WEB_APP_IPAD.md](docs/WEB_APP_IPAD.md).
+
 ## Documentazione
 
 - [Architettura](docs/ARCHITECTURE.md) — livelli, invarianti, sincronizzazione Apple Calendar, sicurezza

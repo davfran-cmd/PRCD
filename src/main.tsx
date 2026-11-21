@@ -14,6 +14,14 @@ import './styles/highlight.css';
 import { App } from './app/App';
 import { boot } from './app/boot';
 import { APP_NAME } from './domain/settings';
+import { Capacitor } from '@capacitor/core';
+
+// Offline support for the web app (GitHub Pages / Safari "Aggiungi a Home"). Not needed inside the native app.
+if (import.meta.env.PROD && !Capacitor.isNativePlatform() && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => undefined);
+  });
+}
 
 const root = createRoot(document.getElementById('root') as HTMLElement);
 
